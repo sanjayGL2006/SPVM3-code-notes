@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fundamentals of Computers Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF8F3;
+  --surface:#F1ECE1;
+  --surface-2:#E9E2D0;
+  --ink:#1C2331;
+  --ink-soft:#4B5563;
+  --accent-green:#2E7D5B;
+  --accent-green-light:#DCEEE4;
+  --accent-copper:#B8722F;
+  --accent-copper-light:#F3E2CC;
+  --panel-dark:#12181F;
+  --panel-dark-2:#1B2430;
+  --panel-line:#2C3849;
+  --line:#DCD3BE;
+  --mono:'IBM Plex Mono', monospace;
+  --serif:'IBM Plex Serif', Georgia, serif;
+  --display:'Space Grotesk', sans-serif;
+  --radius:2px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--serif);
+  font-size:16px;
+  line-height:1.65;
+}
+::selection{background:var(--accent-copper-light);}
+
+/* ---------- layout ---------- */
+.app{display:flex; min-height:100vh;}
+.sidebar{
+  width:288px; flex-shrink:0;
+  background:var(--panel-dark);
+  color:#C9D2DE;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  border-right:1px solid var(--panel-line);
+  padding:0 0 40px;
+  z-index:40;
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--panel-line); border-radius:4px;}
+
+.brand{
+  padding:28px 22px 18px;
+  border-bottom:1px solid var(--panel-line);
+  position:sticky; top:0; background:var(--panel-dark); z-index:2;
+}
+.brand-line1{font-family:var(--mono); font-size:12px; color:var(--accent-green); letter-spacing:.14em; text-transform:uppercase;}
+.brand-line1 .cursor{display:inline-block; width:7px; height:13px; background:var(--accent-green); margin-left:4px; animation:blink 1.1s steps(1) infinite; vertical-align:-2px;}
+@keyframes blink{50%{opacity:0;}}
+.brand h1{
+  font-family:var(--display); font-size:21px; margin:8px 0 4px; color:#F4F1E9; font-weight:600; line-height:1.25;
+}
+.brand p{margin:0; font-size:12.5px; color:#7C8AA0; font-family:var(--mono);}
+
+nav.toc{padding:10px 0 0;}
+.toc-group{margin:0;}
+.toc-group-title{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:#5E6C82; padding:16px 22px 6px;
+}
+.toc a{
+  display:flex; gap:10px; align-items:baseline;
+  padding:6.5px 22px; color:#C9D2DE; text-decoration:none; font-size:13.6px;
+  border-left:2px solid transparent;
+}
+.toc a .addr{font-family:var(--mono); font-size:11px; color:#5E6C82; flex-shrink:0;}
+.toc a:hover{background:var(--panel-dark-2); color:#fff;}
+.toc a.active{border-left-color:var(--accent-green); background:var(--panel-dark-2); color:#fff;}
+.toc a.active .addr{color:var(--accent-green);}
+
+.menu-toggle{display:none;}
+
+main{flex:1; min-width:0;}
+.container{max-width:840px; margin:0 auto; padding:64px 40px 120px;}
+
+/* ---------- hero ---------- */
+.hero{padding:0 0 46px; border-bottom:1px solid var(--line); margin-bottom:46px;}
+.hero .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-copper); margin-bottom:14px;}
+.hero h1{font-family:var(--display); font-size:44px; line-height:1.08; margin:0 0 16px; font-weight:700; letter-spacing:-0.01em;}
+.hero p.lede{font-size:18px; color:var(--ink-soft); max-width:56ch; margin:0 0 22px;}
+.hero-meta{display:flex; gap:22px; flex-wrap:wrap; font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);}
+.hero-meta span b{color:var(--ink);}
+
+/* ---------- sections ---------- */
+section.chapter{margin:0 0 68px; scroll-margin-top:24px;}
+.chapter-head{display:flex; align-items:baseline; gap:14px; margin-bottom:6px;}
+.chapter-num{font-family:var(--mono); font-size:14px; color:var(--accent-green); background:var(--accent-green-light); padding:2px 8px; border-radius:var(--radius);}
+.chapter-head h2{font-family:var(--display); font-size:29px; margin:0; font-weight:700; letter-spacing:-0.01em;}
+.chapter-sub{color:var(--ink-soft); font-size:15px; margin:6px 0 26px; max-width:64ch;}
+
+h3{font-family:var(--display); font-size:19px; margin:34px 0 10px; font-weight:600; color:var(--ink);}
+h4{font-family:var(--display); font-size:15.5px; margin:22px 0 8px; font-weight:600; color:var(--ink);}
+p{margin:0 0 14px;}
+ul,ol{margin:0 0 16px; padding-left:22px;}
+li{margin-bottom:6px;}
+strong{color:var(--ink); font-weight:600;}
+code{font-family:var(--mono); background:var(--surface-2); padding:1px 6px; border-radius:var(--radius); font-size:.88em;}
+
+.callout{
+  background:var(--accent-copper-light); border-left:3px solid var(--accent-copper);
+  padding:14px 18px; margin:18px 0; border-radius:0 var(--radius) var(--radius) 0;
+}
+.callout .callout-label{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--accent-copper); margin-bottom:5px; font-weight:600;}
+.callout p:last-child{margin-bottom:0;}
+
+.note-green{background:var(--accent-green-light); border-left:3px solid var(--accent-green); padding:14px 18px; margin:18px 0; border-radius:0 var(--radius) var(--radius) 0;}
+.note-green .callout-label{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--accent-green); margin-bottom:5px; font-weight:600;}
+.note-green p:last-child{margin-bottom:0;}
+
+/* tables */
+.table-wrap{overflow-x:auto; margin:18px 0 26px; border:1px solid var(--line); border-radius:var(--radius);}
+table{border-collapse:collapse; width:100%; font-size:14.2px;}
+th,td{padding:10px 14px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top;}
+th{font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; background:var(--surface); color:var(--ink-soft);}
+tr:last-child td{border-bottom:none;}
+td code{white-space:nowrap;}
+
+/* timeline */
+.timeline{position:relative; margin:28px 0; padding-left:26px; border-left:2px solid var(--surface-2);}
+.tl-item{position:relative; padding-bottom:26px;}
+.tl-item:last-child{padding-bottom:0;}
+.tl-item::before{content:''; position:absolute; left:-31px; top:4px; width:10px; height:10px; border-radius:50%; background:var(--bg); border:2px solid var(--accent-green);}
+.tl-year{font-family:var(--mono); font-size:12px; color:var(--accent-green); font-weight:600;}
+.tl-title{font-family:var(--display); font-weight:600; font-size:16px; margin:2px 0 4px;}
+.tl-desc{color:var(--ink-soft); font-size:14.3px; margin:0;}
+
+/* generation cards */
+.gen-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin:20px 0;}
+.gen-card{border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; background:var(--surface);}
+.gen-card .gnum{font-family:var(--mono); font-size:11px; color:var(--accent-copper); text-transform:uppercase; letter-spacing:.08em;}
+.gen-card h4{margin:6px 0 8px; font-size:16px;}
+.gen-card p{font-size:13.6px; color:var(--ink-soft); margin:0;}
+
+/* type grid */
+.type-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin:20px 0;}
+.type-card{border:1px solid var(--line); border-radius:var(--radius); padding:16px; background:var(--bg);}
+.type-card h4{margin:0 0 6px; font-size:15px;}
+.type-card p{font-size:13.4px; color:var(--ink-soft); margin:0;}
+
+/* svg diagram frame */
+.diagram{
+  border:1px solid var(--line); background:var(--surface); border-radius:var(--radius);
+  padding:22px; margin:22px 0; text-align:center;
+}
+.diagram svg{max-width:100%; height:auto;}
+.diagram figcaption{font-family:var(--mono); font-size:11.5px; color:var(--ink-soft); margin-top:10px; text-transform:uppercase; letter-spacing:.06em;}
+
+/* logic gate simulator */
+.simulator{
+  border:1px solid var(--panel-line); background:var(--panel-dark); color:#C9D2DE;
+  border-radius:var(--radius); padding:26px; margin:26px 0;
+}
+.simulator h4{color:#F4F1E9; margin-top:0; font-size:15.5px;}
+.sim-top{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;}
+.gate-btn{
+  font-family:var(--mono); font-size:12px; letter-spacing:.04em; padding:7px 13px;
+  background:var(--panel-dark-2); border:1px solid var(--panel-line); color:#C9D2DE; border-radius:var(--radius); cursor:pointer;
+}
+.gate-btn.active{background:var(--accent-green); border-color:var(--accent-green); color:#08130E; font-weight:600;}
+.sim-body{display:flex; flex-wrap:wrap; gap:28px; align-items:center;}
+.sim-inputs{display:flex; gap:14px;}
+.toggle{
+  font-family:var(--mono); text-align:center; cursor:pointer; user-select:none;
+  background:var(--panel-dark-2); border:1px solid var(--panel-line); border-radius:var(--radius); padding:12px 16px; min-width:56px;
+}
+.toggle .lbl{font-size:11px; color:#5E6C82; text-transform:uppercase;}
+.toggle .val{font-size:22px; font-weight:700; color:var(--accent-green); margin-top:4px;}
+.sim-gate-visual{flex-shrink:0;}
+.sim-output{text-align:center; font-family:var(--mono);}
+.sim-output .lbl{font-size:11px; color:#5E6C82; text-transform:uppercase;}
+.sim-output .val{font-size:34px; font-weight:700; margin-top:4px;}
+.sim-output .val.on{color:var(--accent-green);}
+.sim-output .val.off{color:#4A5568;}
+.sim-table{margin-top:22px;}
+.sim-table table{font-size:13px;}
+.sim-table th, .sim-table td{border-color:var(--panel-line); padding:7px 12px;}
+.sim-table th{background:var(--panel-dark-2); color:#8B98AC;}
+.sim-table td{color:#C9D2DE;}
+.sim-table tr.highlight td{background:rgba(46,125,91,.22); color:#fff;}
+
+/* number system converter */
+.converter{border:1px solid var(--line); background:var(--surface); border-radius:var(--radius); padding:22px; margin:22px 0;}
+.converter h4{margin-top:0;}
+.conv-row{display:flex; flex-wrap:wrap; gap:14px; margin-top:14px;}
+.conv-field{flex:1; min-width:140px;}
+.conv-field label{display:block; font-family:var(--mono); font-size:11px; color:var(--ink-soft); text-transform:uppercase; margin-bottom:5px;}
+.conv-field input{
+  width:100%; font-family:var(--mono); font-size:16px; padding:9px 11px; border:1px solid var(--line);
+  border-radius:var(--radius); background:#fff; color:var(--ink);
+}
+.conv-field input:focus{outline:2px solid var(--accent-green); outline-offset:1px;}
+
+/* back to top / footer */
+.chapter-divider{height:1px; background:var(--line); margin:0 0 68px;}
+footer{border-top:1px solid var(--line); padding:40px; text-align:center; font-family:var(--mono); font-size:12px; color:var(--ink-soft);}
+
+/* toolbar apps section */
+.app-tabs{display:flex; gap:8px; margin:20px 0 0; flex-wrap:wrap;}
+.app-tab-btn{
+  font-family:var(--mono); font-size:12.5px; padding:8px 16px; border:1px solid var(--line); background:var(--bg);
+  cursor:pointer; border-radius:var(--radius); color:var(--ink-soft);
+}
+.app-tab-btn.active{background:var(--ink); color:var(--bg); border-color:var(--ink);}
+.app-panel{display:none; border:1px solid var(--line); border-top:none; padding:22px; background:var(--surface); border-radius:0 0 var(--radius) var(--radius);}
+.app-panel.active{display:block;}
+
+/* responsive */
+@media (max-width: 920px){
+  .sidebar{position:fixed; left:0; top:0; transform:translateX(-100%); transition:transform .25s ease; width:82vw; max-width:320px; box-shadow:0 0 40px rgba(0,0,0,.4);}
+  .sidebar.open{transform:translateX(0);}
+  .menu-toggle{
+    display:block; position:fixed; top:16px; left:16px; z-index:50;
+    background:var(--panel-dark); color:#fff; border:1px solid var(--panel-line); border-radius:var(--radius);
+    font-family:var(--mono); font-size:12px; padding:9px 13px; cursor:pointer;
+  }
+  .container{padding:88px 22px 90px;}
+  .hero h1{font-size:32px;}
+  .sim-body{gap:16px;}
+}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  .brand-line1 .cursor{animation:none;}
+}
+a{color:var(--accent-green);}
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('computer-fundamentals')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('computer-fundamentals'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+<button class="menu-toggle" id="menuToggle">☰ Contents</button>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-line1">SYSTEM // NOTES<span class="cursor"></span></div>
+      <h1>Fundamentals of Computers</h1>
+      <p>A–Z reference · basics → advanced</p>
+    </div>
+    <nav class="toc" id="toc">
+      <div class="toc-group-title">Foundations</div>
+      <a href="#ch01"><span class="addr">0x00</span> What Is a Computer</a>
+      <a href="#ch02"><span class="addr">0x01</span> History of Computers</a>
+      <a href="#ch03"><span class="addr">0x02</span> Generations of Computers</a>
+      <a href="#ch04"><span class="addr">0x03</span> Types of Computers</a>
+
+      <div class="toc-group-title">Architecture</div>
+      <a href="#ch05"><span class="addr">0x04</span> Block Diagram &amp; Organization</a>
+      <a href="#ch06"><span class="addr">0x05</span> Input &amp; Output Devices</a>
+      <a href="#ch07"><span class="addr">0x06</span> Number Systems</a>
+      <a href="#ch08"><span class="addr">0x07</span> Boolean Logic &amp; Logic Gates</a>
+
+      <div class="toc-group-title">Hardware</div>
+      <a href="#ch09"><span class="addr">0x08</span> Memory: RAM, ROM, Cache</a>
+      <a href="#ch10"><span class="addr">0x09</span> Secondary Storage: HDD/SSD</a>
+      <a href="#ch11"><span class="addr">0x0A</span> The Processor (CPU)</a>
+      <a href="#ch12"><span class="addr">0x0B</span> Motherboard &amp; Components</a>
+
+      <div class="toc-group-title">Software</div>
+      <a href="#ch13"><span class="addr">0x0C</span> Operating Systems</a>
+      <a href="#ch14"><span class="addr">0x0D</span> System vs Application Software</a>
+      <a href="#ch15"><span class="addr">0x0E</span> Computer Networks</a>
+      <a href="#ch16"><span class="addr">0x0F</span> MS Office: Word / Excel / PPT</a>
+
+      <div class="toc-group-title">Beyond</div>
+      <a href="#ch17"><span class="addr">0x10</span> Computer vs Laptop</a>
+      <a href="#ch18"><span class="addr">0x11</span> Evolution of AI</a>
+      <a href="#ch19"><span class="addr">0x12</span> Glossary (A–Z)</a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="container">
+
+      <div class="hero">
+        <div class="eyebrow">Study Notes · Computer Science 101</div>
+        <h1>Fundamentals of Computers</h1>
+        <p class="lede">A complete walkthrough from "what is a computer" to processors, memory, logic gates, operating systems, networks, office tools, and the rise of AI — written as one continuous set of notes.</p>
+        <div class="hero-meta">
+          <span>Chapters <b>19</b></span>
+          <span>Level <b>Beginner → Advanced</b></span>
+          <span>Format <b>A–Z Reference</b></span>
+        </div>
+      </div>
+
+      <!-- ===================== CHAPTER 1 ===================== -->
+      <section class="chapter" id="ch01">
+        <div class="chapter-head"><span class="chapter-num">0x00</span><h2>What Is a Computer?</h2></div>
+        <p class="chapter-sub">Definition, characteristics, and how a computer actually processes data — the foundation everything else builds on.</p>
+
+        <h3>1.1 Definition</h3>
+        <p>A <strong>computer</strong> is an electronic device that accepts raw data as input, processes that data by following a set of stored instructions (a <em>program</em>), and produces meaningful output. It can store, retrieve, and manipulate data at extremely high speed and with very low error rates.</p>
+        <div class="callout">
+          <div class="callout-label">One-line definition</div>
+          <p>Computer = Input → Process → Output → Storage, all controlled by a program.</p>
+        </div>
+
+        <h3>1.2 The IPO(S) Cycle</h3>
+        <div class="diagram">
+          <svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrow1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#2E7D5B"/></marker>
+            </defs>
+            <g font-family="IBM Plex Mono, monospace" font-size="13" fill="#1C2331">
+              <rect x="20" y="55" width="120" height="55" rx="2" fill="#F3E2CC" stroke="#B8722F"/>
+              <text x="80" y="87" text-anchor="middle">INPUT</text>
+              <line x1="140" y1="82" x2="185" y2="82" stroke="#2E7D5B" stroke-width="2" marker-end="url(#arrow1)"/>
+
+              <rect x="190" y="55" width="140" height="55" rx="2" fill="#DCEEE4" stroke="#2E7D5B"/>
+              <text x="260" y="82" text-anchor="middle">PROCESS</text>
+              <text x="260" y="98" text-anchor="middle" font-size="10" fill="#4B5563">CPU + Program</text>
+              <line x1="330" y1="82" x2="375" y2="82" stroke="#2E7D5B" stroke-width="2" marker-end="url(#arrow1)"/>
+
+              <rect x="380" y="55" width="120" height="55" rx="2" fill="#F3E2CC" stroke="#B8722F"/>
+              <text x="440" y="87" text-anchor="middle">OUTPUT</text>
+              <line x1="500" y1="82" x2="545" y2="82" stroke="#2E7D5B" stroke-width="2" marker-end="url(#arrow1)"/>
+
+              <rect x="550" y="55" width="130" height="55" rx="2" fill="#E9E2D0" stroke="#8a7f60"/>
+              <text x="615" y="82" text-anchor="middle">STORAGE</text>
+              <text x="615" y="98" text-anchor="middle" font-size="10" fill="#4B5563">Save results</text>
+
+              <path d="M260 55 C 260 20, 615 20, 615 55" stroke="#B8722F" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/>
+              <text x="437" y="16" text-anchor="middle" font-size="10" fill="#B8722F">feedback / control</text>
+            </g>
+          </svg>
+          <figcaption>Fig 1.1 — Input–Process–Output–Storage (IPOS) cycle</figcaption>
+        </div>
+
+        <h3>1.3 Characteristics of a Computer</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Characteristic</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Speed</strong></td><td>Executes millions to billions of instructions per second.</td></tr>
+              <tr><td><strong>Accuracy</strong></td><td>Produces error-free results unless the input data or program itself is wrong ("garbage in, garbage out").</td></tr>
+              <tr><td><strong>Diligence</strong></td><td>Performs repetitive tasks with the same accuracy no matter how many times, without fatigue.</td></tr>
+              <tr><td><strong>Storage</strong></td><td>Can store huge volumes of data permanently or temporarily.</td></tr>
+              <tr><td><strong>Versatility</strong></td><td>Same machine can browse the web, edit video, run a factory, or play a game.</td></tr>
+              <tr><td><strong>Automation</strong></td><td>Once a program is loaded, it runs the process without manual step-by-step intervention.</td></tr>
+              <tr><td><strong>No IQ / No feelings</strong></td><td>A computer only does what it is instructed to do — it has no independent judgement of its own.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>1.4 Basic Functional Units</h3>
+        <ul>
+          <li><strong>Input Unit</strong> — accepts data/instructions (keyboard, mouse, scanner...).</li>
+          <li><strong>Central Processing Unit (CPU)</strong> — the "brain"; contains the Control Unit (CU) and Arithmetic Logic Unit (ALU).</li>
+          <li><strong>Memory Unit</strong> — holds data and instructions currently in use (RAM) and permanent instructions (ROM).</li>
+          <li><strong>Output Unit</strong> — presents processed results (monitor, printer, speaker...).</li>
+          <li><strong>Storage Unit</strong> — keeps data permanently (HDD, SSD, pen drive, cloud).</li>
+        </ul>
+      </section>
+
+      <!-- ===================== CHAPTER 2 : HISTORY ===================== -->
+      <section class="chapter" id="ch02">
+        <div class="chapter-head"><span class="chapter-num">0x01</span><h2>History of Computers (A–Z Timeline)</h2></div>
+        <p class="chapter-sub">From counting stones to microprocessors — every major milestone and who invented it.</p>
+
+        <h3>2.1 Before Electricity: Mechanical Era</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-year">~3000 BCE</div>
+            <div class="tl-title">Abacus</div>
+            <p class="tl-desc">The earliest known calculating tool, used in Mesopotamia/China for basic arithmetic using beads on rods.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1614</div>
+            <div class="tl-title">Napier's Bones — John Napier</div>
+            <p class="tl-desc">A manual calculating device using rods to multiply and divide by moving physical strips of numbers.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1642</div>
+            <div class="tl-title">Pascaline — Blaise Pascal</div>
+            <p class="tl-desc">First mechanical adding machine, using gears to perform addition and subtraction.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1673</div>
+            <div class="tl-title">Stepped Reckoner — Gottfried Leibniz</div>
+            <p class="tl-desc">Improved on Pascal's design to also perform multiplication and division.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1822–1837</div>
+            <div class="tl-title">Difference &amp; Analytical Engine — Charles Babbage</div>
+            <p class="tl-desc">Babbage designed the Analytical Engine, a mechanical general-purpose computer with memory and a processor — he is called the <strong>"Father of the Computer."</strong></p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1843</div>
+            <div class="tl-title">First Algorithm — Ada Lovelace</div>
+            <p class="tl-desc">Wrote notes describing how the Analytical Engine could run a sequence of instructions to compute Bernoulli numbers — considered the <strong>first computer programmer</strong>.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1890</div>
+            <div class="tl-title">Tabulating Machine — Herman Hollerith</div>
+            <p class="tl-desc">Used punched cards to process the U.S. census; his company later became part of IBM.</p>
+          </div>
+        </div>
+
+        <h3>2.2 The Birth of Electronic Computing</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-year">1936</div>
+            <div class="tl-title">Turing Machine — Alan Turing</div>
+            <p class="tl-desc">A theoretical model describing how any computation could be performed — the mathematical foundation of computer science; Turing is called the <strong>"Father of Theoretical Computer Science and AI."</strong></p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1938</div>
+            <div class="tl-title">Z1 — Konrad Zuse</div>
+            <p class="tl-desc">One of the first programmable mechanical/electromechanical binary computers, built in Germany.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1943–44</div>
+            <div class="tl-title">Colossus</div>
+            <p class="tl-desc">Built in Britain to break German ciphers during WWII — the first programmable electronic digital computer.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1945</div>
+            <div class="tl-title">ENIAC — Eckert &amp; Mauchly</div>
+            <p class="tl-desc">Electronic Numerical Integrator and Computer — first large-scale, general-purpose electronic digital computer, built with ~18,000 vacuum tubes.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1949</div>
+            <div class="tl-title">EDSAC / Stored-Program Concept — John von Neumann</div>
+            <p class="tl-desc">Introduced the idea of storing a program in memory alongside data — the <strong>von Neumann Architecture</strong> that almost every modern computer still follows.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1951</div>
+            <div class="tl-title">UNIVAC I</div>
+            <p class="tl-desc">First commercially sold computer in the USA.</p>
+          </div>
+        </div>
+
+        <h3>2.3 Solid State to Personal Computing</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-year">1947</div>
+            <div class="tl-title">Transistor invented — Bardeen, Brattain, Shockley (Bell Labs)</div>
+            <p class="tl-desc">Replaced bulky, hot, failure-prone vacuum tubes with a small, reliable solid-state switch.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1958</div>
+            <div class="tl-title">Integrated Circuit — Jack Kilby &amp; Robert Noyce</div>
+            <p class="tl-desc">Multiple transistors etched onto a single silicon chip, drastically shrinking size and cost.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1971</div>
+            <div class="tl-title">First Microprocessor — Intel 4004</div>
+            <p class="tl-desc">The entire CPU on one chip, designed by Federico Faggin, Ted Hoff, and Stan Mazor at Intel.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1975–76</div>
+            <div class="tl-title">Altair 8800 / Apple I</div>
+            <p class="tl-desc">Early personal computer kits; Steve Wozniak and Steve Jobs founded Apple in 1976.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1981</div>
+            <div class="tl-title">IBM PC</div>
+            <p class="tl-desc">IBM's Personal Computer set the hardware/software standard the industry still follows.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1984</div>
+            <div class="tl-title">Apple Macintosh</div>
+            <p class="tl-desc">Popularized the graphical user interface (GUI) and mouse for everyday users.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">1990s–2000s</div>
+            <div class="tl-title">Internet &amp; World Wide Web</div>
+            <p class="tl-desc">Tim Berners-Lee proposed the Web in 1989; the 1990s–2000s saw the internet, laptops, and mobile computing go mainstream.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-year">2007 →</div>
+            <div class="tl-title">Smartphones &amp; Cloud Computing</div>
+            <p class="tl-desc">iPhone (2007) merges computer + phone; cloud computing, tablets, and later AI assistants follow.</p>
+          </div>
+        </div>
+
+        <div class="note-green">
+          <div class="callout-label">Who "invented" the computer?</div>
+          <p>There's no single inventor. <strong>Charles Babbage</strong> conceived the first general-purpose mechanical computer design, <strong>Alan Turing</strong> gave it a mathematical theory, <strong>Eckert &amp; Mauchly</strong> built the first large electronic one (ENIAC), and <strong>John von Neumann</strong> gave it the stored-program architecture used today. Modern computing is the sum of all these contributions.</p>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 3 : GENERATIONS ===================== -->
+      <section class="chapter" id="ch03">
+        <div class="chapter-head"><span class="chapter-num">0x02</span><h2>Generations of Computers</h2></div>
+        <p class="chapter-sub">Vacuum tubes → transistors → integrated circuits → microprocessors → AI. The step-by-step hardware evolution.</p>
+
+        <div class="gen-grid">
+          <div class="gen-card">
+            <div class="gnum">1st Gen · 1940–1956</div>
+            <h4>Vacuum Tubes</h4>
+            <p>Used vacuum tubes for circuitry and magnetic drums for memory. Huge, expensive, generated massive heat, consumed enormous power. Programmed in machine language. Example: ENIAC, UNIVAC I.</p>
+          </div>
+          <div class="gen-card">
+            <div class="gnum">2nd Gen · 1956–1963</div>
+            <h4>Transistors</h4>
+            <p>Vacuum tubes replaced by transistors — smaller, faster, cheaper, more reliable, less heat. Assembly language and early high-level languages (COBOL, FORTRAN) appeared.</p>
+          </div>
+          <div class="gen-card">
+            <div class="gnum">3rd Gen · 1964–1971</div>
+            <h4>Integrated Circuits (ICs)</h4>
+            <p>Thousands of transistors packed onto a single silicon chip. Computers became smaller, faster, and more affordable; keyboards and monitors became common.</p>
+          </div>
+          <div class="gen-card">
+            <div class="gnum">4th Gen · 1971–present</div>
+            <h4>Microprocessors</h4>
+            <p>An entire CPU shrunk onto one chip (VLSI — Very Large Scale Integration). Gave birth to personal computers, GUIs, networking, and portable devices.</p>
+          </div>
+          <div class="gen-card">
+            <div class="gnum">5th Gen · present → future</div>
+            <h4>Artificial Intelligence</h4>
+            <p>Based on parallel processing, natural language processing, and machine learning — systems that learn, reason, and adapt rather than just follow fixed instructions.</p>
+          </div>
+        </div>
+
+        <h3>3.1 Vacuum Tube → Transistor → IC Chip: Step by Step</h3>
+        <div class="diagram">
+          <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg">
+            <defs><marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#B8722F"/></marker></defs>
+            <g font-family="IBM Plex Mono, monospace" font-size="12" fill="#1C2331" text-anchor="middle">
+              <!-- vacuum tube -->
+              <ellipse cx="90" cy="70" rx="34" ry="46" fill="#F3E2CC" stroke="#B8722F" stroke-width="1.6"/>
+              <line x1="90" y1="24" x2="90" y2="8" stroke="#B8722F"/>
+              <text x="90" y="140" font-weight="600">Vacuum Tube</text>
+              <text x="90" y="156" font-size="10" fill="#4B5563">1940s · fragile, hot</text>
+
+              <line x1="140" y1="70" x2="185" y2="70" stroke="#B8722F" stroke-width="2" marker-end="url(#arrow2)"/>
+
+              <!-- transistor -->
+              <g transform="translate(210,40)">
+                <rect x="0" y="0" width="60" height="60" fill="#DCEEE4" stroke="#2E7D5B" stroke-width="1.6"/>
+                <line x1="30" y1="60" x2="30" y2="80" stroke="#2E7D5B"/>
+                <line x1="10" y1="0" x2="10" y2="-14" stroke="#2E7D5B"/>
+                <line x1="50" y1="0" x2="50" y2="-14" stroke="#2E7D5B"/>
+              </g>
+              <text x="240" y="140" font-weight="600">Transistor</text>
+              <text x="240" y="156" font-size="10" fill="#4B5563">1947 · Bell Labs</text>
+
+              <line x1="290" y1="70" x2="335" y2="70" stroke="#B8722F" stroke-width="2" marker-end="url(#arrow2)"/>
+
+              <!-- IC chip -->
+              <g transform="translate(360,35)">
+                <rect x="0" y="0" width="80" height="70" rx="3" fill="#E9E2D0" stroke="#8a7f60" stroke-width="1.6"/>
+                <g stroke="#8a7f60">
+                  <line x1="0" y1="12" x2="-10" y2="12"/><line x1="0" y1="30" x2="-10" y2="30"/><line x1="0" y1="48" x2="-10" y2="48"/><line x1="0" y1="60" x2="-10" y2="60"/>
+                  <line x1="80" y1="12" x2="90" y2="12"/><line x1="80" y1="30" x2="90" y2="30"/><line x1="80" y1="48" x2="90" y2="48"/><line x1="80" y1="60" x2="90" y2="60"/>
+                </g>
+                <circle cx="10" cy="10" r="2.5" fill="#8a7f60"/>
+              </g>
+              <text x="400" y="140" font-weight="600">IC Chip</text>
+              <text x="400" y="156" font-size="10" fill="#4B5563">1958 · Kilby / Noyce</text>
+
+              <line x1="450" y1="70" x2="495" y2="70" stroke="#B8722F" stroke-width="2" marker-end="url(#arrow2)"/>
+
+              <!-- microprocessor -->
+              <g transform="translate(520,30)">
+                <rect x="0" y="0" width="90" height="80" rx="3" fill="#1C2331"/>
+                <rect x="14" y="14" width="62" height="52" rx="2" fill="none" stroke="#2E7D5B" stroke-width="1.4"/>
+                <text x="45" y="45" fill="#DCEEE4" font-size="10">CPU</text>
+              </g>
+              <text x="565" y="140" font-weight="600">Microprocessor</text>
+              <text x="565" y="156" font-size="10" fill="#4B5563">1971 · Intel 4004</text>
+            </g>
+          </svg>
+          <figcaption>Fig 3.1 — Evolution of the switching component that computers are built from</figcaption>
+        </div>
+
+        <p>The pattern behind every jump is the same: <strong>make the switching element smaller, cheaper, cooler, and faster</strong> — from a glass tube you could hold in your hand, to a transistor the size of a grain of rice, to billions of transistors etched onto a chip smaller than a fingernail.</p>
+      </section>
+
+      <!-- ===================== CHAPTER 4 : TYPES ===================== -->
+      <section class="chapter" id="ch04">
+        <div class="chapter-head"><span class="chapter-num">0x03</span><h2>Types of Computers</h2></div>
+        <p class="chapter-sub">Classified by size, power, and purpose.</p>
+
+        <h3>4.1 By Size &amp; Processing Power</h3>
+        <div class="type-grid">
+          <div class="type-card"><h4>Supercomputer</h4><p>Fastest, most powerful class; used for weather modeling, nuclear simulation, scientific research. Example: Fugaku, Frontier.</p></div>
+          <div class="type-card"><h4>Mainframe</h4><p>Large systems handling bulk data and many simultaneous users — banks, airlines, government records.</p></div>
+          <div class="type-card"><h4>Minicomputer</h4><p>Mid-range, multi-user systems, smaller than mainframes; mostly historical (1960s–80s), now replaced by servers.</p></div>
+          <div class="type-card"><h4>Microcomputer</h4><p>Built around a single microprocessor — desktops, laptops, and workstations fall here.</p></div>
+        </div>
+
+        <h3>4.2 By Form Factor / Use</h3>
+        <div class="type-grid">
+          <div class="type-card"><h4>Desktop</h4><p>Fixed workstation with separate case, monitor, keyboard, mouse — most upgradeable and powerful per rupee spent.</p></div>
+          <div class="type-card"><h4>Laptop / Notebook</h4><p>Portable, battery-powered, all components integrated into one hinged unit.</p></div>
+          <div class="type-card"><h4>Tablet</h4><p>Touchscreen-first, no physical keyboard by default; runs mobile-style operating systems.</p></div>
+          <div class="type-card"><h4>Smartphone</h4><p>Pocket-sized computer combining telephony, apps, camera, and internet access.</p></div>
+          <div class="type-card"><h4>Server</h4><p>Optimized to serve data/services to many client devices over a network, often running 24/7.</p></div>
+          <div class="type-card"><h4>Embedded Computer</h4><p>A computer built into another device for one dedicated task — washing machines, cars, ATMs, smart TVs.</p></div>
+          <div class="type-card"><h4>Wearable</h4><p>Smartwatches and fitness bands — extremely low-power, always-on computers worn on the body.</p></div>
+          <div class="type-card"><h4>Workstation</h4><p>High-spec desktop tuned for CAD, video editing, or scientific computation.</p></div>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 5 : BLOCK DIAGRAM ===================== -->
+      <section class="chapter" id="ch05">
+        <div class="chapter-head"><span class="chapter-num">0x04</span><h2>Block Diagram &amp; Computer Organization</h2></div>
+        <p class="chapter-sub">How the functional units connect and talk to each other via buses.</p>
+
+        <div class="diagram">
+          <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg">
+            <g font-family="IBM Plex Mono, monospace" font-size="12.5" fill="#1C2331" text-anchor="middle">
+              <rect x="40" y="30" width="140" height="50" rx="2" fill="#F3E2CC" stroke="#B8722F"/>
+              <text x="110" y="60">INPUT UNIT</text>
+
+              <rect x="460" y="30" width="140" height="50" rx="2" fill="#F3E2CC" stroke="#B8722F"/>
+              <text x="530" y="60">OUTPUT UNIT</text>
+
+              <rect x="220" y="20" width="200" height="120" rx="2" fill="none" stroke="#1C2331" stroke-width="1.6"/>
+              <text x="320" y="40" font-weight="700">CPU</text>
+              <rect x="240" y="52" width="75" height="42" rx="2" fill="#DCEEE4" stroke="#2E7D5B"/>
+              <text x="277" y="77" font-size="11">CU</text>
+              <rect x="325" y="52" width="75" height="42" rx="2" fill="#DCEEE4" stroke="#2E7D5B"/>
+              <text x="362" y="77" font-size="11">ALU</text>
+              <rect x="240" y="102" width="160" height="28" rx="2" fill="#E9E2D0" stroke="#8a7f60"/>
+              <text x="320" y="121" font-size="11">Registers</text>
+
+              <rect x="220" y="180" width="200" height="50" rx="2" fill="#DCEEE4" stroke="#2E7D5B"/>
+              <text x="320" y="210">MEMORY (RAM / ROM)</text>
+
+              <rect x="220" y="260" width="200" height="50" rx="2" fill="#E9E2D0" stroke="#8a7f60"/>
+              <text x="320" y="290">SECONDARY STORAGE</text>
+
+              <!-- connecting bus lines -->
+              <line x1="180" y1="55" x2="220" y2="70" stroke="#1C2331" stroke-width="1.4"/>
+              <line x1="420" y1="70" x2="460" y2="55" stroke="#1C2331" stroke-width="1.4"/>
+              <line x1="320" y1="140" x2="320" y2="180" stroke="#1C2331" stroke-width="1.4"/>
+              <line x1="320" y1="230" x2="320" y2="260" stroke="#1C2331" stroke-width="1.4"/>
+              <text x="335" y="245" font-size="10" fill="#4B5563" text-anchor="start">data / address / control bus</text>
+            </g>
+          </svg>
+          <figcaption>Fig 5.1 — Functional block diagram of a von Neumann–style computer</figcaption>
+        </div>
+
+        <h3>5.1 Control Unit (CU) vs Arithmetic Logic Unit (ALU)</h3>
+        <ul>
+          <li><strong>Control Unit</strong> — fetches instructions from memory, decodes them, and directs every other unit on what to do and when (the "traffic controller").</li>
+          <li><strong>ALU</strong> — actually performs arithmetic (add, subtract, multiply, divide) and logical operations (AND, OR, NOT, comparisons).</li>
+          <li><strong>Registers</strong> — tiny, extremely fast storage locations inside the CPU that hold data currently being worked on.</li>
+        </ul>
+
+        <h3>5.2 Buses</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Bus</th><th>Carries</th></tr></thead>
+            <tbody>
+              <tr><td>Data Bus</td><td>The actual data being moved between CPU, memory, and I/O devices.</td></tr>
+              <tr><td>Address Bus</td><td>The memory address that specifies <em>where</em> data should be read from or written to.</td></tr>
+              <tr><td>Control Bus</td><td>Signals that coordinate timing — read, write, interrupt, clock pulses.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 6 : I/O DEVICES ===================== -->
+      <section class="chapter" id="ch06">
+        <div class="chapter-head"><span class="chapter-num">0x05</span><h2>Input &amp; Output Devices</h2></div>
+        <p class="chapter-sub">Keyboard, mouse, and everything that lets humans talk to — and hear back from — a computer.</p>
+
+        <h3>6.1 Input Devices</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Device</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Keyboard</strong></td><td>Text and command entry; standard QWERTY layout, invented from typewriter design, adapted for computers in the 1970s.</td></tr>
+              <tr><td><strong>Mouse</strong></td><td>Pointing device invented by Douglas Engelbart (1964); moves an on-screen cursor and clicks to select.</td></tr>
+              <tr><td>Touchpad / Trackpad</td><td>Touch-sensitive pointing surface, common on laptops.</td></tr>
+              <tr><td>Scanner</td><td>Converts printed documents/images into digital form.</td></tr>
+              <tr><td>Microphone</td><td>Captures audio input for voice commands or recording.</td></tr>
+              <tr><td>Webcam</td><td>Captures live video input.</td></tr>
+              <tr><td>Joystick / Game Controller</td><td>Directional input mainly for gaming.</td></tr>
+              <tr><td>Barcode / QR Scanner</td><td>Reads printed codes for retail and logistics.</td></tr>
+              <tr><td>Touchscreen</td><td>Combined input+output surface responding directly to finger/stylus touch.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>6.2 Output Devices</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Device</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Monitor</strong></td><td>Visual display; evolved CRT → LCD → LED → OLED.</td></tr>
+              <tr><td><strong>Printer</strong></td><td>Produces a physical (hard) copy — inkjet, laser, and dot-matrix are common types.</td></tr>
+              <tr><td>Speaker</td><td>Converts digital audio into sound.</td></tr>
+              <tr><td>Projector</td><td>Casts the display onto a large external screen.</td></tr>
+              <tr><td>Plotter</td><td>Draws precise vector graphics — used in engineering/CAD for large drawings.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="note-green">
+          <div class="callout-label">Both input &amp; output</div>
+          <p>Touchscreens, modems, and network cards work in both directions — they send data out and receive data in.</p>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 7 : NUMBER SYSTEMS ===================== -->
+      <section class="chapter" id="ch07">
+        <div class="chapter-head"><span class="chapter-num">0x06</span><h2>Number Systems</h2></div>
+        <p class="chapter-sub">The language computers actually think in — binary — and how it maps to decimal, octal, and hexadecimal.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>System</th><th>Base</th><th>Digits used</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>Binary</td><td>2</td><td>0, 1</td><td><code>1011</code></td></tr>
+              <tr><td>Octal</td><td>8</td><td>0–7</td><td><code>013</code></td></tr>
+              <tr><td>Decimal</td><td>10</td><td>0–9</td><td><code>11</code></td></tr>
+              <tr><td>Hexadecimal</td><td>16</td><td>0–9, A–F</td><td><code>0xB</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Computers use <strong>binary</strong> because their basic building block — the transistor — is a simple electronic switch with only two stable states: <strong>ON (1)</strong> and <strong>OFF (0)</strong>. Every letter, image, sound, and instruction is ultimately represented as a sequence of 1s and 0s (called <strong>bits</strong>). 8 bits = 1 <strong>byte</strong>.</p>
+
+        <div class="converter">
+          <h4>🔢 Live Number System Converter</h4>
+          <p style="margin-bottom:0; font-size:13.5px; color:var(--ink-soft);">Type a value into any field — the others update instantly.</p>
+          <div class="conv-row">
+            <div class="conv-field"><label>Decimal</label><input type="text" id="convDec" inputmode="numeric"></div>
+            <div class="conv-field"><label>Binary</label><input type="text" id="convBin" inputmode="numeric"></div>
+            <div class="conv-field"><label>Octal</label><input type="text" id="convOct" inputmode="numeric"></div>
+            <div class="conv-field"><label>Hexadecimal</label><input type="text" id="convHex"></div>
+          </div>
+        </div>
+
+        <h3>7.1 Bits, Bytes &amp; Bigger Units</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Unit</th><th>Size</th></tr></thead>
+            <tbody>
+              <tr><td>1 Bit</td><td>Smallest unit — a single 0 or 1</td></tr>
+              <tr><td>1 Byte</td><td>8 bits</td></tr>
+              <tr><td>1 Kilobyte (KB)</td><td>1,024 bytes</td></tr>
+              <tr><td>1 Megabyte (MB)</td><td>1,024 KB</td></tr>
+              <tr><td>1 Gigabyte (GB)</td><td>1,024 MB</td></tr>
+              <tr><td>1 Terabyte (TB)</td><td>1,024 GB</td></tr>
+              <tr><td>1 Petabyte (PB)</td><td>1,024 TB</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 8 : LOGIC GATES ===================== -->
+      <section class="chapter" id="ch08">
+        <div class="chapter-head"><span class="chapter-num">0x07</span><h2>Boolean Logic &amp; Logic Gates</h2></div>
+        <p class="chapter-sub">AND, OR, NOT, NAND, NOR, XOR, XNOR — the tiny decisions every circuit is built from.</p>
+
+        <p>A <strong>logic gate</strong> is a physical electronic circuit — built from transistors — that takes one or more binary inputs and produces a single binary output, based on a rule from Boolean algebra (developed by George Boole in 1854). Combine millions of these tiny gates and you get a CPU.</p>
+
+        <div class="simulator">
+          <h4>⚡ Interactive Logic Gate Simulator</h4>
+          <div class="sim-top" id="gateButtons">
+            <button class="gate-btn active" data-gate="AND">AND</button>
+            <button class="gate-btn" data-gate="OR">OR</button>
+            <button class="gate-btn" data-gate="NOT">NOT</button>
+            <button class="gate-btn" data-gate="NAND">NAND</button>
+            <button class="gate-btn" data-gate="NOR">NOR</button>
+            <button class="gate-btn" data-gate="XOR">XOR</button>
+            <button class="gate-btn" data-gate="XNOR">XNOR</button>
+          </div>
+          <div class="sim-body">
+            <div class="sim-inputs" id="simInputs">
+              <div class="toggle" id="toggleA" data-input="A"><div class="lbl">A</div><div class="val">0</div></div>
+              <div class="toggle" id="toggleB" data-input="B"><div class="lbl">B</div><div class="val">0</div></div>
+            </div>
+            <div class="sim-gate-visual">
+              <svg id="gateSvg" viewBox="0 0 160 120" width="160" height="120"></svg>
+            </div>
+            <div class="sim-output">
+              <div class="lbl">Output</div>
+              <div class="val off" id="simOutVal">0</div>
+            </div>
+          </div>
+          <div class="sim-table">
+            <table id="truthTable"></table>
+          </div>
+        </div>
+
+        <h3>8.1 Truth Tables (Quick Reference)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Gate</th><th>Rule</th><th>Symbol meaning</th></tr></thead>
+            <tbody>
+              <tr><td><strong>AND</strong></td><td>Output is 1 only if <em>all</em> inputs are 1</td><td>A · B</td></tr>
+              <tr><td><strong>OR</strong></td><td>Output is 1 if <em>at least one</em> input is 1</td><td>A + B</td></tr>
+              <tr><td><strong>NOT</strong></td><td>Inverts the single input (0→1, 1→0)</td><td>Ā</td></tr>
+              <tr><td><strong>NAND</strong></td><td>NOT(AND) — opposite of AND</td><td>¬(A·B)</td></tr>
+              <tr><td><strong>NOR</strong></td><td>NOT(OR) — opposite of OR</td><td>¬(A+B)</td></tr>
+              <tr><td><strong>XOR</strong></td><td>Output is 1 only if inputs are <em>different</em></td><td>A ⊕ B</td></tr>
+              <tr><td><strong>XNOR</strong></td><td>Output is 1 only if inputs are <em>the same</em></td><td>¬(A⊕B)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout">
+          <div class="callout-label">Why it matters</div>
+          <p>NAND and NOR are called <strong>"universal gates"</strong> — any other gate (and therefore any digital circuit, including a full CPU) can be built using only NAND gates or only NOR gates.</p>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 9 : MEMORY ===================== -->
+      <section class="chapter" id="ch09">
+        <div class="chapter-head"><span class="chapter-num">0x08</span><h2>Memory: RAM, ROM &amp; Cache</h2></div>
+        <p class="chapter-sub">Primary memory — fast, close to the CPU, and central to performance.</p>
+
+        <h3>9.1 RAM vs ROM</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th></th><th>RAM (Random Access Memory)</th><th>ROM (Read-Only Memory)</th></tr></thead>
+            <tbody>
+              <tr><td>Volatility</td><td>Volatile — cleared when power is off</td><td>Non-volatile — retains data without power</td></tr>
+              <tr><td>Role</td><td>Temporary workspace for running programs</td><td>Stores firmware / boot instructions (BIOS/UEFI)</td></tr>
+              <tr><td>Speed</td><td>Very fast read/write</td><td>Slower, mostly read-only</td></tr>
+              <tr><td>Size in a PC</td><td>4 GB – 128 GB typical today</td><td>Few MB (just enough for firmware)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>9.2 History &amp; Evolution of RAM</h3>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-year">1968</div><div class="tl-title">DRAM invented (Robert Dennard, IBM)</div><p class="tl-desc">Dynamic RAM — one transistor + one capacitor per bit; needs constant refreshing.</p></div>
+          <div class="tl-item"><div class="tl-year">1970s</div><div class="tl-title">SRAM</div><p class="tl-desc">Static RAM — faster and doesn't need refreshing, but more expensive; used today for CPU cache.</p></div>
+          <div class="tl-item"><div class="tl-year">1993</div><div class="tl-title">SDRAM</div><p class="tl-desc">Synchronous DRAM synced to the system clock for faster, predictable transfers.</p></div>
+          <div class="tl-item"><div class="tl-year">2000</div><div class="tl-title">DDR (Double Data Rate)</div><p class="tl-desc">Transfers data on both the rising and falling edge of the clock signal, doubling throughput.</p></div>
+          <div class="tl-item"><div class="tl-year">2003 → 2024</div><div class="tl-title">DDR2 → DDR3 → DDR4 → DDR5</div><p class="tl-desc">Each generation roughly doubles bandwidth and lowers voltage/power draw. DDR5 (2020+) is the current mainstream standard, with LPDDR5/5X used in laptops and phones.</p></div>
+        </div>
+
+        <h3>9.3 Present-Day RAM Sizes</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Use case</th><th>Typical RAM (2026)</th></tr></thead>
+            <tbody>
+              <tr><td>Entry-level smartphone</td><td>4–6 GB</td></tr>
+              <tr><td>Flagship smartphone</td><td>8–16 GB</td></tr>
+              <tr><td>Everyday laptop</td><td>8–16 GB</td></tr>
+              <tr><td>Gaming / creator PC</td><td>16–32 GB</td></tr>
+              <tr><td>Workstation / server</td><td>64 GB – several TB</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>9.4 Cache Memory</h3>
+        <p>A very small, very fast memory placed directly on or near the CPU die to hold frequently used data, cutting down trips to slower main RAM. Organized in levels:</p>
+        <ul>
+          <li><strong>L1 Cache</strong> — smallest, fastest, built into each core.</li>
+          <li><strong>L2 Cache</strong> — larger, slightly slower, often per-core.</li>
+          <li><strong>L3 Cache</strong> — largest, shared across all cores.</li>
+        </ul>
+      </section>
+
+      <!-- ===================== CHAPTER 10 : STORAGE ===================== -->
+      <section class="chapter" id="ch10">
+        <div class="chapter-head"><span class="chapter-num">0x09</span><h2>Secondary Storage: HDD vs SSD</h2></div>
+        <p class="chapter-sub">Where data lives permanently, even with the power off.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th></th><th>HDD (Hard Disk Drive)</th><th>SSD (Solid State Drive)</th></tr></thead>
+            <tbody>
+              <tr><td>How it works</td><td>Spinning magnetic platters read/written by a moving head</td><td>Flash memory chips, no moving parts</td></tr>
+              <tr><td>Speed</td><td>Slower (80–160 MB/s typical)</td><td>Much faster (500 MB/s SATA SSD to 7,000+ MB/s NVMe)</td></tr>
+              <tr><td>Durability</td><td>Sensitive to physical shock</td><td>Highly shock-resistant</td></tr>
+              <tr><td>Noise / Heat</td><td>Audible spin/seek noise, more heat</td><td>Silent, runs cooler</td></tr>
+              <tr><td>Cost per GB</td><td>Cheaper for very large capacities</td><td>More expensive per GB, prices falling steadily</td></tr>
+              <tr><td>Introduced</td><td>1956 (IBM 305 RAMAC)</td><td>Popularized commercially from the mid-2000s</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Most modern laptops and desktops now ship with an <strong>SSD</strong> as the primary drive (often connected via the <strong>NVMe</strong> interface for maximum speed), reserving HDDs mainly for cheap bulk backup storage.</p>
+      </section>
+
+      <!-- ===================== CHAPTER 11 : CPU ===================== -->
+      <section class="chapter" id="ch11">
+        <div class="chapter-head"><span class="chapter-num">0x0A</span><h2>The Processor (CPU)</h2></div>
+        <p class="chapter-sub">The brain of the computer — cores, clock speed, and today's major processor families.</p>
+
+        <h3>11.1 Key Terms</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td>Core</td><td>An independent processing unit inside the CPU; modern chips have 2–64+ cores that can work in parallel.</td></tr>
+              <tr><td>Clock Speed</td><td>How many cycles per second the CPU runs, measured in GHz (billions of cycles/second).</td></tr>
+              <tr><td>Threads</td><td>Virtual cores created via simultaneous multithreading (e.g., Intel Hyper-Threading) so one core handles two instruction streams.</td></tr>
+              <tr><td>Instruction Set (ISA)</td><td>The vocabulary of commands a CPU understands — mainly <strong>x86-64</strong> (desktops/laptops) or <strong>ARM</strong> (phones, and now many laptops/servers).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>11.2 Processor Generations (Intel example)</h3>
+        <p>Intel's "Core" lineage has progressed roughly as: Core 2 Duo (2006) → Core i3/i5/i7 1st Gen "Nehalem" (2008) → 2nd–14th Gen "Core i" naming → from 2023 rebranded as <strong>Intel Core Ultra</strong> (series 1, 2...) with a dedicated AI accelerator (NPU) built in. AMD's Ryzen line has followed a parallel path since 2017, now on multiple Ryzen generations with integrated AI engines too.</p>
+
+        <h3>11.3 Major Processor Makers Today</h3>
+        <div class="type-grid">
+          <div class="type-card"><h4>Intel</h4><p>Core Ultra / Core i-series for laptops &amp; desktops, Xeon for servers.</p></div>
+          <div class="type-card"><h4>AMD</h4><p>Ryzen for consumer PCs, EPYC for servers, Threadripper for workstations.</p></div>
+          <div class="type-card"><h4>Apple</h4><p>Apple Silicon (M-series, ARM-based) — used across MacBooks, iMacs, iPads.</p></div>
+          <div class="type-card"><h4>Qualcomm</h4><p>Snapdragon — dominant in Android phones, now expanding into ARM-based Windows laptops.</p></div>
+          <div class="type-card"><h4>Samsung / MediaTek</h4><p>Exynos and Dimensity chips power a large share of mid-range and flagship Android phones.</p></div>
+        </div>
+
+        <div class="note-green">
+          <div class="callout-label">Note</div>
+          <p>Exact "latest generation" model numbers change every year — always check the manufacturer's current lineup for the newest release rather than relying on older notes.</p>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 12 : MOTHERBOARD ===================== -->
+      <section class="chapter" id="ch12">
+        <div class="chapter-head"><span class="chapter-num">0x0B</span><h2>Motherboard &amp; Core Components</h2></div>
+        <p class="chapter-sub">The circuit board that ties every part of the computer together.</p>
+
+        <div class="diagram">
+          <svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+            <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#1C2331">
+              <rect x="10" y="10" width="620" height="340" rx="4" fill="#E9E2D0" stroke="#8a7f60" stroke-width="2"/>
+              <rect x="240" y="40" width="120" height="120" rx="4" fill="#1C2331"/>
+              <text x="300" y="105" fill="#DCEEE4" text-anchor="middle" font-size="13">CPU SOCKET</text>
+
+              <rect x="40" y="40" width="34" height="270" fill="#DCEEE4" stroke="#2E7D5B"/>
+              <text x="57" y="30" text-anchor="middle">RAM SLOTS</text>
+              <rect x="80" y="40" width="34" height="270" fill="#DCEEE4" stroke="#2E7D5B"/>
+
+              <rect x="420" y="40" width="170" height="70" rx="3" fill="#F3E2CC" stroke="#B8722F"/>
+              <text x="505" y="80" text-anchor="middle" font-size="12">GPU / PCIe Slot</text>
+
+              <rect x="420" y="130" width="170" height="45" rx="3" fill="#F3E2CC" stroke="#B8722F"/>
+              <text x="505" y="157" text-anchor="middle" font-size="11">M.2 SSD Slot</text>
+
+              <rect x="420" y="190" width="170" height="45" rx="3" fill="#F3E2CC" stroke="#B8722F"/>
+              <text x="505" y="217" text-anchor="middle" font-size="11">SATA Ports</text>
+
+              <rect x="140" y="200" width="240" height="70" rx="3" fill="#DCEEE4" stroke="#2E7D5B"/>
+              <text x="260" y="240" text-anchor="middle" font-size="12">Chipset</text>
+
+              <rect x="140" y="290" width="450" height="40" rx="3" fill="#E1D8C2" stroke="#8a7f60"/>
+              <text x="365" y="315" text-anchor="middle" font-size="11">USB / Audio / Ethernet / Power Connectors</text>
+            </g>
+          </svg>
+          <figcaption>Fig 12.1 — Simplified motherboard layout</figcaption>
+        </div>
+
+        <h3>12.1 What Fits Where</h3>
+        <ul>
+          <li><strong>CPU</strong> — clips into the CPU socket, secured under a retention arm and topped with a heatsink/fan or liquid cooler.</li>
+          <li><strong>RAM</strong> — clicks vertically into DIMM slots; most boards need sticks installed in matching pairs for dual-channel speed.</li>
+          <li><strong>GPU (Graphics Card)</strong> — slots into the top PCIe x16 slot and is screwed to the case; separate power cables connect for higher-end cards.</li>
+          <li><strong>Storage (SSD/HDD)</strong> — M.2 SSDs screw flat directly onto the board; SATA drives connect via a data + power cable.</li>
+          <li><strong>Chipset</strong> — manages communication between CPU, memory, storage, and peripherals; determines which features/overclocking options are available.</li>
+          <li><strong>Power Supply Unit (PSU)</strong> — converts wall AC power to the DC voltages every component needs.</li>
+        </ul>
+
+        <h3>12.2 GPU (Graphics Card) — Major Players</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Brand</th><th>Product lines</th><th>Focus</th></tr></thead>
+            <tbody>
+              <tr><td>NVIDIA</td><td>GeForce RTX (consumer), RTX/Quadro (workstation), H100/B-series (AI/data center)</td><td>Gaming, ray-tracing, and AI/ML acceleration</td></tr>
+              <tr><td>AMD</td><td>Radeon RX (consumer), Instinct (data center)</td><td>Gaming and compute</td></tr>
+              <tr><td>Intel</td><td>Arc (consumer)</td><td>Newer entrant, competitive mid-range gaming</td></tr>
+              <tr><td>Apple</td><td>Integrated GPU inside M-series chips</td><td>Efficient graphics for Mac/iPad</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 13 : OS ===================== -->
+      <section class="chapter" id="ch13">
+        <div class="chapter-head"><span class="chapter-num">0x0C</span><h2>Operating Systems</h2></div>
+        <p class="chapter-sub">The software that manages every other piece of software and hardware.</p>
+
+        <h3>13.1 What Does an OS Do?</h3>
+        <ul>
+          <li><strong>Process management</strong> — decides which program gets the CPU and when.</li>
+          <li><strong>Memory management</strong> — allocates and frees RAM for running programs.</li>
+          <li><strong>File system management</strong> — organizes how data is stored and retrieved on disk.</li>
+          <li><strong>Device management</strong> — talks to hardware through drivers (printer, GPU, network card...).</li>
+          <li><strong>User interface</strong> — provides the GUI or command line through which people interact with the machine.</li>
+          <li><strong>Security</strong> — manages user accounts, permissions, and access control.</li>
+        </ul>
+
+        <h3>13.2 Types of Operating Systems</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Description</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td>Batch OS</td><td>Jobs collected and run in groups with no direct user interaction</td><td>Early mainframe systems</td></tr>
+              <tr><td>Time-Sharing OS</td><td>CPU time divided in slices so multiple users feel like they have the system to themselves</td><td>Unix</td></tr>
+              <tr><td>Distributed OS</td><td>Manages a group of independent computers as a single system</td><td>Cluster/cloud systems</td></tr>
+              <tr><td>Real-Time OS (RTOS)</td><td>Guarantees a task completes within a strict deadline — used where timing is critical</td><td>Medical devices, industrial robots</td></tr>
+              <tr><td>Mobile OS</td><td>Optimized for touch, battery life, and app sandboxing</td><td>Android, iOS</td></tr>
+              <tr><td>Network OS</td><td>Manages shared resources across a network</td><td>Windows Server, Novell NetWare</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>13.3 Major Operating Systems Today</h3>
+        <div class="type-grid">
+          <div class="type-card"><h4>Windows</h4><p>Microsoft's GUI-based OS, dominant on desktops/laptops worldwide; current mainstream release is Windows 11.</p></div>
+          <div class="type-card"><h4>macOS</h4><p>Apple's Unix-based desktop OS, tightly integrated with Apple hardware and its own App Store.</p></div>
+          <div class="type-card"><h4>Linux (general)</h4><p>Open-source, Unix-like kernel created by Linus Torvalds (1991); free to modify and distribute — the base for hundreds of "distros."</p></div>
+          <div class="type-card"><h4>Ubuntu</h4><p>The most popular beginner-friendly Linux distribution, widely used for desktops, servers, and development.</p></div>
+          <div class="type-card"><h4>Kali Linux</h4><p>A specialized Debian-based distro pre-loaded with penetration-testing and security-auditing tools, used by ethical hackers and security professionals.</p></div>
+          <div class="type-card"><h4>Fedora / Debian / Arch</h4><p>Other major Linux distributions, each with different release philosophies (cutting-edge vs. stable vs. minimal/DIY).</p></div>
+          <div class="type-card"><h4>Android</h4><p>Google's Linux-kernel-based mobile OS — the most widely used OS on Earth by device count.</p></div>
+          <div class="type-card"><h4>iOS / iPadOS</h4><p>Apple's mobile OS for iPhone/iPad, known for tight hardware integration and app-store curation.</p></div>
+          <div class="type-card"><h4>ChromeOS</h4><p>Google's lightweight, browser-centric OS built for Chromebooks.</p></div>
+          <div class="type-card"><h4>Unix</h4><p>The 1969 original (Bell Labs) that inspired Linux, macOS, iOS, and Android's underlying design.</p></div>
+        </div>
+
+        <div class="callout">
+          <div class="callout-label">Note on "Paretoas"</div>
+          <p>There isn't a mainstream OS by that exact name — you may be thinking of <strong>Parrot OS</strong>, another Debian-based security/pentesting distro similar in purpose to Kali Linux.</p>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 14 : SOFTWARE ===================== -->
+      <section class="chapter" id="ch14">
+        <div class="chapter-head"><span class="chapter-num">0x0D</span><h2>System vs Application Software</h2></div>
+        <p class="chapter-sub">Two broad buckets everything a computer runs falls into.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th></th><th>System Software</th><th>Application Software</th></tr></thead>
+            <tbody>
+              <tr><td>Purpose</td><td>Runs and manages the computer itself</td><td>Helps the user do a specific task</td></tr>
+              <tr><td>Examples</td><td>Operating System, device drivers, compilers, utilities</td><td>MS Word, Excel, browsers, games, WhatsApp</td></tr>
+              <tr><td>Who uses it directly</td><td>Mostly runs in the background</td><td>End users interact with it directly</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>14.1 Programming Languages — A Quick Path</h3>
+        <p>Languages evolved from what the hardware directly understands to what humans find easiest to write:</p>
+        <ol>
+          <li><strong>Machine Language</strong> — raw binary (1s and 0s); the only thing a CPU truly executes.</li>
+          <li><strong>Assembly Language</strong> — human-readable mnemonics (<code>MOV</code>, <code>ADD</code>) that map almost 1-to-1 to machine code; needs an <em>assembler</em>.</li>
+          <li><strong>High-Level Languages</strong> — closer to English/math (FORTRAN 1957, COBOL 1959, C 1972, C++ 1985, Java 1995, Python 1991, JavaScript 1995...); need a <em>compiler</em> or <em>interpreter</em> to convert to machine code.</li>
+          <li><strong>Modern/Scripting &amp; AI-era languages</strong> — Python (dominant for AI/ML), JavaScript/TypeScript (web), Swift/Kotlin (mobile), Rust/Go (systems).</li>
+        </ol>
+      </section>
+
+      <!-- ===================== CHAPTER 15 : NETWORKS ===================== -->
+      <section class="chapter" id="ch15">
+        <div class="chapter-head"><span class="chapter-num">0x0E</span><h2>Computer Networks</h2></div>
+        <p class="chapter-sub">How computers talk to each other — from two machines in a room to the entire internet.</p>
+
+        <h3>15.1 Types of Networks by Size</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Network</th><th>Full form</th><th>Typical range</th></tr></thead>
+            <tbody>
+              <tr><td>PAN</td><td>Personal Area Network</td><td>A few meters — Bluetooth earphones, smartwatch</td></tr>
+              <tr><td>LAN</td><td>Local Area Network</td><td>One building/office — connects computers via Wi-Fi/Ethernet</td></tr>
+              <tr><td>MAN</td><td>Metropolitan Area Network</td><td>A city — links multiple LANs</td></tr>
+              <tr><td>WAN</td><td>Wide Area Network</td><td>Country/global — the internet is the largest WAN</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>15.2 Network Topologies</h3>
+        <ul>
+          <li><strong>Bus</strong> — all devices share a single central cable.</li>
+          <li><strong>Star</strong> — all devices connect to one central hub/switch (most common today).</li>
+          <li><strong>Ring</strong> — each device connects to exactly two neighbors, forming a loop.</li>
+          <li><strong>Mesh</strong> — devices interconnect directly with many/all others for redundancy.</li>
+        </ul>
+
+        <h3>15.3 Core Internet Concepts</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td>IP Address</td><td>A unique numeric label identifying a device on a network.</td></tr>
+              <tr><td>Router</td><td>Directs data packets between networks, e.g., your home network and the internet.</td></tr>
+              <tr><td>Modem</td><td>Converts digital signals to/from the format used by your ISP's line (fiber, cable, DSL).</td></tr>
+              <tr><td>Server / Client</td><td>A server provides data or a service; a client (your device) requests and consumes it.</td></tr>
+              <tr><td>Protocol</td><td>An agreed set of rules for communication — e.g., HTTP/HTTPS for the web, TCP/IP for routing data reliably.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 16 : MS OFFICE ===================== -->
+      <section class="chapter" id="ch16">
+        <div class="chapter-head"><span class="chapter-num">0x0F</span><h2>MS Office: Word, Excel &amp; PowerPoint</h2></div>
+        <p class="chapter-sub">The core productivity suite — basics through advanced features.</p>
+
+        <div class="app-tabs" id="appTabs">
+          <button class="app-tab-btn active" data-app="word">Microsoft Word</button>
+          <button class="app-tab-btn" data-app="excel">Microsoft Excel</button>
+          <button class="app-tab-btn" data-app="ppt">Microsoft PowerPoint</button>
+        </div>
+
+        <div class="app-panel active" id="panel-word">
+          <h4>What it's for</h4>
+          <p>Word processing — writing letters, reports, resumes, and long documents.</p>
+          <h4>Basics</h4>
+          <ul>
+            <li>Typing, selecting text, cut/copy/paste (<code>Ctrl+X / C / V</code>)</li>
+            <li>Font, size, bold/italic/underline, alignment, bullet &amp; numbered lists</li>
+            <li>Page setup — margins, orientation, page size</li>
+          </ul>
+          <h4>Intermediate</h4>
+          <ul>
+            <li><strong>Styles</strong> — consistent heading/body formatting applied in one click</li>
+            <li><strong>Tables</strong> — insert, merge cells, apply table styles</li>
+            <li><strong>Headers/Footers &amp; Page Numbers</strong></li>
+            <li><strong>Find &amp; Replace</strong> (<code>Ctrl+H</code>)</li>
+          </ul>
+          <h4>Advanced</h4>
+          <ul>
+            <li><strong>Table of Contents</strong> — auto-generated from heading styles</li>
+            <li><strong>Mail Merge</strong> — generate personalized letters from a data source</li>
+            <li><strong>Track Changes &amp; Comments</strong> — collaborative editing and review</li>
+            <li><strong>Macros</strong> — automate repetitive formatting tasks</li>
+          </ul>
+        </div>
+
+        <div class="app-panel" id="panel-excel">
+          <h4>What it's for</h4>
+          <p>Spreadsheets — numbers, calculations, data analysis, and charts, organized in rows and columns (cells).</p>
+          <h4>Basics</h4>
+          <ul>
+            <li>Cells, rows, columns; entering data and basic formulas starting with <code>=</code></li>
+            <li>AutoSum, basic math operators (<code>+ - * /</code>)</li>
+            <li>Formatting cells — number, currency, date, borders, fill color</li>
+          </ul>
+          <h4>Intermediate</h4>
+          <ul>
+            <li>Functions: <code>SUM</code>, <code>AVERAGE</code>, <code>COUNT</code>, <code>IF</code>, <code>VLOOKUP</code></li>
+            <li>Sorting &amp; filtering data</li>
+            <li>Charts &amp; graphs (bar, line, pie)</li>
+            <li>Freeze panes, cell references (relative <code>A1</code> vs absolute <code>$A$1</code>)</li>
+          </ul>
+          <h4>Advanced</h4>
+          <ul>
+            <li><strong>Pivot Tables</strong> — summarize and cross-tabulate huge data sets instantly</li>
+            <li><strong>XLOOKUP / INDEX-MATCH</strong> — flexible lookups beyond VLOOKUP</li>
+            <li><strong>Conditional Formatting</strong> &amp; data validation</li>
+            <li><strong>Macros / VBA</strong> — scripted automation</li>
+            <li><strong>Power Query</strong> — importing and cleaning data from external sources</li>
+          </ul>
+        </div>
+
+        <div class="app-panel" id="panel-ppt">
+          <h4>What it's for</h4>
+          <p>Slide-based presentations for talks, pitches, and visual storytelling.</p>
+          <h4>Basics</h4>
+          <ul>
+            <li>Adding slides, choosing layouts, inserting text boxes and images</li>
+            <li>Themes — a consistent color/font scheme applied across all slides</li>
+            <li>Slide Show / Present mode (<code>F5</code>)</li>
+          </ul>
+          <h4>Intermediate</h4>
+          <ul>
+            <li>Transitions between slides and entrance/exit animations on objects</li>
+            <li>SmartArt for diagrams; inserting charts and tables</li>
+            <li>Slide Master — edit one master layout to update every slide at once</li>
+          </ul>
+          <h4>Advanced</h4>
+          <ul>
+            <li><strong>Custom animation timing &amp; triggers</strong> for interactive decks</li>
+            <li><strong>Embedded video/audio</strong> and hyperlinked navigation between slides</li>
+            <li><strong>Presenter view</strong> — see notes and next slide while the audience sees only the current slide</li>
+            <li><strong>Design ideas / auto-layout suggestions</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 17 : COMPUTER VS LAPTOP ===================== -->
+      <section class="chapter" id="ch17">
+        <div class="chapter-head"><span class="chapter-num">0x10</span><h2>Computer (Desktop) vs Laptop</h2></div>
+        <p class="chapter-sub">Same core components, packaged very differently.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th></th><th>Desktop Computer</th><th>Laptop</th></tr></thead>
+            <tbody>
+              <tr><td>Portability</td><td>Fixed in place</td><td>Battery-powered, carry anywhere</td></tr>
+              <tr><td>Upgradability</td><td>Easy — swap GPU, RAM, storage individually</td><td>Limited — many parts soldered/integrated</td></tr>
+              <tr><td>Performance per rupee</td><td>Generally higher for the same price</td><td>Pay a premium for compactness &amp; battery life</td></tr>
+              <tr><td>Cooling</td><td>Larger fans/space — sustains high performance longer</td><td>Compact cooling — may throttle under heavy load</td></tr>
+              <tr><td>Screen/keyboard/battery</td><td>Separate peripherals</td><td>All built in, needs charging</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 18 : AI ===================== -->
+      <section class="chapter" id="ch18">
+        <div class="chapter-head"><span class="chapter-num">0x11</span><h2>Evolution of Artificial Intelligence</h2></div>
+        <p class="chapter-sub">From a 1956 workshop to AI built into every modern processor.</p>
+
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-year">1950</div><div class="tl-title">The Turing Test</div><p class="tl-desc">Alan Turing proposed a test for whether a machine can exhibit behavior indistinguishable from a human.</p></div>
+          <div class="tl-item"><div class="tl-year">1956</div><div class="tl-title">Term "Artificial Intelligence" coined</div><p class="tl-desc">Coined at the Dartmouth Workshop, organized by John McCarthy and colleagues — widely marked as the birth of AI as a field.</p></div>
+          <div class="tl-item"><div class="tl-year">1960s–70s</div><div class="tl-title">Early AI &amp; "AI Winters"</div><p class="tl-desc">Rule-based expert systems show promise, but limited computing power leads to funding cutbacks known as "AI winters."</p></div>
+          <div class="tl-item"><div class="tl-year">1997</div><div class="tl-title">Deep Blue beats Kasparov</div><p class="tl-desc">IBM's chess computer defeats world champion Garry Kasparov, a landmark for specialized AI.</p></div>
+          <div class="tl-item"><div class="tl-year">2012</div><div class="tl-title">Deep Learning breakthrough</div><p class="tl-desc">AlexNet's win at the ImageNet competition proves deep neural networks trained on GPUs dramatically outperform older approaches.</p></div>
+          <div class="tl-item"><div class="tl-year">2017</div><div class="tl-title">The Transformer architecture</div><p class="tl-desc">Google researchers publish "Attention Is All You Need," the architecture that underlies virtually all modern large language models.</p></div>
+          <div class="tl-item"><div class="tl-year">2020s</div><div class="tl-title">Large Language Models go mainstream</div><p class="tl-desc">Models like GPT, Claude, and Gemini bring conversational AI, coding assistants, and generative tools to everyday users; NPUs (Neural Processing Units) start shipping inside consumer CPUs.</p></div>
+        </div>
+      </section>
+
+      <!-- ===================== CHAPTER 19 : GLOSSARY ===================== -->
+      <section class="chapter" id="ch19">
+        <div class="chapter-head"><span class="chapter-num">0x12</span><h2>Glossary (A–Z Quick Reference)</h2></div>
+        <p class="chapter-sub">Fast lookup for every core term used in this notebook.</p>
+        <div class="table-wrap">
+          <table>
+            <tbody>
+              <tr><td><strong>ALU</strong></td><td>Arithmetic Logic Unit — performs math &amp; logic operations inside the CPU.</td></tr>
+              <tr><td><strong>Bit / Byte</strong></td><td>Smallest data unit (0/1) / 8 bits grouped together.</td></tr>
+              <tr><td><strong>Bus</strong></td><td>Pathway carrying data, addresses, or control signals inside a computer.</td></tr>
+              <tr><td><strong>Cache</strong></td><td>Small, ultra-fast memory near the CPU holding frequently used data.</td></tr>
+              <tr><td><strong>CPU</strong></td><td>Central Processing Unit — the "brain" that executes instructions.</td></tr>
+              <tr><td><strong>Driver</strong></td><td>Software that lets the OS communicate with a specific hardware device.</td></tr>
+              <tr><td><strong>Firmware</strong></td><td>Low-level software stored in ROM/flash that controls hardware directly (e.g. BIOS/UEFI).</td></tr>
+              <tr><td><strong>GPU</strong></td><td>Graphics Processing Unit — specialized processor for parallel tasks like rendering and AI.</td></tr>
+              <tr><td><strong>GUI</strong></td><td>Graphical User Interface — visual, icon/window-based interaction (vs command line).</td></tr>
+              <tr><td><strong>IC</strong></td><td>Integrated Circuit — many transistors etched onto one chip.</td></tr>
+              <tr><td><strong>Kernel</strong></td><td>The core part of an OS that manages hardware and system resources directly.</td></tr>
+              <tr><td><strong>LAN/WAN</strong></td><td>Local vs Wide Area Network — network scope by geography.</td></tr>
+              <tr><td><strong>NPU</strong></td><td>Neural Processing Unit — dedicated AI-acceleration hardware in modern chips.</td></tr>
+              <tr><td><strong>OS</strong></td><td>Operating System — manages hardware and runs all other software.</td></tr>
+              <tr><td><strong>RAM</strong></td><td>Random Access Memory — fast, volatile working memory.</td></tr>
+              <tr><td><strong>ROM</strong></td><td>Read-Only Memory — non-volatile memory holding fixed instructions.</td></tr>
+              <tr><td><strong>SSD/HDD</strong></td><td>Solid State Drive (flash, fast) vs Hard Disk Drive (spinning platters, cheap/bulk).</td></tr>
+              <tr><td><strong>Transistor</strong></td><td>Tiny electronic switch; the basic building block of all digital circuits.</td></tr>
+              <tr><td><strong>Von Neumann Architecture</strong></td><td>Design where program instructions and data share the same memory — the basis of most computers today.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    <footer>
+      FUNDAMENTALS OF COMPUTERS — A COMPLETE NOTEBOOK · MADE FOR STUDY &amp; REVISION
+    </footer>
+  </main>
+</div>
+
+<script>
+// ---------- mobile sidebar toggle ----------
+const menuToggle = document.getElementById('menuToggle');
+const sidebar = document.getElementById('sidebar');
+menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+document.querySelectorAll('.toc a').forEach(a => a.addEventListener('click', () => sidebar.classList.remove('open')));
+
+// ---------- active TOC highlighting ----------
+const sections = document.querySelectorAll('section.chapter');
+const tocLinks = document.querySelectorAll('.toc a');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      tocLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+    }
+  });
+}, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+sections.forEach(s => io.observe(s));
+
+// ---------- number system converter ----------
+const decEl = document.getElementById('convDec');
+const binEl = document.getElementById('convBin');
+const octEl = document.getElementById('convOct');
+const hexEl = document.getElementById('convHex');
+
+function updateFrom(base, el){
+  let n;
+  try {
+    if (el.value.trim() === '') { [decEl,binEl,octEl,hexEl].forEach(x=>{ if(x!==el) x.value=''; }); return; }
+    n = parseInt(el.value, base);
+    if (isNaN(n) || n < 0) return;
+  } catch(e){ return; }
+  if (el !== decEl) decEl.value = n.toString(10);
+  if (el !== binEl) binEl.value = n.toString(2);
+  if (el !== octEl) octEl.value = n.toString(8);
+  if (el !== hexEl) hexEl.value = n.toString(16).toUpperCase();
+}
+decEl.addEventListener('input', () => updateFrom(10, decEl));
+binEl.addEventListener('input', () => updateFrom(2, binEl));
+octEl.addEventListener('input', () => updateFrom(8, octEl));
+hexEl.addEventListener('input', () => updateFrom(16, hexEl));
+decEl.value = 25; updateFrom(10, decEl);
+
+// ---------- logic gate simulator ----------
+const gateDefs = {
+  AND:  {inputs:2, fn:(a,b)=> a & b},
+  OR:   {inputs:2, fn:(a,b)=> a | b},
+  NOT:  {inputs:1, fn:(a)=> a ? 0 : 1},
+  NAND: {inputs:2, fn:(a,b)=> (a & b) ? 0 : 1},
+  NOR:  {inputs:2, fn:(a,b)=> (a | b) ? 0 : 1},
+  XOR:  {inputs:2, fn:(a,b)=> (a ^ b)},
+  XNOR: {inputs:2, fn:(a,b)=> (a ^ b) ? 0 : 1},
+};
+let currentGate = 'AND';
+let state = {A:0, B:0};
+
+function gateShapePath(gate){
+  // returns svg inner markup for the gate body depending on type
+  const isNotFamily = gate === 'NOT' || gate === 'NAND' || gate === 'NOR' || gate === 'XNOR';
+  const bubble = isNotFamily ? '<circle cx="118" cy="60" r="6" fill="#12181F" stroke="#2E7D5B" stroke-width="2"/>' : '';
+  let body = '';
+  if (gate === 'AND' || gate === 'NAND') {
+    body = '<path d="M40,25 h30 a35,35 0 0 1 0,70 h-30 Z" fill="#1B2430" stroke="#2E7D5B" stroke-width="2"/>';
+  } else if (gate === 'OR' || gate === 'NOR' || gate === 'XOR' || gate === 'XNOR') {
+    body = '<path d="M40,25 q30,0 60,35 q-30,35 -60,35 q14,-35 0,-70 Z" fill="#1B2430" stroke="#2E7D5B" stroke-width="2"/>';
+  } else if (gate === 'NOT') {
+    body = '<path d="M40,25 L100,60 L40,95 Z" fill="#1B2430" stroke="#2E7D5B" stroke-width="2"/>';
+  }
+  let extraLine = (gate === 'XOR' || gate === 'XNOR') ? '<path d="M32,25 q14,35 0,70" fill="none" stroke="#2E7D5B" stroke-width="2"/>' : '';
+  return extraLine + body + bubble;
+}
+
+function renderGate(){
+  const def = gateDefs[currentGate];
+  const svg = document.getElementById('gateSvg');
+  let inputLines = '';
+  if (def.inputs === 2){
+    inputLines = '<line x1="4" y1="42" x2="40" y2="42" stroke="#5E6C82" stroke-width="2"/><line x1="4" y1="78" x2="40" y2="78" stroke="#5E6C82" stroke-width="2"/>';
+  } else {
+    inputLines = '<line x1="4" y1="60" x2="40" y2="60" stroke="#5E6C82" stroke-width="2"/>';
+  }
+  const outX = (currentGate==='NOT'||currentGate==='NAND'||currentGate==='NOR'||currentGate==='XNOR') ? 124 : 118;
+  const outputLine = `<line x1="${outX}" y1="60" x2="156" y2="60" stroke="#5E6C82" stroke-width="2"/>`;
+  svg.innerHTML = inputLines + gateShapePath(currentGate) + outputLine;
+
+  document.getElementById('simInputs').style.display = def.inputs === 1 ? 'flex' : 'flex';
+  document.getElementById('toggleB').style.display = def.inputs === 2 ? 'block' : 'none';
+}
+
+function computeOutput(){
+  const def = gateDefs[currentGate];
+  return def.inputs === 1 ? def.fn(state.A) : def.fn(state.A, state.B);
+}
+
+function renderOutput(){
+  const out = computeOutput();
+  const el = document.getElementById('simOutVal');
+  el.textContent = out;
+  el.className = 'val ' + (out ? 'on' : 'off');
+}
+
+function renderTruthTable(){
+  const def = gateDefs[currentGate];
+  const table = document.getElementById('truthTable');
+  let rows = [];
+  if (def.inputs === 1){
+    rows = [0,1].map(a => ({A:a, out: def.fn(a)}));
+  } else {
+    rows = [[0,0],[0,1],[1,0],[1,1]].map(([a,b]) => ({A:a,B:b,out:def.fn(a,b)}));
+  }
+  let html = '<thead><tr><th>A</th>' + (def.inputs===2?'<th>B</th>':'') + '<th>Output</th></tr></thead><tbody>';
+  rows.forEach(r => {
+    const isCurrent = r.A === state.A && (def.inputs===1 || r.B === state.B);
+    html += `<tr class="${isCurrent?'highlight':''}"><td>${r.A}</td>${def.inputs===2?'<td>'+r.B+'</td>':''}<td>${r.out}</td></tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+function renderAll(){ renderGate(); renderOutput(); renderTruthTable(); }
+
+document.querySelectorAll('#gateButtons .gate-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#gateButtons .gate-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentGate = btn.dataset.gate;
+    renderAll();
+  });
+});
+document.getElementById('toggleA').addEventListener('click', () => { state.A = state.A ? 0 : 1; document.querySelector('#toggleA .val').textContent = state.A; renderAll(); });
+document.getElementById('toggleB').addEventListener('click', () => { state.B = state.B ? 0 : 1; document.querySelector('#toggleB .val').textContent = state.B; renderAll(); });
+renderAll();
+
+// ---------- office app tabs ----------
+document.querySelectorAll('.app-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.app-tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.app-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.app).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

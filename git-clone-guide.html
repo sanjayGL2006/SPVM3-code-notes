@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git & Version Control Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:            #0d1117;
+    --bg-raised:     #151b23;
+    --bg-terminal:   #0a0e14;
+    --line:          #232b36;
+    --text:          #e6edf3;
+    --muted:         #8791a1;
+    --orange:        #e8622f;
+    --orange-dim:    #7a3a20;
+    --green:         #5fb87a;
+    --green-dim:     #274430;
+    --red:           #e5626b;
+    --amber:         #d8a13a;
+    --radius:        10px;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  ::selection{ background:var(--orange-dim); color:#fff; }
+
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    letter-spacing:-0.01em;
+  }
+
+  code, .mono, .terminal, pre{
+    font-family:'JetBrains Mono', monospace;
+  }
+
+  a{ color:var(--orange); }
+
+  .wrap{
+    max-width:880px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  /* ---------- NAV ---------- */
+  header.top{
+    position:sticky; top:0; z-index:20;
+    background:rgba(13,17,23,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  header.top .wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    height:58px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:9px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600; font-size:15px;
+    color:var(--text);
+  }
+  .brand .dot{
+    width:9px; height:9px; border-radius:50%;
+    background:var(--orange);
+    box-shadow:0 0 0 3px var(--orange-dim);
+  }
+  nav.top-links{ display:flex; gap:22px; }
+  nav.top-links a{
+    color:var(--muted); text-decoration:none;
+    font-size:13.5px; font-weight:500;
+    transition:color .15s ease;
+  }
+  nav.top-links a:hover{ color:var(--text); }
+  @media (max-width:620px){ nav.top-links{ display:none; } }
+
+  /* ---------- HERO ---------- */
+  .hero{ padding:64px 0 40px; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:600;
+    color:var(--orange);
+    text-transform:uppercase; letter-spacing:.08em;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{
+    content:''; width:16px; height:1px; background:var(--orange);
+  }
+  h1.title{
+    font-size:clamp(34px, 5vw, 50px);
+    font-weight:700;
+    line-height:1.08;
+    max-width:11ch;
+    margin-bottom:18px;
+  }
+  h1.title .accent{ color:var(--orange); }
+  p.lede{
+    color:var(--muted);
+    font-size:17px;
+    max-width:52ch;
+    margin-bottom:36px;
+  }
+  p.lede strong{ color:var(--text); font-weight:600; }
+
+  /* ---------- TERMINAL (signature element) ---------- */
+  .terminal{
+    background:var(--bg-terminal);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    overflow:hidden;
+    box-shadow:0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+  .terminal-bar{
+    display:flex; align-items:center; gap:8px;
+    padding:11px 14px;
+    background:var(--bg-raised);
+    border-bottom:1px solid var(--line);
+  }
+  .terminal-bar .tdot{ width:11px; height:11px; border-radius:50%; }
+  .terminal-bar .tdot.r{ background:#e5626b; }
+  .terminal-bar .tdot.y{ background:#d8a13a; }
+  .terminal-bar .tdot.g{ background:#5fb87a; }
+  .terminal-bar .tlabel{
+    margin-left:8px;
+    font-size:12px; color:var(--muted);
+  }
+  .terminal-body{
+    padding:20px 22px 26px;
+    font-size:13.5px;
+    min-height:210px;
+  }
+  .terminal-body .row{ display:flex; gap:8px; margin-bottom:5px; flex-wrap:wrap; }
+  .terminal-body .prompt{ color:var(--green); flex-shrink:0; }
+  .terminal-body .cmd{ color:var(--text); }
+  .terminal-body .out{ color:var(--muted); margin-bottom:2px; }
+  .terminal-body .out .pct{ color:var(--amber); }
+  .caret{
+    display:inline-block; width:7px; height:15px;
+    background:var(--orange);
+    vertical-align:middle; margin-left:2px;
+    animation:blink 1s steps(1) infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+  .type-line{ display:inline-block; overflow:hidden; white-space:nowrap; }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{ padding:52px 0; border-top:1px solid var(--line); }
+  section.no-border{ border-top:none; }
+  .kicker{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; color:var(--orange);
+    letter-spacing:.04em;
+    margin-bottom:10px;
+  }
+  h2.h{
+    font-size:26px; font-weight:600;
+    margin-bottom:14px;
+  }
+  p.dek{
+    color:var(--muted); font-size:15.5px; max-width:58ch; margin-bottom:28px;
+  }
+
+  /* ---------- FLOW DIAGRAM ---------- */
+  .flow{
+    display:flex; align-items:center; justify-content:center;
+    gap:0; flex-wrap:wrap;
+    padding:36px 20px;
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+  }
+  .flow-node{
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    width:150px; text-align:center;
+  }
+  .flow-node .icon{
+    width:54px; height:54px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--bg-terminal); border:1px solid var(--line);
+  }
+  .flow-node .icon svg{ width:26px; height:26px; }
+  .flow-node .label{ font-size:13.5px; font-weight:600; }
+  .flow-node .sub{ font-size:11.5px; color:var(--muted); }
+  .flow-arrow{
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    width:110px; color:var(--muted);
+    font-family:'JetBrains Mono', monospace; font-size:11.5px;
+  }
+  .flow-arrow .line{
+    width:100%; height:1px; background:var(--line); position:relative;
+  }
+  .flow-arrow .line::after{
+    content:''; position:absolute; right:0; top:-3px;
+    border-left:6px solid var(--orange);
+    border-top:3px solid transparent; border-bottom:3px solid transparent;
+  }
+  @media (max-width:640px){
+    .flow{ flex-direction:column; }
+    .flow-arrow{ width:auto; flex-direction:row; height:44px; }
+    .flow-arrow .line{ width:1px; height:100%; }
+    .flow-arrow .line::after{
+      right:-3px; top:auto; bottom:0;
+      border-top:6px solid var(--orange); border-left:3px solid transparent; border-right:3px solid transparent; border-bottom:none;
+    }
+  }
+
+  /* ---------- STEPS ---------- */
+  .steps{ display:flex; flex-direction:column; gap:0; }
+  .step{
+    display:grid; grid-template-columns:52px 1fr;
+    gap:18px; padding:26px 0;
+    border-top:1px solid var(--line);
+  }
+  .step:first-child{ border-top:none; }
+  .step-num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px; color:var(--orange);
+    border:1px solid var(--orange-dim);
+    border-radius:8px;
+    width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:600;
+  }
+  .step-title{ font-size:16.5px; font-weight:600; margin-bottom:6px; }
+  .step-text{ color:var(--muted); font-size:14.5px; margin-bottom:12px; }
+  .step-text b{ color:var(--text); font-weight:600; }
+
+  /* ---------- CODE BLOCK ---------- */
+  .code{
+    position:relative;
+    background:var(--bg-terminal);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:14px 46px 14px 16px;
+    font-size:13px;
+    overflow-x:auto;
+    color:#c8d1dc;
+  }
+  .code .kw{ color:var(--orange); }
+  .code .str{ color:var(--green); }
+  .code .cm{ color:var(--muted); }
+  .copy-btn{
+    position:absolute; top:9px; right:9px;
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-family:'Inter', sans-serif;
+    font-size:11px; font-weight:500;
+    padding:5px 9px; border-radius:6px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .copy-btn:hover{ color:var(--text); border-color:#3a4453; }
+  .copy-btn.copied{ color:var(--green); border-color:var(--green-dim); }
+
+  /* ---------- CALLOUT ---------- */
+  .callout{
+    display:flex; gap:14px;
+    background:var(--bg-raised);
+    border:1px solid var(--line);
+    border-left:3px solid var(--orange);
+    border-radius:8px;
+    padding:18px 20px;
+    margin-top:28px;
+  }
+  .callout .icon{ color:var(--orange); flex-shrink:0; font-family:'JetBrains Mono', monospace; font-weight:700; }
+  .callout .body b{ color:var(--text); }
+  .callout .body{ color:var(--muted); font-size:14.5px; }
+
+  /* ---------- REFERENCE TABLE ---------- */
+  .ref{
+    width:100%; border-collapse:collapse;
+    font-size:14px;
+  }
+  .ref th{
+    text-align:left; font-family:'JetBrains Mono', monospace;
+    font-size:11.5px; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.05em;
+    padding:0 0 12px; border-bottom:1px solid var(--line);
+  }
+  .ref td{
+    padding:13px 0; border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  .ref td:first-child{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--orange); font-size:13.5px; white-space:nowrap; padding-right:20px;
+  }
+  .ref td:last-child{ color:var(--muted); }
+  .ref tr:last-child td{ border-bottom:none; }
+
+  footer{
+    padding:36px 0 60px;
+    color:var(--muted); font-size:13px;
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:10px;
+  }
+  footer .mono{ color:#5a6472; }
+
+  @media (max-width:600px){
+    .hero{ padding:40px 0 30px; }
+    section{ padding:40px 0; }
+  }
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('git-guide')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('git-guide'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span> git clone —guide</div>
+    <nav class="top-links">
+      <a href="#what">What it does</a>
+      <a href="#steps">Steps</a>
+      <a href="#example">Example</a>
+      <a href="#reference">Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero no-border">
+    <div class="eyebrow">Git &middot; beginner guide</div>
+    <h1 class="title">Clone a repository <span class="accent">the right way.</span></h1>
+    <p class="lede">Cloning copies a remote Git repository — every file and its full commit history — onto your own computer. <strong>One command, one download, and you have a working local copy.</strong></p>
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span>
+        <span class="tlabel">Desktop — powershell</span>
+      </div>
+      <div class="terminal-body" id="termBody">
+        <div class="row"><span class="prompt">PS Desktop&gt;</span> <span class="cmd type-line" id="typeCmd"></span><span class="caret" id="caret"></span></div>
+        <div id="typeOutput"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="what">
+    <div class="kicker">01 / What cloning does</div>
+    <h2 class="h">A copy, not a link</h2>
+    <p class="dek">Once cloned, the project lives fully on your machine. You can read files, inspect history, and make commits offline — the remote is only contacted again when you <code>push</code> or <code>pull</code>.</p>
+
+    <div class="flow">
+      <div class="flow-node">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 6a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6Z" stroke="#e8622f" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="label">Remote repository</div>
+        <div class="sub">GitHub, GitLab, etc.</div>
+      </div>
+      <div class="flow-arrow"><span>git clone</span><span class="line"></span></div>
+      <div class="flow-node">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="12" rx="1.5" stroke="#5fb87a" stroke-width="1.6"/><path d="M9 20h6M12 16v4" stroke="#5fb87a" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div class="label">Your computer</div>
+        <div class="sub">Full local copy</div>
+      </div>
+      <div class="flow-arrow"><span>git pull</span><span class="line"></span></div>
+      <div class="flow-node">
+        <div class="icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 17v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" stroke="#d8a13a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="label">Stay in sync</div>
+        <div class="sub">Later, whenever</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="steps">
+    <div class="kicker">02 / Step by step</div>
+    <h2 class="h">Six steps, start to finish</h2>
+    <p class="dek">Run these in order the first time you clone a project. After that, most days you'll only need <code>git pull</code>.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Copy the repository URL</div>
+          <div class="step-text">Open the repository you want and copy its HTTPS URL. It looks like <b>https://example.com/username/project.git</b>.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Open a terminal in the right folder</div>
+          <div class="step-text">Navigate to where you want the project to live before cloning.</div>
+          <div class="code"><button class="copy-btn" data-copy="cd Desktop">Copy</button><span class="kw">cd</span> Desktop</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Run git clone</div>
+          <div class="step-text">Git downloads every file and the entire commit history.</div>
+          <div class="code"><button class="copy-btn" data-copy="git clone https://example.com/username/student-management.git">Copy</button><span class="kw">git clone</span> <span class="str">https://example.com/username/student-management.git</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>
+          <div class="step-title">Move into the project</div>
+          <div class="step-text">A new folder is created automatically, named after the repository.</div>
+          <div class="code"><button class="copy-btn" data-copy="cd student-management">Copy</button><span class="kw">cd</span> student-management</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div>
+          <div class="step-title">Confirm it worked</div>
+          <div class="step-text">A clean status means the clone succeeded and you're tracking the remote's <b>main</b> branch.</div>
+          <div class="code"><button class="copy-btn" data-copy="git status">Copy</button><span class="kw">git</span> status</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">6</div>
+        <div>
+          <div class="step-title">Edit, commit, and push as usual</div>
+          <div class="step-text">From here it's the standard cycle: change files, stage them, commit, then push.</div>
+          <div class="code"><button class="copy-btn" data-copy="git add .
+git commit -m &quot;Updated student application&quot;
+git push">Copy</button><span class="kw">git</span> add .
+<span class="kw">git</span> commit -m <span class="str">"Updated student application"</span>
+<span class="kw">git</span> push</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="callout">
+      <div class="icon">!</div>
+      <div class="body">You only clone <b>once</b> — the first time you get the project. Every time after that, use <b>git pull</b> to bring in the latest changes instead of cloning again.</div>
+    </div>
+  </section>
+
+  <section id="example">
+    <div class="kicker">03 / Complete example</div>
+    <h2 class="h">Cloning student-management</h2>
+    <p class="dek">Start to finish, exactly as you'd type it.</p>
+    <div class="code" style="padding-top:16px;"><button class="copy-btn" data-copy="cd Desktop
+git clone https://example.com/username/student-management.git
+cd student-management
+git status">Copy</button><span class="cm">PS&gt;</span> <span class="kw">cd</span> Desktop
+<span class="cm">PS&gt;</span> <span class="kw">git clone</span> <span class="str">https://example.com/username/student-management.git</span>
+<span class="cm">PS&gt;</span> <span class="kw">cd</span> student-management
+<span class="cm">PS&gt;</span> <span class="kw">git</span> status</div>
+  </section>
+
+  <section id="reference">
+    <div class="kicker">04 / Quick reference</div>
+    <h2 class="h">Commands you'll actually reuse</h2>
+    <table class="ref">
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td>git clone URL</td><td>Downloads a remote repository and its full history into a new folder</td></tr>
+      <tr><td>cd folder</td><td>Moves your terminal into that folder</td></tr>
+      <tr><td>git status</td><td>Shows what's changed, staged, or untracked</td></tr>
+      <tr><td>git add .</td><td>Stages every changed file for the next commit</td></tr>
+      <tr><td>git commit -m "..."</td><td>Saves the staged changes as a new point in history</td></tr>
+      <tr><td>git push</td><td>Uploads your commits to the remote repository</td></tr>
+      <tr><td>git pull</td><td>Downloads and merges the latest remote changes</td></tr>
+      <tr><td>git restore file</td><td>Discards uncommitted changes to a file</td></tr>
+    </table>
+  </section>
+
+  <footer>
+    <span>Beginner's guide to <span class="mono">git clone</span></span>
+    <span class="mono">clone once → pull often</span>
+  </footer>
+
+</div>
+
+<script>
+  // Typing animation for the hero terminal
+  const cmdText = "git clone https://example.com/username/student-management.git";
+  const typeCmd = document.getElementById('typeCmd');
+  const typeOutput = document.getElementById('typeOutput');
+  const caret = document.getElementById('caret');
+
+  const outputLines = [
+    { text: "Cloning into 'student-management'...", cls: 'out' },
+    { text: "remote: Enumerating objects: 47, done.", cls: 'out' },
+    { text: "remote: Counting objects: <span class=\"pct\">100%</span> (47/47), done.", cls: 'out' },
+    { text: "remote: Compressing objects: <span class=\"pct\">100%</span> (32/32), done.", cls: 'out' },
+    { text: "Receiving objects: <span class=\"pct\">100%</span> (47/47), 12.4 KiB | 3.10 MiB/s, done.", cls: 'out' },
+    { text: "Resolving deltas: <span class=\"pct\">100%</span> (10/10), done.", cls: 'out' }
+  ];
+
+  let i = 0;
+  function typeChar(){
+    if(i <= cmdText.length){
+      typeCmd.textContent = cmdText.slice(0, i);
+      i++;
+      setTimeout(typeChar, 22);
+    } else {
+      caret.style.display = 'none';
+      setTimeout(showOutput, 250);
+    }
+  }
+
+  function showOutput(){
+    let idx = 0;
+    function next(){
+      if(idx < outputLines.length){
+        const div = document.createElement('div');
+        div.className = 'out';
+        div.innerHTML = outputLines[idx].text;
+        typeOutput.appendChild(div);
+        idx++;
+        setTimeout(next, 220);
+      }
+    }
+    next();
+  }
+
+  setTimeout(typeChar, 500);
+
+  // Copy-to-clipboard buttons
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const text = btn.getAttribute('data-copy');
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1400);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

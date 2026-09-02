@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHP Complete Reference Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root{
+  --bg:            #0f1117;
+  --bg-soft:       #12141d;
+  --panel:         #171a26;
+  --panel-2:       #1c1f2e;
+  --panel-3:       #21253a;
+  --border:        #2a2f45;
+  --border-soft:   #232739;
+  --purple:        #8993be;
+  --purple-bright: #b3bcf0;
+  --purple-dim:    #565f8c;
+  --amber:         #ffb454;
+  --amber-dim:     #b98946;
+  --green:         #7ee3a8;
+  --red:           #ff7a7a;
+  --text:          #eae7de;
+  --text-dim:      #9aa0b8;
+  --text-faint:    #616986;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --radius: 10px;
+  --sidebar-w: 272px;
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(137,147,190,0.10), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 10%, rgba(255,180,84,0.06), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--font-sans);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{ background:var(--amber); color:#1a1305; }
+
+a{ color:var(--purple-bright); text-decoration:none; }
+a:hover{ text-decoration:underline; }
+
+h1,h2,h3,h4{
+  font-family:var(--font-mono);
+  color:var(--text);
+  font-weight:700;
+  letter-spacing:-0.01em;
+  margin:0 0 .5em;
+}
+p{ margin:0 0 1em; color:var(--text); }
+code:not(pre code){
+  font-family:var(--font-mono);
+  background:var(--panel-3);
+  border:1px solid var(--border);
+  padding:.1em .42em;
+  border-radius:5px;
+  font-size:.88em;
+  color:var(--amber);
+}
+
+/* ============================================================
+   LAYOUT SHELL
+   ============================================================ */
+.app{ display:flex; min-height:100vh; }
+
+/* ---- Sidebar ---- */
+.sidebar{
+  position:fixed; top:0; left:0; bottom:0; width:var(--sidebar-w);
+  background:var(--bg-soft);
+  border-right:1px solid var(--border-soft);
+  padding:22px 16px 18px;
+  overflow-y:auto;
+  z-index:40;
+  transition:transform .25s ease;
+}
+.sidebar::-webkit-scrollbar{ width:6px; }
+.sidebar::-webkit-scrollbar-thumb{ background:var(--border); border-radius:4px; }
+
+.brand{
+  display:flex; align-items:center; gap:10px;
+  padding:4px 6px 18px;
+  border-bottom:1px solid var(--border-soft);
+  margin-bottom:14px;
+}
+.brand-mark{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(145deg, var(--purple), #4b5285);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono); font-weight:700; color:#0f1117; font-size:15px;
+  flex:none;
+  box-shadow:0 0 0 1px rgba(179,188,240,.25), 0 6px 16px -4px rgba(137,147,190,.5);
+}
+.brand-text{ font-family:var(--font-mono); font-size:13.5px; line-height:1.25; }
+.brand-text b{ color:var(--text); display:block; font-size:14.5px; }
+.brand-text span{ color:var(--text-faint); }
+
+.navlabel{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.14em;
+  color:var(--text-faint); text-transform:uppercase; margin:16px 10px 6px;
+}
+.navlist{ list-style:none; margin:0; padding:0; }
+.navlist a{
+  display:flex; align-items:baseline; gap:9px;
+  padding:7px 10px; border-radius:7px;
+  color:var(--text-dim); font-size:13.6px; text-decoration:none;
+  font-family:var(--font-sans); font-weight:500;
+  border:1px solid transparent;
+}
+.navlist a:hover{ background:var(--panel); color:var(--text); }
+.navlist a.active{
+  background:var(--panel-2); color:var(--purple-bright);
+  border-color:var(--border);
+}
+.navlist a .num{
+  font-family:var(--font-mono); font-size:11px; color:var(--text-faint);
+  min-width:18px;
+}
+.navlist a.active .num{ color:var(--amber); }
+
+.sidebar-foot{
+  margin-top:20px; padding:12px 10px; border-top:1px solid var(--border-soft);
+  font-size:11.5px; color:var(--text-faint); font-family:var(--font-mono);
+}
+
+.sidebar-toggle{
+  display:none;
+  position:fixed; top:14px; left:14px; z-index:60;
+  width:40px;height:40px; border-radius:9px;
+  background:var(--panel-2); border:1px solid var(--border);
+  color:var(--text); font-size:18px; align-items:center; justify-content:center;
+  cursor:pointer;
+}
+.sidebar-scrim{ display:none; position:fixed; inset:0; background:rgba(6,7,12,.6); z-index:39; }
+
+/* ---- Main content ---- */
+.main{
+  margin-left:var(--sidebar-w);
+  flex:1;
+  min-width:0;
+  padding:0 0 90px;
+}
+.content-wrap{
+  max-width:840px;
+  margin:0 auto;
+  padding:0 40px;
+}
+
+/* ---- Hero ---- */
+.hero{
+  padding:64px 40px 50px;
+  max-width:980px; margin:0 auto;
+  border-bottom:1px solid var(--border-soft);
+  margin-bottom:56px;
+}
+.hero-eyebrow{
+  font-family:var(--font-mono); font-size:12px; letter-spacing:.16em;
+  color:var(--amber); text-transform:uppercase; margin-bottom:14px;
+  display:flex; align-items:center; gap:10px;
+}
+.hero-eyebrow::before{ content:''; width:22px; height:1px; background:var(--amber); display:inline-block; }
+.hero h1{
+  font-size:44px; line-height:1.12; margin-bottom:16px; color:var(--text);
+}
+.hero h1 span{ color:var(--purple-bright); }
+.hero p.lead{
+  font-size:16.5px; color:var(--text-dim); max-width:600px; margin-bottom:28px;
+}
+.hero-actions{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:34px; }
+.btn{
+  font-family:var(--font-mono); font-size:13.5px; font-weight:600;
+  padding:11px 20px; border-radius:8px; cursor:pointer; border:1px solid transparent;
+  display:inline-flex; align-items:center; gap:8px; text-decoration:none;
+}
+.btn-primary{ background:var(--amber); color:#241705; }
+.btn-primary:hover{ background:#ffc372; text-decoration:none; }
+.btn-ghost{ background:var(--panel-2); color:var(--text); border-color:var(--border); }
+.btn-ghost:hover{ background:var(--panel-3); text-decoration:none; }
+
+.hero-facts{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border-soft); border:1px solid var(--border-soft); border-radius:10px; overflow:hidden; }
+.hero-fact{ background:var(--bg-soft); padding:14px 16px; }
+.hero-fact .k{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+.hero-fact .v{ font-family:var(--font-mono); font-size:14px; color:var(--purple-bright); font-weight:600; }
+
+/* ---- Terminal boot animation ---- */
+.boot-window{
+  margin-top:32px; background:var(--panel); border:1px solid var(--border);
+  border-radius:12px; overflow:hidden; box-shadow:0 30px 60px -30px rgba(0,0,0,.6);
+}
+.boot-bar{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--panel-2); border-bottom:1px solid var(--border); }
+.dot{ width:10px;height:10px;border-radius:50%; }
+.dot.r{ background:#ff6058; } .dot.y{ background:#ffbd2e; } .dot.g{ background:#28c840; }
+.boot-bar .fname{ margin-left:8px; font-family:var(--font-mono); font-size:12px; color:var(--text-faint); }
+.boot-body{ padding:18px 20px; font-family:var(--font-mono); font-size:13.5px; min-height:120px; }
+.boot-body .line{ white-space:pre-wrap; }
+.boot-body .tag{ color:var(--purple-bright); }
+.boot-body .kw{ color:var(--amber); }
+.boot-body .str{ color:var(--green); }
+.boot-body .cur{ display:inline-block; width:8px; height:16px; background:var(--amber); vertical-align:middle; animation:blink 1s steps(1) infinite; }
+@keyframes blink{ 50%{ opacity:0; } }
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+section.topic{ padding-top:26px; margin-bottom:64px; scroll-margin-top:24px; }
+.topic-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:6px; }
+.topic-num{ font-family:var(--font-mono); font-size:14px; color:var(--amber); font-weight:700; }
+.topic-head h2{ font-size:26px; margin:0; }
+.topic-sub{ color:var(--text-dim); font-size:14.5px; margin-bottom:26px; max-width:640px; }
+.rule{ height:1px; background:var(--border-soft); border:none; margin:40px 0; }
+
+h3.h-sub{ font-size:17px; margin-top:30px; color:var(--purple-bright); }
+h4.h-sub2{ font-size:14.5px; margin-top:20px; color:var(--text); font-family:var(--font-sans); text-transform:uppercase; letter-spacing:.04em; color:var(--text-dim); }
+
+ul.notes, ol.notes{ padding-left:22px; margin:0 0 16px; }
+ul.notes li, ol.notes li{ margin-bottom:7px; color:var(--text); }
+ul.notes li::marker{ color:var(--amber); }
+.callout{
+  background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--purple);
+  border-radius:8px; padding:14px 16px; margin:18px 0; font-size:14px; color:var(--text-dim);
+}
+.callout b{ color:var(--purple-bright); }
+.callout.tip{ border-left-color:var(--green); }
+.callout.tip b{ color:var(--green); }
+.callout.warn{ border-left-color:var(--red); }
+.callout.warn b{ color:var(--red); }
+
+/* ---- tables ---- */
+.tblwrap{ overflow-x:auto; margin:18px 0; border:1px solid var(--border); border-radius:10px; }
+table.notes-table{ width:100%; border-collapse:collapse; font-size:13.6px; }
+table.notes-table th{
+  background:var(--panel-2); text-align:left; padding:10px 14px;
+  font-family:var(--font-mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--purple-bright); border-bottom:1px solid var(--border);
+}
+table.notes-table td{ padding:10px 14px; border-bottom:1px solid var(--border-soft); color:var(--text-dim); vertical-align:top; }
+table.notes-table tr:last-child td{ border-bottom:none; }
+table.notes-table td code, table.notes-table td.mono{ font-family:var(--font-mono); color:var(--text); }
+table.notes-table tr:hover td{ background:rgba(255,255,255,.015); }
+
+/* ---- pill tags ---- */
+.tag{
+  display:inline-block; font-family:var(--font-mono); font-size:11px;
+  padding:2px 8px; border-radius:999px; background:var(--panel-3); border:1px solid var(--border);
+  color:var(--text-dim); margin:2px 4px 2px 0;
+}
+
+/* ============================================================
+   CODE SNIPPETS (runnable)
+   ============================================================ */
+.snippet{
+  background:var(--panel); border:1px solid var(--border); border-radius:11px;
+  overflow:hidden; margin:18px 0 22px;
+}
+.snippet-bar{
+  display:flex; align-items:center; gap:10px; padding:9px 14px;
+  background:var(--panel-2); border-bottom:1px solid var(--border);
+}
+.snippet-bar .dots{ display:flex; gap:6px; }
+.snippet-bar .fname{ font-family:var(--font-mono); font-size:12px; color:var(--text-faint); margin-right:auto; }
+.run-btn{
+  font-family:var(--font-mono); font-size:12px; font-weight:600; color:#182014;
+  background:var(--green); border:none; border-radius:6px; padding:6px 12px;
+  cursor:pointer; display:flex; align-items:center; gap:6px;
+}
+.run-btn:hover{ filter:brightness(1.08); }
+.run-btn .tri{ width:0;height:0; border-top:5px solid transparent; border-bottom:5px solid transparent; border-left:8px solid #182014; }
+.snippet pre{ margin:0; padding:16px 18px; overflow-x:auto; }
+.snippet code{
+  font-family:var(--font-mono); font-size:13.2px; line-height:1.6; color:var(--text);
+  background:none; border:none; padding:0;
+}
+.snippet .php-tag{ color:var(--purple-bright); }
+.output-panel{
+  border-top:1px dashed var(--border);
+  background:#0c0d13;
+  padding:0;
+  max-height:0; overflow:hidden;
+  transition:max-height .25s ease;
+}
+.output-panel.show{ max-height:340px; overflow-y:auto; }
+.output-inner{ padding:12px 18px; }
+.output-label{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; color:var(--text-faint); text-transform:uppercase; margin-bottom:6px; }
+.output-text{ font-family:var(--font-mono); font-size:13px; color:var(--green); white-space:pre-wrap; margin:0; }
+.output-text.err{ color:var(--red); }
+
+/* ============================================================
+   PLAYGROUND
+   ============================================================ */
+.playground{
+  background:var(--panel); border:1px solid var(--border); border-radius:14px; overflow:hidden;
+  box-shadow:0 30px 70px -35px rgba(0,0,0,.7);
+}
+.pg-toolbar{
+  display:flex; align-items:center; gap:10px; padding:12px 16px;
+  background:var(--panel-2); border-bottom:1px solid var(--border); flex-wrap:wrap;
+}
+.pg-toolbar select{
+  font-family:var(--font-mono); font-size:12.5px; background:var(--panel-3); color:var(--text);
+  border:1px solid var(--border); border-radius:6px; padding:7px 10px;
+}
+.pg-toolbar .spacer{ flex:1; }
+.pg-btn{
+  font-family:var(--font-mono); font-size:12.5px; font-weight:600;
+  padding:8px 14px; border-radius:6px; cursor:pointer; border:1px solid var(--border);
+  background:var(--panel-3); color:var(--text); display:flex; align-items:center; gap:7px;
+}
+.pg-btn.run{ background:var(--amber); color:#241705; border-color:var(--amber); }
+.pg-btn.run:hover{ background:#ffc372; }
+.pg-btn.clear:hover{ background:var(--panel); }
+.pg-body{ display:grid; grid-template-columns:1fr 1fr; min-height:360px; }
+.pg-editor-wrap{ position:relative; border-right:1px solid var(--border); }
+.pg-lines{
+  position:absolute; left:0; top:0; bottom:0; width:40px; padding:16px 0;
+  font-family:var(--font-mono); font-size:13px; color:var(--text-faint); text-align:right;
+  line-height:1.65; user-select:none; pointer-events:none; white-space:pre; overflow:hidden;
+}
+#pg-editor{
+  width:100%; height:100%; min-height:360px; resize:none; border:none; outline:none;
+  background:transparent; color:var(--text); font-family:var(--font-mono); font-size:13px;
+  line-height:1.65; padding:16px 16px 16px 52px; tab-size:4;
+}
+.pg-output-wrap{ display:flex; flex-direction:column; background:#0c0d13; }
+.pg-output-head{
+  padding:10px 16px; font-family:var(--font-mono); font-size:11px; letter-spacing:.1em;
+  color:var(--text-faint); text-transform:uppercase; border-bottom:1px solid var(--border-soft);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.pg-status{ font-size:10.5px; padding:2px 8px; border-radius:999px; background:var(--panel-3); color:var(--text-dim); }
+.pg-status.ok{ color:var(--green); }
+.pg-status.err{ color:var(--red); }
+#pg-output{
+  flex:1; padding:16px; font-family:var(--font-mono); font-size:13px; color:var(--green);
+  white-space:pre-wrap; overflow-y:auto; margin:0;
+}
+#pg-output.err{ color:var(--red); }
+.pg-hint{ padding:10px 16px; font-size:11.5px; color:var(--text-faint); border-top:1px solid var(--border-soft); font-family:var(--font-mono); }
+
+@media (max-width: 900px){
+  .pg-body{ grid-template-columns:1fr; }
+  .pg-editor-wrap{ border-right:none; border-bottom:1px solid var(--border); }
+}
+
+/* ---- Quick reference grid ---- */
+.cheatgrid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin:18px 0; }
+.cheat-card{ background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
+.cheat-card h4{ font-family:var(--font-mono); font-size:13px; color:var(--amber); margin:0 0 8px; }
+.cheat-card code{ display:block; background:var(--panel-3); border:1px solid var(--border); padding:8px 10px; border-radius:6px; margin-bottom:6px; font-size:12.3px; color:var(--text); }
+@media (max-width:700px){ .cheatgrid{ grid-template-columns:1fr; } }
+
+footer.site-foot{
+  max-width:840px; margin:0 auto; padding:30px 40px 60px; color:var(--text-faint);
+  font-family:var(--font-mono); font-size:12px; border-top:1px solid var(--border-soft); margin-top:40px;
+}
+
+@media (max-width: 980px){
+  :root{ --sidebar-w:0px; }
+  .sidebar{ transform:translateX(-100%); width:280px; }
+  .sidebar.open{ transform:translateX(0); }
+  .sidebar-toggle{ display:flex; }
+  .main{ margin-left:0; }
+  .content-wrap{ padding:0 20px; }
+  .hero{ padding:80px 20px 40px; }
+  .hero h1{ font-size:32px; }
+  .hero-facts{ grid-template-columns:repeat(2,1fr); }
+  .pg-body{ grid-template-columns:1fr; }
+}
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('php-notes')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('php-notes'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">☰</button>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<div class="app">
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">&lt;/&gt;</div>
+      <div class="brand-text"><b>PHP Notes</b><span>Zero to basics, in your browser</span></div>
+    </div>
+
+    <div class="navlabel">Getting started</div>
+    <ul class="navlist">
+      <li><a href="#intro"><span class="num">01</span> What is PHP</a></li>
+      <li><a href="#setup"><span class="num">02</span> Install &amp; Run PHP</a></li>
+      <li><a href="#syntax"><span class="num">03</span> Basic Syntax</a></li>
+      <li><a href="#comments"><span class="num">04</span> Comments</a></li>
+    </ul>
+
+    <div class="navlabel">Language basics</div>
+    <ul class="navlist">
+      <li><a href="#variables"><span class="num">05</span> Variables</a></li>
+      <li><a href="#datatypes"><span class="num">06</span> Data Types</a></li>
+      <li><a href="#constants"><span class="num">07</span> Constants</a></li>
+      <li><a href="#operators"><span class="num">08</span> Operators</a></li>
+    </ul>
+
+    <div class="navlabel">Control &amp; structure</div>
+    <ul class="navlist">
+      <li><a href="#conditionals"><span class="num">09</span> Conditional Statements</a></li>
+      <li><a href="#loops"><span class="num">10</span> Loops</a></li>
+      <li><a href="#arrays"><span class="num">11</span> Arrays (Data Structures)</a></li>
+      <li><a href="#functions"><span class="num">12</span> Functions</a></li>
+      <li><a href="#oop"><span class="num">13</span> OOP Basics</a></li>
+    </ul>
+
+    <div class="navlabel">Practice</div>
+    <ul class="navlist">
+      <li><a href="#cheatsheet"><span class="num">14</span> Quick Reference</a></li>
+      <li><a href="#playground"><span class="num">15</span> Live Playground</a></li>
+    </ul>
+
+    <div class="sidebar-foot">Built with HTML, CSS &amp; JavaScript.<br>Runs entirely offline — no server needed.</div>
+  </nav>
+
+  <main class="main">
+
+    <header class="hero">
+      <div class="hero-eyebrow">Beginner-friendly · Self-contained notes</div>
+      <h1>Learn <span>PHP</span> from the very first line<br>to loops, arrays &amp; objects.</h1>
+      <p class="lead">Full, detailed notes on the PHP programming language — what it is, how to install and run it, syntax, variables, data types, conditionals, loops, arrays, functions and basic OOP. Every example is <b>editable and runnable</b> right on this page.</p>
+      <div class="hero-actions">
+        <a href="#intro" class="btn btn-primary">▶ Start Reading</a>
+        <a href="#playground" class="btn btn-ghost">⌘ Open Playground</a>
+      </div>
+      <div class="hero-facts">
+        <div class="hero-fact"><div class="k">Full name</div><div class="v">Hypertext Preprocessor</div></div>
+        <div class="hero-fact"><div class="k">Type</div><div class="v">Server-side scripting</div></div>
+        <div class="hero-fact"><div class="k">Created</div><div class="v">1994, Rasmus Lerdorf</div></div>
+        <div class="hero-fact"><div class="k">File extension</div><div class="v">.php</div></div>
+      </div>
+
+      <div class="boot-window">
+        <div class="boot-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="fname">index.php — terminal</span>
+        </div>
+        <div class="boot-body" id="bootBody"></div>
+      </div>
+    </header>
+
+    <div class="content-wrap">
+
+      <!-- ================= 01 WHAT IS PHP ================= -->
+      <section class="topic" id="intro">
+        <div class="topic-head"><span class="topic-num">01</span><h2>What is PHP?</h2></div>
+        <p class="topic-sub">The foundation — what PHP actually is, where it runs, and why it exists.</p>
+
+        <p><b>PHP</b> stands for <b>"PHP: Hypertext Preprocessor"</b> (a recursive acronym). It is a widely-used, open-source, <b>server-side scripting language</b> designed specifically for building dynamic and interactive websites. PHP code is written inside HTML pages but is executed entirely on the <b>server</b>, before anything is sent to the visitor's browser.</p>
+
+        <div class="callout">
+          <b>In one line:</b> PHP takes a request from a browser, runs some logic on the server (talk to a database, do calculations, check a login), and sends back plain HTML — the browser never sees the PHP code itself.
+        </div>
+
+        <h3 class="h-sub">A short history</h3>
+        <ul class="notes">
+          <li>Created in <b>1994</b> by <b>Rasmus Lerdorf</b> as a small set of tools called "Personal Home Page" scripts.</li>
+          <li>Evolved into a full scripting language and was re-branded as <b>PHP: Hypertext Preprocessor</b>.</li>
+          <li>PHP 7 (2015) brought major speed improvements; <b>PHP 8.x</b> is the current modern generation with features like JIT compilation, union types, and the <code>match</code> expression.</li>
+          <li>It powers a huge share of the web — including WordPress, large parts of Facebook's original codebase, and Wikipedia.</li>
+        </ul>
+
+        <h3 class="h-sub">Why developers use PHP</h3>
+        <ul class="notes">
+          <li><b>Free and open-source</b> — no licensing cost.</li>
+          <li><b>Cross-platform</b> — runs on Windows, macOS, and Linux.</li>
+          <li><b>Easy to learn</b> — simple syntax, very close to C/JavaScript style.</li>
+          <li><b>Database friendly</b> — built-in support for MySQL, PostgreSQL, SQLite and more.</li>
+          <li><b>Huge ecosystem</b> — frameworks like Laravel, Symfony, and CMS platforms like WordPress are all built on PHP.</li>
+          <li><b>Embeds directly into HTML</b> — you can mix PHP logic and HTML markup in the same file.</li>
+        </ul>
+
+        <h3 class="h-sub">Client-side vs. server-side — where PHP actually runs</h3>
+        <p>This is the single most important idea to understand before writing any PHP. A web page can involve <b>two different places</b> where code executes:</p>
+
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Concept</th><th>Server-side (PHP)</th><th>Client-side (HTML / CSS / JavaScript)</th></tr>
+            <tr><td>Where it runs</td><td class="mono">On the web server</td><td class="mono">Inside the visitor's browser</td></tr>
+            <tr><td>Who can see the code</td><td>Nobody — the visitor only receives the result</td><td>Anyone — visible via "View Source" / DevTools</td></tr>
+            <tr><td>Typical uses</td><td>Databases, authentication, business logic, file handling</td><td>Animations, form validation, interactivity, DOM updates</td></tr>
+            <tr><td>File extension</td><td class="mono">.php</td><td class="mono">.html / .css / .js</td></tr>
+          </table>
+        </div>
+
+        <p>Here is the request lifecycle for a PHP-powered page, step by step:</p>
+        <ol class="notes">
+          <li>Your browser sends a request for a page, e.g. <code>profile.php</code>.</li>
+          <li>The web server (Apache/Nginx) sees the <code>.php</code> extension and hands the file to the <b>PHP engine</b> instead of sending it directly.</li>
+          <li>The PHP engine runs every block wrapped in <code>&lt;?php ... ?&gt;</code>, executing logic, pulling data from a database if needed.</li>
+          <li>PHP produces plain <b>HTML</b> as output and hands it back to the server.</li>
+          <li>The server sends that finished HTML to the browser — the browser renders it like any normal web page, with no idea PHP was ever involved.</li>
+        </ol>
+
+        <div class="callout tip"><b>Tip:</b> If you "View Page Source" on a working PHP website, you will only ever see the generated HTML — never the PHP code. That's proof it already ran on the server.</div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 02 SETUP ================= -->
+      <section class="topic" id="setup">
+        <div class="topic-head"><span class="topic-num">02</span><h2>How to Install &amp; Run PHP</h2></div>
+        <p class="topic-sub">PHP files can't just be double-clicked — you need something that understands the <code>.php</code> extension and runs the engine. Here are the three common paths.</p>
+
+        <h3 class="h-sub">Option A — All-in-one local server stacks (best for beginners)</h3>
+        <p>These bundle a web server (Apache), a database (MySQL), and PHP together so you don't configure anything by hand.</p>
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Tool</th><th>Platform</th><th>Notes</th></tr>
+            <tr><td class="mono">XAMPP</td><td>Windows / macOS / Linux</td><td>Most popular, from apachefriends.org</td></tr>
+            <tr><td class="mono">WAMP</td><td>Windows only</td><td>Windows + Apache + MySQL + PHP</td></tr>
+            <tr><td class="mono">MAMP</td><td>macOS (and Windows)</td><td>Mac + Apache + MySQL + PHP</td></tr>
+            <tr><td class="mono">LAMP</td><td>Linux</td><td>Usually installed via <code>apt</code> as separate packages</td></tr>
+          </table>
+        </div>
+        <ol class="notes">
+          <li>Download XAMPP from <b>apachefriends.org</b> and run the installer.</li>
+          <li>Open the <b>XAMPP Control Panel</b> and click <b>Start</b> next to <b>Apache</b>.</li>
+          <li>Place your project folder inside XAMPP's <code>htdocs</code> directory (e.g. <code>C:\xampp\htdocs\myproject</code>).</li>
+          <li>Open a browser and visit <code>http://localhost/myproject/index.php</code> — PHP runs and the result is rendered.</li>
+        </ol>
+
+        <h3 class="h-sub">Option B — Install PHP directly + built-in dev server (great for practice)</h3>
+        <p>PHP ships with a lightweight built-in server, so you don't need Apache at all while learning.</p>
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>OS</th><th>Install command</th></tr>
+            <tr><td>Windows</td><td class="mono">Download from php.net/downloads, add the folder to your PATH</td></tr>
+            <tr><td>macOS</td><td class="mono">brew install php</td></tr>
+            <tr><td>Linux (Debian/Ubuntu)</td><td class="mono">sudo apt install php</td></tr>
+          </table>
+        </div>
+        <ol class="notes">
+          <li>Verify the install: <code>php -v</code> — should print the installed PHP version.</li>
+          <li>Run a single script directly in the terminal (no browser needed): <code>php hello.php</code> — this is called <b>CLI mode</b> and prints straight to the terminal.</li>
+          <li>Or start a local dev server for a whole folder: <code>php -S localhost:8000</code>, then open <code>http://localhost:8000</code> in your browser.</li>
+        </ol>
+
+        <h3 class="h-sub">Option C — Online PHP editors (zero install)</h3>
+        <p>Useful for quick experiments without installing anything: sites like <b>3v4l.org</b> (test across multiple PHP versions at once), <b>onlinephp.io</b>, and <b>replit.com</b> all let you write and run PHP in the browser.</p>
+
+        <h3 class="h-sub">Verifying your setup</h3>
+        <p>Create a file called <code>info.php</code> with the single line below, place it in your server root, and open it in the browser. It prints a full page with your PHP version, loaded extensions, and configuration — the standard "it's alive" check.</p>
+        <div class="snippet" data-runnable="false">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">info.php</span></div>
+          <pre><code>&lt;?php
+phpinfo();
+?&gt;</code></pre>
+        </div>
+        <div class="callout warn"><b>Note:</b> <code>phpinfo()</code> needs a real PHP engine (Options A or B above) — the playground on this page is a simplified simulator built in JavaScript, so this particular command isn't runnable here. Everything else on this page is.</div>
+
+        <h3 class="h-sub">Recommended editor</h3>
+        <p>Any text editor works, but <b>VS Code</b> with the <b>PHP Intelephense</b> extension gives you autocomplete, error checking, and formatting for free.</p>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 03 SYNTAX ================= -->
+      <section class="topic" id="syntax">
+        <div class="topic-head"><span class="topic-num">03</span><h2>Basic Syntax — Your First Program</h2></div>
+        <p class="topic-sub">The rules every PHP file follows, plus your first runnable "Hello, World!".</p>
+
+        <ul class="notes">
+          <li>PHP code always lives between <code>&lt;?php</code> and <code>?&gt;</code> tags. Anything outside these tags is treated as plain HTML and sent through untouched.</li>
+          <li>Every statement ends with a <b>semicolon</b> <code>;</code>.</li>
+          <li>The most common way to output content is the <code>echo</code> keyword (or <code>print</code>).</li>
+          <li>PHP is <b>case-sensitive for variables</b> (<code>$Name</code> and <code>$name</code> are different) but keywords and function names are <b>not</b> case-sensitive (<code>ECHO</code>, <code>Echo</code>, and <code>echo</code> all work — though lowercase is standard style).</li>
+          <li>If a file contains <b>only</b> PHP code, the closing <code>?&gt;</code> tag is usually omitted — it avoids accidental blank-line output.</li>
+        </ul>
+
+        <h3 class="h-sub">Hello, World!</h3>
+        <div class="snippet">
+          <div class="snippet-bar">
+            <span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span>
+            <span class="fname">hello.php</span>
+            <button class="run-btn">▶ Run</button>
+          </div>
+          <pre><code>&lt;?php
+echo "Hello, World!";
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+
+        <h3 class="h-sub">Mixing PHP with HTML</h3>
+        <p>PHP was designed to be sprinkled inside HTML. You can jump in and out of PHP mode as many times as you like within one file:</p>
+        <div class="snippet">
+          <div class="snippet-bar">
+            <span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span>
+            <span class="fname">greet.php</span>
+            <button class="run-btn">▶ Run</button>
+          </div>
+          <pre><code>&lt;?php
+$user = "Sam";
+?&gt;
+&lt;?php
+echo "Welcome back, " . $user . "!";
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+        <div class="callout"><b>How this page runs your PHP:</b> Click any green <b>▶ Run</b> button. A small PHP simulator (written in JavaScript, explained more in the Playground section) parses the code and shows real output right below it — no server, install, or page reload required.</div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 04 COMMENTS ================= -->
+      <section class="topic" id="comments">
+        <div class="topic-head"><span class="topic-num">04</span><h2>Comments</h2></div>
+        <p class="topic-sub">Notes in your code that PHP ignores when running — for humans, not the engine.</p>
+
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Style</th><th>Syntax</th><th>Use case</th></tr>
+            <tr><td>Single-line (C++ style)</td><td class="mono">// comment text</td><td>Most common style, quick notes</td></tr>
+            <tr><td>Single-line (shell style)</td><td class="mono"># comment text</td><td>Less common, borrowed from shell scripts</td></tr>
+            <tr><td>Multi-line</td><td class="mono">/* comment text */</td><td>Explaining a whole block, or temporarily disabling code</td></tr>
+          </table>
+        </div>
+
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">comments.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+// This line sets a greeting
+$greeting = "Hi there"; # this style also works
+
+/*
+  Multi-line comments are useful
+  for longer explanations.
+*/
+echo $greeting;
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 05 VARIABLES ================= -->
+      <section class="topic" id="variables">
+        <div class="topic-head"><span class="topic-num">05</span><h2>Variables</h2></div>
+        <p class="topic-sub">Named containers that hold data your program works with.</p>
+
+        <ul class="notes">
+          <li>Every variable name starts with a <b>dollar sign</b> <code>$</code>, e.g. <code>$age</code>.</li>
+          <li>After the <code>$</code>, the name must start with a letter or underscore, followed by letters, numbers, or underscores (no spaces, no starting with a digit).</li>
+          <li>Variable names are <b>case-sensitive</b>: <code>$total</code> and <code>$Total</code> are two different variables.</li>
+          <li>PHP is <b>loosely typed</b> (also called dynamically typed) — you never declare a type up front; PHP figures it out from the value you assign.</li>
+          <li>Assign a value with the <code>=</code> operator.</li>
+        </ul>
+
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">variables.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+$name = "Priya";
+$age = 22;
+$isStudent = true;
+
+echo "Name: $name\n";
+echo "Age: $age\n";
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+
+        <h3 class="h-sub">Variable scope (brief)</h3>
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Scope</th><th>Meaning</th></tr>
+            <tr><td class="mono">local</td><td>Declared inside a function — only usable inside that function</td></tr>
+            <tr><td class="mono">global</td><td>Declared outside any function — accessible everywhere at the top level</td></tr>
+            <tr><td class="mono">static</td><td>A local variable that remembers its value between function calls</td></tr>
+          </table>
+        </div>
+        <div class="callout tip"><b>Tip:</b> Inside a function, PHP does not automatically see outer/global variables — you must use the <code>global</code> keyword or pass the value as a parameter.</div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 06 DATA TYPES ================= -->
+      <section class="topic" id="datatypes">
+        <div class="topic-head"><span class="topic-num">06</span><h2>Data Types — The Two Main Categories</h2></div>
+        <p class="topic-sub">PHP's data types split cleanly into two big sets: values that hold one single piece of data, and values that hold collections of other data.</p>
+
+        <p>PHP organizes its data types into <b>two major groups</b>:</p>
+
+        <div class="cheatgrid">
+          <div class="cheat-card">
+            <h4>SET 1 · Scalar types</h4>
+            <p style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Hold exactly <b>one single value</b>.</p>
+            <code>int&nbsp;&nbsp;&nbsp;&nbsp;→ 42, -7, 1000</code>
+            <code>float&nbsp;&nbsp;→ 3.14, 0.5</code>
+            <code>string&nbsp;→ "hello", 'PHP'</code>
+            <code>bool&nbsp;&nbsp;&nbsp;→ true, false</code>
+          </div>
+          <div class="cheat-card">
+            <h4>SET 2 · Compound types</h4>
+            <p style="font-size:13px;color:var(--text-dim);margin-bottom:10px;">Hold <b>collections</b> of other values.</p>
+            <code>array&nbsp;&nbsp;→ [1, 2, 3]</code>
+            <code>object&nbsp;→ instance of a class</code>
+          </div>
+        </div>
+
+        <div class="callout"><b>Plus two special types</b> you'll see occasionally: <code>NULL</code> (a variable with no value at all) and <code>resource</code> (a reference to an external resource, like an open file or database connection). They don't fit neatly into either main set, but every value in PHP belongs to one of these four groups overall.</div>
+
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Type</th><th>Category</th><th>Example</th><th>Description</th></tr>
+            <tr><td class="mono">int</td><td>Scalar</td><td class="mono">$x = 10;</td><td>Whole numbers, positive or negative</td></tr>
+            <tr><td class="mono">float</td><td>Scalar</td><td class="mono">$x = 9.81;</td><td>Decimal / floating-point numbers</td></tr>
+            <tr><td class="mono">string</td><td>Scalar</td><td class="mono">$x = "Hi";</td><td>Text, in single or double quotes</td></tr>
+            <tr><td class="mono">bool</td><td>Scalar</td><td class="mono">$x = true;</td><td>Only two values: true or false</td></tr>
+            <tr><td class="mono">array</td><td>Compound</td><td class="mono">$x = [1,2,3];</td><td>An ordered map of keys to values</td></tr>
+            <tr><td class="mono">object</td><td>Compound</td><td class="mono">$x = new Car();</td><td>An instance created from a class</td></tr>
+            <tr><td class="mono">NULL</td><td>Special</td><td class="mono">$x = null;</td><td>Represents "no value"</td></tr>
+            <tr><td class="mono">resource</td><td>Special</td><td class="mono">fopen(...)</td><td>Handle to an external resource</td></tr>
+          </table>
+        </div>
+
+        <h3 class="h-sub">Checking and converting types</h3>
+        <p>Because PHP decides types automatically, it also gives you tools to inspect or force them:</p>
+        <ul class="notes">
+          <li><code>gettype($x)</code> — returns the current type as a string.</li>
+          <li><code>var_dump($x)</code> — prints the type <b>and</b> the value, useful for debugging.</li>
+          <li><b>Type casting</b> — force a value into another type: <code>(int)$x</code>, <code>(float)$x</code>, <code>(string)$x</code>, <code>(bool)$x</code>, <code>(array)$x</code>.</li>
+          <li><b>Type juggling</b> — PHP automatically converts types in certain operations, e.g. comparing <code>"100" &gt; $intVal</code> converts the numeric string <code>"100"</code> into a number before comparing.</li>
+        </ul>
+
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">types.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+$intVal = 15;
+$floatVal = 3.5;
+$strVal = "PHP";
+
+echo "sum: " . ($intVal + $floatVal) . "\n";
+echo "juggling: " . (("100" > $intVal) ? "yes, 100 wins" : "no") . "\n";
+echo "concat: " . $strVal . " rocks\n";
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 07 CONSTANTS ================= -->
+      <section class="topic" id="constants">
+        <div class="topic-head"><span class="topic-num">07</span><h2>Constants</h2></div>
+        <p class="topic-sub">Values that, once set, never change for the rest of the script.</p>
+        <ul class="notes">
+          <li>Defined with <code>define('NAME', value)</code> or the <code>const</code> keyword.</li>
+          <li>By convention, constant names are written in <b>UPPERCASE</b>.</li>
+          <li>No <code>$</code> sign is used when referring to a constant.</li>
+          <li>Cannot be reassigned once defined — attempting to will trigger an error.</li>
+        </ul>
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">constants.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+define("SITE_NAME", "MyBlog");
+const MAX_USERS = 100;
+
+echo SITE_NAME . " allows up to " . MAX_USERS . " users.";
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 08 OPERATORS ================= -->
+      <section class="topic" id="operators">
+        <div class="topic-head"><span class="topic-num">08</span><h2>Operators</h2></div>
+        <p class="topic-sub">Symbols that perform actions on values and variables.</p>
+
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Category</th><th>Operators</th><th>Example</th></tr>
+            <tr><td>Arithmetic</td><td class="mono">+  -  *  /  %  **</td><td class="mono">$a + $b, $a % $b (remainder)</td></tr>
+            <tr><td>Assignment</td><td class="mono">=  +=  -=  *=  /=  .=</td><td class="mono">$x += 5; // same as $x = $x + 5</td></tr>
+            <tr><td>Comparison</td><td class="mono">==  ===  !=  !==  &lt;  &gt;  &lt;=  &gt;=</td><td class="mono">$a === $b (equal value AND type)</td></tr>
+            <tr><td>Logical</td><td class="mono">&&  ||  !  and  or</td><td class="mono">$a > 0 && $b > 0</td></tr>
+            <tr><td>String</td><td class="mono">.  .=</td><td class="mono">"Hi " . $name</td></tr>
+            <tr><td>Increment / Decrement</td><td class="mono">++  --</td><td class="mono">$i++;  $i--;</td></tr>
+            <tr><td>Null coalescing</td><td class="mono">??</td><td class="mono">$name = $input ?? "Guest";</td></tr>
+          </table>
+        </div>
+
+        <div class="callout warn"><b>== vs ===</b> — <code>==</code> compares only the <i>value</i> (loose comparison, allows type juggling); <code>===</code> compares <i>value and type</i> (strict comparison). <code>"5" == 5</code> is <code>true</code>, but <code>"5" === 5</code> is <code>false</code>. Prefer <code>===</code> to avoid surprises.</div>
+
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">operators.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+$a = 10;
+$b = 3;
+
+echo "Add: " . ($a + $b) . "\n";
+echo "Remainder: " . ($a % $b) . "\n";
+echo "Loose (==): ";
+if ("10" == $a) { echo "true\n"; } else { echo "false\n"; }
+echo "Strict (===): ";
+if ("10" === $a) { echo "true\n"; } else { echo "false\n"; }
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 09 CONDITIONALS ================= -->
+      <section class="topic" id="conditionals">
+        <div class="topic-head"><span class="topic-num">09</span><h2>Conditional Statements</h2></div>
+        <p class="topic-sub">Making your program branch and decide, based on whether something is true or false.</p>
+
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Statement</th><th>Use case</th></tr>
+            <tr><td class="mono">if</td><td>Run code only when a condition is true</td></tr>
+            <tr><td class="mono">if / else</td><td>Choose between two paths</td></tr>
+            <tr><td class="mono">if / elseif / else</td><td>Choose between several paths</td></tr>
+            <tr><td class="mono">switch</td><td>Compare one variable against many possible fixed values</td></tr>
+            <tr><td class="mono">?: (ternary)</td><td>A compact one-line if/else that returns a value</td></tr>
+            <tr><td class="mono">?? (null coalescing)</td><td>Use a fallback value if a variable is null/unset</td></tr>
+          </table>
+        </div>
+
+        <h3 class="h-sub">if / elseif / else</h3>
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">grade.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+$score = 78;
+
+if ($score >= 90) {
+  echo "Grade: A";
+} elseif ($score >= 75) {
+  echo "Grade: B";
+} elseif ($score >= 60) {
+  echo "Grade: C";
+} else {
+  echo "Grade: F";
+}
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+
+        <h3 class="h-sub">Ternary shortcut</h3>
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">ternary.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+$age = 20;
+$status = ($age >= 18) ? "Adult" : "Minor";
+echo $status;
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+        <div class="callout"><b>Also in modern PHP (8.x):</b> the <code>match</code> expression is a stricter, cleaner alternative to <code>switch</code> that uses strict comparison and returns a value directly.</div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 10 LOOPS ================= -->
+      <section class="topic" id="loops">
+        <div class="topic-head"><span class="topic-num">10</span><h2>Loops</h2></div>
+        <p class="topic-sub">Repeating a block of code, either a fixed number of times or until a condition changes.</p>
+
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Loop</th><th>Runs when...</th></tr>
+            <tr><td class="mono">for</td><td>You know exactly how many times to repeat</td></tr>
+            <tr><td class="mono">while</td><td>You repeat as long as a condition stays true (checked before each run)</td></tr>
+            <tr><td class="mono">do...while</td><td>Same as while, but always runs at least once</td></tr>
+            <tr><td class="mono">foreach</td><td>You want to visit every item in an array</td></tr>
+          </table>
+        </div>
+
+        <h3 class="h-sub">for loop</h3>
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">for-loop.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+for ($i = 1; $i <= 5; $i++) {
+  echo "Count: $i\n";
+}
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+
+        <h3 class="h-sub">while loop</h3>
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">while-loop.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+$i = 1;
+while ($i <= 5) {
+  echo "i is $i\n";
+  $i++;
+}
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+
+        <h3 class="h-sub">foreach loop — looping over arrays</h3>
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">foreach-loop.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+$colors = ["Red", "Green", "Blue"];
+
+foreach ($colors as $color) {
+  echo "Color: $color\n";
+}
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+
+        <h3 class="h-sub">break and continue</h3>
+        <ul class="notes">
+          <li><code>break</code> — exits the loop immediately.</li>
+          <li><code>continue</code> — skips the rest of the current iteration and moves to the next one.</li>
+        </ul>
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">break-continue.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+for ($i = 1; $i <= 10; $i++) {
+  if ($i == 6) {
+    break;
+  }
+  echo "$i \n";
+}
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 11 ARRAYS ================= -->
+      <section class="topic" id="arrays">
+        <div class="topic-head"><span class="topic-num">11</span><h2>Data Structures — Arrays</h2></div>
+        <p class="topic-sub">PHP's core built-in data structure. An array can hold a list, a lookup table, or a nested structure of both.</p>
+
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Kind</th><th>Keys</th><th>Example</th></tr>
+            <tr><td>Indexed array</td><td>Automatic numeric keys (0, 1, 2...)</td><td class="mono">["Apple","Banana","Cherry"]</td></tr>
+            <tr><td>Associative array</td><td>Your own named keys</td><td class="mono">["name"=>"Bob","age"=>30]</td></tr>
+            <tr><td>Multidimensional array</td><td>An array of arrays</td><td class="mono">[["x",1],["y",2]]</td></tr>
+          </table>
+        </div>
+
+        <h3 class="h-sub">Indexed arrays</h3>
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">indexed.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+$fruits = array("Apple", "Banana", "Cherry");
+
+foreach ($fruits as $fruit) {
+  echo "I like $fruit\n";
+}
+echo "Total: " . count($fruits);
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+
+        <h3 class="h-sub">Associative arrays</h3>
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">assoc.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+$person = array("name" => "Bob", "age" => 30, "city" => "Delhi");
+
+foreach ($person as $key => $value) {
+  echo "$key: $value\n";
+}
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+
+        <h3 class="h-sub">Building an array with a loop, then inspecting it</h3>
+        <div class="snippet">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">build-array.php</span><button class="run-btn">▶ Run</button></div>
+          <pre><code>&lt;?php
+$squares = [];
+for ($i = 1; $i <= 5; $i++) {
+  $squares[] = $i * $i;
+}
+print_r($squares);
+?&gt;</code></pre>
+          <div class="output-panel"><div class="output-inner"><div class="output-label">Output</div><pre class="output-text"></pre></div></div>
+        </div>
+
+        <h3 class="h-sub">Handy built-in array functions</h3>
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Function</th><th>What it does</th></tr>
+            <tr><td class="mono">count($arr)</td><td>Number of elements</td></tr>
+            <tr><td class="mono">array_push($arr, $val)</td><td>Add an item to the end (same as <code>$arr[] = $val</code>)</td></tr>
+            <tr><td class="mono">array_pop($arr)</td><td>Remove and return the last item</td></tr>
+            <tr><td class="mono">sort($arr)</td><td>Sort values in ascending order</td></tr>
+            <tr><td class="mono">array_merge($a, $b)</td><td>Combine two arrays into one</td></tr>
+            <tr><td class="mono">in_array($val, $arr)</td><td>Check if a value exists</td></tr>
+            <tr><td class="mono">array_keys($arr)</td><td>Get all keys as a new array</td></tr>
+            <tr><td class="mono">print_r($arr)</td><td>Human-readable structure dump — great for debugging</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 12 FUNCTIONS ================= -->
+      <section class="topic" id="functions">
+        <div class="topic-head"><span class="topic-num">12</span><h2>Functions</h2></div>
+        <p class="topic-sub">Reusable, named blocks of code — write logic once, call it as many times as you need.</p>
+        <ul class="notes">
+          <li>Defined with the <code>function</code> keyword.</li>
+          <li>Can accept <b>parameters</b>, including ones with default values.</li>
+          <li>Use <code>return</code> to send a value back to wherever the function was called.</li>
+          <li>Variables created inside a function are <b>local</b> to it — they don't exist outside.</li>
+        </ul>
+        <div class="snippet" data-runnable="false">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">functions.php</span></div>
+          <pre><code>&lt;?php
+function greet($name = "Guest") {
+  return "Hello, $name!";
+}
+
+echo greet("Maya") . "\n";
+echo greet();
+?&gt;</code></pre>
+        </div>
+        <div class="callout"><b>Note for this page's simulator:</b> the mini interpreter used for the runnable examples on this page focuses on core syntax — variables, loops, conditionals and arrays. Custom <code>function</code> definitions are best explained here conceptually; run this snippet in a real PHP environment (Section 02) to see it in action — expected output is <code>Hello, Maya!</code> then <code>Hello, Guest!</code>.</div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 13 OOP ================= -->
+      <section class="topic" id="oop">
+        <div class="topic-head"><span class="topic-num">13</span><h2>OOP Basics — Classes &amp; Objects</h2></div>
+        <p class="topic-sub">PHP is not only procedural — it also supports Object-Oriented Programming, built around two core ideas: <b>classes</b> (blueprints) and <b>objects</b> (instances made from that blueprint).</p>
+
+        <div class="tblwrap">
+          <table class="notes-table">
+            <tr><th>Term</th><th>Meaning</th></tr>
+            <tr><td class="mono">class</td><td>A blueprint describing properties (data) and methods (behavior)</td></tr>
+            <tr><td class="mono">object</td><td>A real instance created from a class, using <code>new</code></td></tr>
+            <tr><td class="mono">$this</td><td>Refers to the current object inside its own methods</td></tr>
+            <tr><td class="mono">__construct()</td><td>A special method that runs automatically when an object is created</td></tr>
+            <tr><td class="mono">extends</td><td>Lets one class inherit properties/methods from another</td></tr>
+          </table>
+        </div>
+
+        <div class="callout"><b>Access modifiers (brief):</b> <code>public</code> — accessible from anywhere · <code>protected</code> — accessible inside the class and its subclasses · <code>private</code> — accessible only inside the class itself.</div>
+
+        <h3 class="h-sub">Defining a class and creating an object</h3>
+        <div class="snippet" data-runnable="false">
+          <div class="snippet-bar"><span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span><span class="fname">car.php</span></div>
+          <pre><code>&lt;?php
+class Car {
+  public $brand;
+  public $speed = 0;
+
+  public function __construct($brand) {
+    $this->brand = $brand;
+  }
+
+  public function accelerate($amount) {
+    $this->speed += $amount;
+  }
+
+  public function describe() {
+    return "$this->brand is going {$this->speed} km/h";
+  }
+}
+
+$myCar = new Car("Tesla");
+$myCar->accelerate(40);
+echo $myCar->describe();
+?&gt;</code></pre>
+        </div>
+        <div class="callout warn"><b>Reference-only example:</b> object-oriented code needs a real PHP engine to execute (this page's simulator handles procedural PHP only). Copy this into XAMPP or an online PHP editor from Section 02 to see it run — the expected output is <code>Tesla is going 40 km/h</code>.</div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 14 CHEATSHEET ================= -->
+      <section class="topic" id="cheatsheet">
+        <div class="topic-head"><span class="topic-num">14</span><h2>Quick Reference</h2></div>
+        <p class="topic-sub">The whole language, at a glance.</p>
+        <div class="cheatgrid">
+          <div class="cheat-card">
+            <h4>Tags &amp; output</h4>
+            <code>&lt;?php ... ?&gt;</code>
+            <code>echo "text";</code>
+            <code>print "text";</code>
+          </div>
+          <div class="cheat-card">
+            <h4>Variables</h4>
+            <code>$name = "Sam";</code>
+            <code>$age = 21;</code>
+            <code>$price = 9.99;</code>
+          </div>
+          <div class="cheat-card">
+            <h4>Conditionals</h4>
+            <code>if (...) { } elseif (...) { } else { }</code>
+            <code>$x = $a ? $b : $c;</code>
+          </div>
+          <div class="cheat-card">
+            <h4>Loops</h4>
+            <code>for ($i=0;$i&lt;5;$i++){ }</code>
+            <code>while (...) { }</code>
+            <code>foreach ($arr as $v) { }</code>
+          </div>
+          <div class="cheat-card">
+            <h4>Arrays</h4>
+            <code>$a = [1, 2, 3];</code>
+            <code>$m = ["k" => "v"];</code>
+            <code>$a[] = "new item";</code>
+          </div>
+          <div class="cheat-card">
+            <h4>Functions</h4>
+            <code>function f($x) { return $x; }</code>
+            <code>echo f(5);</code>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <!-- ================= 15 PLAYGROUND ================= -->
+      <section class="topic" id="playground">
+        <div class="topic-head"><span class="topic-num">15</span><h2>Live Playground</h2></div>
+        <p class="topic-sub">A free-form, editable PHP editor. Write your own code, press <b>Run</b>, and see the output instantly.</p>
+
+        <div class="playground">
+          <div class="pg-toolbar">
+            <select id="pg-examples">
+              <option value="">Load an example…</option>
+              <option value="hello">Hello World</option>
+              <option value="ifelse">If / Else</option>
+              <option value="forloop">For Loop</option>
+              <option value="foreach">Foreach + Array</option>
+              <option value="assoc">Associative Array</option>
+            </select>
+            <div class="spacer"></div>
+            <button class="pg-btn clear" id="pg-clear">✕ Clear</button>
+            <button class="pg-btn run" id="pg-run">▶ Run Code</button>
+          </div>
+          <div class="pg-body">
+            <div class="pg-editor-wrap">
+              <div class="pg-lines" id="pg-lines">1</div>
+              <textarea id="pg-editor" spellcheck="false">&lt;?php
+$name = "World";
+echo "Hello, $name!";
+?&gt;</textarea>
+            </div>
+            <div class="pg-output-wrap">
+              <div class="pg-output-head">Output <span class="pg-status" id="pg-status">Ready</span></div>
+              <pre id="pg-output">Click "Run Code" to see the output here.</pre>
+              <div class="pg-hint">Supports: echo, variables, if/elseif/else, for, while, foreach, indexed &amp; associative arrays, print_r, string interpolation.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /content-wrap -->
+
+    <footer class="site-foot">
+      PHP Notes · A self-contained HTML, CSS &amp; JavaScript learning project.<br>
+      The in-browser "Run" feature is a simplified PHP simulator built in JavaScript for instant feedback — for real projects, run PHP through XAMPP, the PHP CLI, or an online PHP editor (see Section 02).
+    </footer>
+
+  </main>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   MINI PHP INTERPRETER (JavaScript)
+   A simplified simulator supporting: variables, echo/print,
+   arithmetic & string operators, if/elseif/else, for, while,
+   foreach, indexed & associative arrays, print_r, var_dump,
+   string interpolation, comments.
+   Not a full PHP engine — built for instant in-browser feedback.
+   ============================================================ */
+
+function stripPhpTags(src){
+  return src.replace(/<\?php/g, "").replace(/\?>/g, "");
+}
+
+function stripComments(src){
+  let inS = false, inD = false;
+  let i=0, n=src.length, buf="";
+  while(i<n){
+    let c = src[i];
+    if(!inS && !inD && c === "/" && src[i+1] === "/"){
+      while(i<n && src[i] !== "\n") i++;
+      continue;
+    }
+    if(!inS && !inD && c === "#"){
+      while(i<n && src[i] !== "\n") i++;
+      continue;
+    }
+    if(!inS && !inD && c === "/" && src[i+1] === "*"){
+      i+=2;
+      while(i<n && !(src[i]==="*" && src[i+1]==="/")) i++;
+      i+=2;
+      continue;
+    }
+    if(!inD && c === "'" ) { inS = !inS; buf+=c; i++; continue; }
+    if(!inS && c === '"') { inD = !inD; buf+=c; i++; continue; }
+    buf += c; i++;
+  }
+  return buf;
+}
+
+class Parser{
+  constructor(code){
+    this.code = code;
+    this.pos = 0;
+    this.len = code.length;
+  }
+  skipWS(){ while(this.pos < this.len && /\s/.test(this.code[this.pos])) this.pos++; }
+  peekIdent(){
+    this.skipWS();
+    let m = /^[A-Za-z_]\w*/.exec(this.code.slice(this.pos));
+    return m ? m[0] : null;
+  }
+  consumeIdent(){
+    this.skipWS();
+    let m = /^[A-Za-z_]\w*/.exec(this.code.slice(this.pos));
+    if(!m) throw new Error("Expected identifier near '"+this.code.slice(this.pos,this.pos+20)+"'");
+    this.pos += m[0].length;
+    return m[0];
+  }
+  expectChar(c){
+    this.skipWS();
+    if(this.code[this.pos] !== c) throw new Error("Expected '"+c+"' near '"+this.code.slice(this.pos,this.pos+20)+"'");
+    this.pos++;
+  }
+  readBalanced(open, close){
+    let depth = 1;
+    let start = this.pos;
+    let inS=false, inD=false;
+    while(this.pos < this.len && depth > 0){
+      let c = this.code[this.pos];
+      if(!inD && c === "'" ) inS = !inS;
+      else if(!inS && c === '"') inD = !inD;
+      else if(!inS && !inD){
+        if(c === open) depth++;
+        else if(c === close){ depth--; if(depth===0) break; }
+      }
+      this.pos++;
+    }
+    let content = this.code.slice(start, this.pos);
+    this.pos++;
+    return content;
+  }
+  readParenExpr(){ this.expectChar('('); return this.readBalanced('(', ')'); }
+  readBraceBlock(){ this.expectChar('{'); return this.readBalanced('{', '}'); }
+  readUntilSemicolon(){
+    let start = this.pos;
+    let inS=false, inD=false, depth=0;
+    while(this.pos < this.len){
+      let c = this.code[this.pos];
+      if(!inD && c === "'") inS = !inS;
+      else if(!inS && c === '"') inD = !inD;
+      else if(!inS && !inD){
+        if(c === '(' || c==='[') depth++;
+        else if(c === ')' || c===']') depth--;
+        else if(c === ';' && depth === 0) break;
+      }
+      this.pos++;
+    }
+    let content = this.code.slice(start, this.pos);
+    this.pos++;
+    return content.trim();
+  }
+  splitTopLevel(str, sep){
+    let parts = [];
+    let depth=0, inS=false, inD=false, start=0;
+    for(let i=0;i<str.length;i++){
+      let c = str[i];
+      if(!inD && c==="'") inS=!inS;
+      else if(!inS && c==='"') inD=!inD;
+      else if(!inS && !inD){
+        if(c==='('||c==='['||c==='{') depth++;
+        else if(c===')'||c===']'||c==='}') depth--;
+        else if(c===sep && depth===0){ parts.push(str.slice(start,i)); start = i+1; }
+      }
+    }
+    parts.push(str.slice(start));
+    return parts.map(s=>s.trim()).filter(s=>s.length>0);
+  }
+  parseStatements(stopAtBrace){
+    let stmts = [];
+    while(true){
+      this.skipWS();
+      if(this.pos >= this.len) break;
+      if(stopAtBrace && this.code[this.pos] === '}') break;
+      stmts.push(this.parseStatement());
+    }
+    return stmts;
+  }
+  parseStatement(){
+    this.skipWS();
+    let word = this.peekIdent();
+    if(word === 'if'){
+      this.consumeIdent();
+      let cond = this.readParenExpr();
+      let body = this.parseBlockOrSingle();
+      let branches = [{cond, body}];
+      let elseBody = null;
+      while(true){
+        this.skipWS();
+        let save = this.pos;
+        let w2 = this.peekIdent();
+        if(w2 === 'elseif'){
+          this.consumeIdent();
+          let c2 = this.readParenExpr();
+          let b2 = this.parseBlockOrSingle();
+          branches.push({cond:c2, body:b2});
+        } else if(w2 === 'else'){
+          this.consumeIdent();
+          this.skipWS();
+          let w3 = this.peekIdent();
+          if(w3 === 'if'){
+            this.consumeIdent();
+            let c3 = this.readParenExpr();
+            let b3 = this.parseBlockOrSingle();
+            branches.push({cond:c3, body:b3});
+          } else {
+            elseBody = this.parseBlockOrSingle();
+            break;
+          }
+        } else { this.pos = save; break; }
+      }
+      return {type:'if', branches, elseBody};
+    }
+    if(word === 'for'){
+      this.consumeIdent();
+      this.expectChar('(');
+      let inner = this.readBalanced('(', ')');
+      let parts = this.splitTopLevel(inner, ';');
+      let body = this.parseBlockOrSingle();
+      return {type:'for', init: parts[0]||'', cond: parts[1]||'', incr: parts[2]||'', body};
+    }
+    if(word === 'while'){
+      this.consumeIdent();
+      let cond = this.readParenExpr();
+      let body = this.parseBlockOrSingle();
+      return {type:'while', cond, body};
+    }
+    if(word === 'foreach'){
+      this.consumeIdent();
+      let inner = this.readParenExpr();
+      let asParts = inner.split(/\s+as\s+/);
+      let arrExpr = asParts[0].trim();
+      let rest = (asParts[1]||'').trim();
+      let keyVar=null, valVar;
+      if(rest.includes('=>')){
+        let [k,v] = rest.split('=>').map(s=>s.trim());
+        keyVar = k.replace('$','');
+        valVar = v.replace('$','');
+      } else { valVar = rest.replace('$',''); }
+      let body = this.parseBlockOrSingle();
+      return {type:'foreach', arrExpr, keyVar, valVar, body};
+    }
+    if(word === 'echo'){
+      this.consumeIdent();
+      let raw = this.readUntilSemicolon();
+      let exprs = this.splitTopLevel(raw, ',');
+      return {type:'echo', exprs};
+    }
+    if(word === 'print'){
+      this.consumeIdent();
+      let raw = this.readUntilSemicolon();
+      return {type:'echo', exprs:[raw]};
+    }
+    if(word === 'print_r' || word === 'var_dump'){
+      let name = this.consumeIdent();
+      this.expectChar('(');
+      let arg = this.readBalanced('(', ')');
+      this.skipWS();
+      if(this.code[this.pos] === ';') this.pos++;
+      return {type:'call', name, arg};
+    }
+    if(word === 'break'){
+      this.consumeIdent(); this.skipWS();
+      if(this.code[this.pos]===';') this.pos++;
+      return {type:'break'};
+    }
+    if(word === 'continue'){
+      this.consumeIdent(); this.skipWS();
+      if(this.code[this.pos]===';') this.pos++;
+      return {type:'continue'};
+    }
+    let raw = this.readUntilSemicolon();
+    return {type:'raw', raw};
+  }
+  parseBlockOrSingle(){
+    this.skipWS();
+    if(this.code[this.pos] === '{'){
+      let inner = this.readBraceBlock();
+      let p = new Parser(inner);
+      return p.parseStatements(false);
+    } else { return [this.parseStatement()]; }
+  }
+}
+
+function convertArrayLiteral(expr){
+  expr = expr.trim();
+  let inner;
+  let m1 = /^array\s*\((.*)\)$/s.exec(expr);
+  let m2 = /^\[(.*)\]$/s.exec(expr);
+  if(m1) inner = m1[1];
+  else if(m2) inner = m2[1];
+  else return null;
+  let p = new Parser("");
+  let parts = p.splitTopLevel(inner, ',');
+  let hasArrow = parts.some(x => /=>/.test(x));
+  if(hasArrow){
+    let entries = parts.map(part=>{
+      let idx = part.indexOf('=>');
+      let k = part.slice(0, idx).trim();
+      let v = part.slice(idx+2).trim();
+      return `[${convertExpr(k)}]: ${convertExpr(v)}`;
+    });
+    return `{${entries.join(', ')}}`;
+  } else {
+    return `[${parts.map(v=>convertExpr(v)).join(', ')}]`;
+  }
+}
+
+function convertExpr(expr){
+  expr = expr.trim();
+  let arrLit = convertArrayLiteral(expr);
+  if(arrLit !== null) return arrLit;
+
+  let tokens = [];
+  let coded = "";
+  let i=0, n=expr.length;
+  while(i<n){
+    let c = expr[i];
+    if(c === '"'){
+      let j = i+1, buf = "";
+      while(j<n && expr[j] !== '"'){
+        if(expr[j] === '\\' && j+1<n){ buf += expr[j]+expr[j+1]; j+=2; continue; }
+        buf += expr[j]; j++;
+      }
+      j++;
+      let interpolated = buf.replace(/\$(\w+)(\[[^\]]+\])?/g, (m, name, idx)=>{
+        if(idx){
+          let key = idx.slice(1,-1).trim();
+          let jsKey = /^'.*'$/.test(key) || /^".*"$/.test(key) ? key.replace(/^"(.*)"$/, "'$1'") : (isNaN(key)? "'"+key+"'" : key);
+          return "${vars['"+name+"'][" + jsKey + "]}";
+        }
+        return "${vars['"+name+"']}";
+      });
+      let tok = "@@STR"+tokens.length+"@@";
+      tokens.push("`"+interpolated.replace(/`/g,'\\`')+"`");
+      coded += tok; i = j; continue;
+    }
+    if(c === "'"){
+      let j = i+1, buf = "";
+      while(j<n && expr[j] !== "'"){
+        if(expr[j] === '\\' && j+1<n){ buf += expr[j+1]; j+=2; continue; }
+        buf += expr[j]; j++;
+      }
+      j++;
+      let tok = "@@STR"+tokens.length+"@@";
+      tokens.push("'" + buf.replace(/\\/g,'\\\\').replace(/'/g,"\\'") + "'");
+      coded += tok; i = j; continue;
+    }
+    coded += c; i++;
+  }
+
+  coded = coded.replace(/\$(\w+)/g, "vars['$1']");
+  coded = coded.replace(/(?<=\s)\.(?=\s)/g, '+');
+  coded = coded.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+
+  // route known built-in PHP function names through the `php` helper object
+  const BUILTINS = ['count','strlen','strtoupper','strtolower','array_sum','in_array',
+    'array_keys','array_values','implode','ucfirst','trim','abs','round','floor','ceil','max','min'];
+  for(const fn of BUILTINS){
+    coded = coded.replace(new RegExp('\\b'+fn+'\\s*\\(', 'g'), 'php.'+fn+'(');
+  }
+
+  coded = coded.replace(/@@STR(\d+)@@/g, (m, idx) => tokens[Number(idx)]);
+  return coded;
+}
+
+const PHP_BUILTINS = {
+  count: v => Array.isArray(v) ? v.length : (v && typeof v==='object' ? Object.keys(v).length : 0),
+  strlen: s => String(s).length,
+  strtoupper: s => String(s).toUpperCase(),
+  strtolower: s => String(s).toLowerCase(),
+  array_sum: v => (Array.isArray(v) ? v : Object.values(v)).reduce((a,b)=>a+Number(b),0),
+  in_array: (needle, arr) => (Array.isArray(arr) ? arr : Object.values(arr)).includes(needle),
+  array_keys: v => Array.isArray(v) ? v.map((_,i)=>i) : Object.keys(v),
+  array_values: v => Array.isArray(v) ? v.slice() : Object.values(v),
+  implode: (sep, arr) => (Array.isArray(arr) ? arr : Object.values(arr)).map(x=>String(x)).join(sep),
+  ucfirst: s => String(s).charAt(0).toUpperCase()+String(s).slice(1),
+  trim: s => String(s).trim(),
+  abs: n => Math.abs(n),
+  round: n => Math.round(n),
+  floor: n => Math.floor(n),
+  ceil: n => Math.ceil(n),
+  max: (...a) => Math.max(...a.flat(Infinity)),
+  min: (...a) => Math.min(...a.flat(Infinity)),
+};
+
+function toPhpString(val){
+  if(val === null || val === undefined) return "";
+  if(typeof val === 'boolean') return val ? "1" : "";
+  if(Array.isArray(val) || (typeof val === 'object')) return "Array";
+  return String(val);
+}
+
+function printR(val, indent){
+  indent = indent || 0;
+  const pad = "    ".repeat(indent);
+  if(Array.isArray(val)){
+    let s = "Array\n"+pad+"(\n";
+    val.forEach((v,i)=>{
+      s += pad+"    ["+i+"] => "+ (typeof v==='object'&&v!==null? printR(v, indent+2).trimStart() : toPhpString(v)) + "\n";
+    });
+    s += pad+")\n";
+    return s;
+  } else if(typeof val === 'object' && val !== null){
+    let s = "Array\n"+pad+"(\n";
+    for(let k in val){
+      let v = val[k];
+      s += pad+"    ["+k+"] => "+ (typeof v==='object'&&v!==null? printR(v, indent+2).trimStart() : toPhpString(v)) + "\n";
+    }
+    s += pad+")\n";
+    return s;
+  }
+  return toPhpString(val);
+}
+
+class Interpreter{
+  constructor(){ this.vars = {}; this.consts = {}; this.output = []; }
+  run(source){
+    let src = stripPhpTags(source);
+    src = stripComments(src);
+    let p = new Parser(src);
+    let stmts = p.parseStatements(false);
+    this.execList(stmts);
+    return this.output.join("");
+  }
+  execList(stmts){
+    for(let s of stmts){ let sig = this.exec(s); if(sig) return sig; }
+    return null;
+  }
+  evalRaw(raw){
+    let js = convertExpr(raw);
+    // resolve bare identifiers that match known constants (define()/const)
+    const constNames = Object.keys(this.consts);
+    for(const key of constNames){
+      js = js.replace(new RegExp('\\b'+key+'\\b','g'), "consts['"+key+"']");
+    }
+    try{ return (new Function('vars', 'consts', 'php', 'return (' + js + ')'))(this.vars, this.consts, PHP_BUILTINS); }
+    catch(e){ throw new Error("Couldn't evaluate: "+raw); }
+  }
+  exec(node){
+    switch(node.type){
+      case 'echo': {
+        for(let e of node.exprs){ this.output.push(toPhpString(this.evalRaw(e))); }
+        return null;
+      }
+      case 'call': {
+        let args = new Parser("").splitTopLevel(node.arg, ',');
+        if(node.name === 'print_r'){ this.output.push(printR(this.evalRaw(args[0]))); }
+        else if(node.name === 'var_dump'){
+          for(let a of args){ let v = this.evalRaw(a); this.output.push(typeof v + "(" + toPhpString(v) + ")\n"); }
+        }
+        return null;
+      }
+      case 'raw': { this.execRawStatement(node.raw); return null; }
+      case 'if': {
+        for(let br of node.branches){ if(this.evalRaw(br.cond)) return this.execList(br.body); }
+        if(node.elseBody) return this.execList(node.elseBody);
+        return null;
+      }
+      case 'for': {
+        if(node.init) this.execRawStatement(node.init);
+        let guard = 0;
+        while(node.cond ? this.evalRaw(node.cond) : true){
+          if(++guard > 50000) throw new Error("Infinite loop guard triggered");
+          let sig = this.execList(node.body);
+          if(sig === 'break') break;
+          if(node.incr) this.execRawStatement(node.incr);
+        }
+        return null;
+      }
+      case 'while': {
+        let guard = 0;
+        while(this.evalRaw(node.cond)){
+          if(++guard > 50000) throw new Error("Infinite loop guard triggered");
+          let sig = this.execList(node.body);
+          if(sig === 'break') break;
+        }
+        return null;
+      }
+      case 'foreach': {
+        let arr = this.evalRaw(node.arrExpr);
+        if(Array.isArray(arr)){
+          for(let i=0;i<arr.length;i++){
+            if(node.keyVar) this.vars[node.keyVar] = i;
+            this.vars[node.valVar] = arr[i];
+            let sig = this.execList(node.body);
+            if(sig === 'break') break;
+          }
+        } else if(typeof arr === 'object' && arr !== null){
+          for(let k in arr){
+            if(node.keyVar) this.vars[node.keyVar] = isNaN(k)? k : Number(k);
+            this.vars[node.valVar] = arr[k];
+            let sig = this.execList(node.body);
+            if(sig === 'break') break;
+          }
+        }
+        return null;
+      }
+      case 'break': return 'break';
+      case 'continue': return null;
+      default: return null;
+    }
+  }
+  execRawStatement(raw){
+    raw = raw.trim();
+    if(!raw) return;
+    // define("NAME", value);
+    let mDefine = /^define\s*\((.+)\)$/s.exec(raw);
+    if(mDefine){
+      let p = new Parser("");
+      let args = p.splitTopLevel(mDefine[1], ',');
+      if(args.length >= 2){
+        let name = this.evalRaw(args[0]);
+        let val = this.evalRaw(args[1]);
+        this.consts[name] = val;
+      }
+      return;
+    }
+    // const NAME = value;
+    let mConst = /^const\s+(\w+)\s*=\s*(.+)$/s.exec(raw);
+    if(mConst){
+      this.consts[mConst[1]] = this.evalRaw(mConst[2]);
+      return;
+    }
+    let m = /^\$(\w+)\[\]\s*=\s*(.+)$/s.exec(raw);
+    if(m){
+      let name = m[1], valExpr = m[2];
+      if(!Array.isArray(this.vars[name])) this.vars[name] = [];
+      this.vars[name].push(this.evalRaw(valExpr));
+      return;
+    }
+    m = /^\$(\w+)\[(.+?)\]\s*(\+=|-=|\.=|\*=|\/=|=)\s*(.+)$/s.exec(raw);
+    if(m){
+      let name=m[1], keyExpr=m[2], op=m[3], valExpr=m[4];
+      if(this.vars[name] === undefined) this.vars[name] = {};
+      let key = this.evalRaw(keyExpr);
+      let val = this.evalRaw(valExpr);
+      this.applyOp(this.vars[name], key, op, val);
+      return;
+    }
+    m = /^\$(\w+)\s*(\+\+|--)$/.exec(raw);
+    if(m){
+      let name=m[1], op=m[2];
+      this.vars[name] = (this.vars[name]||0) + (op==='++'?1:-1);
+      return;
+    }
+    m = /^\$(\w+)\s*(\+=|-=|\.=|\*=|\/=|=)\s*(.+)$/s.exec(raw);
+    if(m){
+      let name=m[1], op=m[2], valExpr=m[3];
+      let val = this.evalRaw(valExpr);
+      this.applyOp(this.vars, name, op, val);
+      return;
+    }
+    try{ this.evalRaw(raw); } catch(e){ /* ignore bare expressions we can't handle */ }
+  }
+  applyOp(container, key, op, val){
+    switch(op){
+      case '=': container[key] = val; break;
+      case '+=': container[key] = (container[key]||0) + val; break;
+      case '-=': container[key] = (container[key]||0) - val; break;
+      case '*=': container[key] = (container[key]||0) * val; break;
+      case '/=': container[key] = (container[key]||0) / val; break;
+      case '.=': container[key] = toPhpString(container[key]||"") + toPhpString(val); break;
+    }
+  }
+}
+
+function runPHPCode(code){
+  const interp = new Interpreter();
+  const out = interp.run(code);
+  return out;
+}
+
+/* ============================================================
+   UI WIRING
+   ============================================================ */
+
+// --- Sidebar toggle (mobile) ---
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebarScrim = document.getElementById('sidebarScrim');
+function openSidebar(){ sidebar.classList.add('open'); sidebarScrim.style.display='block'; }
+function closeSidebar(){ sidebar.classList.remove('open'); sidebarScrim.style.display='none'; }
+sidebarToggle.addEventListener('click', ()=> sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
+sidebarScrim.addEventListener('click', closeSidebar);
+sidebar.querySelectorAll('a').forEach(a => a.addEventListener('click', closeSidebar));
+
+// --- Active nav link on scroll ---
+const navLinks = Array.from(document.querySelectorAll('.navlist a'));
+const topics = Array.from(document.querySelectorAll('section.topic'));
+function updateActiveNav(){
+  let currentId = topics[0] && topics[0].id;
+  for(const t of topics){
+    if(t.getBoundingClientRect().top - 90 <= 0) currentId = t.id;
+  }
+  navLinks.forEach(a=>{
+    a.classList.toggle('active', a.getAttribute('href') === '#'+currentId);
+  });
+}
+document.addEventListener('scroll', updateActiveNav, {passive:true});
+updateActiveNav();
+
+// --- Hero boot animation ---
+(function bootAnim(){
+  const el = document.getElementById('bootBody');
+  const linesSrc = [
+    {text:'$ php -v', cls:''},
+    {text:'PHP 8.3.0 (cli) — ready', cls:'', dim:true},
+    {text:'', cls:''},
+    {text:'<?php', cls:'tag'},
+    {text:'echo "Hello, World!";', cls:''},
+    {text:'?>', cls:'tag'},
+    {text:'', cls:''},
+    {text:'» Hello, World!', cls:'str'},
+  ];
+  let li = 0;
+  function typeLine(){
+    if(li >= linesSrc.length){
+      const cur = document.createElement('span');
+      cur.className='cur';
+      el.appendChild(cur);
+      return;
+    }
+    const lineObj = linesSrc[li];
+    const div = document.createElement('div');
+    div.className = 'line' + (lineObj.cls ? ' '+lineObj.cls : '');
+    if(lineObj.dim) div.style.color = 'var(--text-faint)';
+    el.appendChild(div);
+    let ci = 0;
+    const txt = lineObj.text;
+    function typeChar(){
+      if(ci <= txt.length){
+        div.textContent = txt.slice(0, ci);
+        ci++;
+        setTimeout(typeChar, txt.length ? 14 : 0);
+      } else {
+        li++;
+        setTimeout(typeLine, 120);
+      }
+    }
+    typeChar();
+  }
+  typeLine();
+})();
+
+// --- Runnable inline snippets ---
+document.querySelectorAll('.snippet').forEach(snippet=>{
+  const btn = snippet.querySelector('.run-btn');
+  if(!btn) return;
+  const codeEl = snippet.querySelector('code');
+  const panel = snippet.querySelector('.output-panel');
+  const outText = snippet.querySelector('.output-text');
+  btn.addEventListener('click', ()=>{
+    const code = codeEl.textContent;
+    try{
+      const result = runPHPCode(code);
+      outText.textContent = result.length ? result : '(no output)';
+      outText.classList.remove('err');
+    } catch(e){
+      outText.textContent = 'Error: ' + e.message;
+      outText.classList.add('err');
+    }
+    panel.classList.add('show');
+  });
+});
+
+// --- Playground ---
+const pgEditor = document.getElementById('pg-editor');
+const pgOutput = document.getElementById('pg-output');
+const pgRun = document.getElementById('pg-run');
+const pgClear = document.getElementById('pg-clear');
+const pgStatus = document.getElementById('pg-status');
+const pgLines = document.getElementById('pg-lines');
+const pgExamples = document.getElementById('pg-examples');
+
+function refreshLineNumbers(){
+  const n = pgEditor.value.split('\n').length;
+  let out = '';
+  for(let i=1;i<=n;i++) out += i + '\n';
+  pgLines.textContent = out;
+}
+pgEditor.addEventListener('input', refreshLineNumbers);
+pgEditor.addEventListener('scroll', ()=>{ pgLines.style.transform = `translateY(-${pgEditor.scrollTop}px)`; });
+refreshLineNumbers();
+
+function runPlayground(){
+  const code = pgEditor.value;
+  try{
+    const result = runPHPCode(code);
+    pgOutput.textContent = result.length ? result : '(no output)';
+    pgOutput.classList.remove('err');
+    pgStatus.textContent = 'Success';
+    pgStatus.className = 'pg-status ok';
+  } catch(e){
+    pgOutput.textContent = 'Error: ' + e.message;
+    pgOutput.classList.add('err');
+    pgStatus.textContent = 'Error';
+    pgStatus.className = 'pg-status err';
+  }
+}
+pgRun.addEventListener('click', runPlayground);
+pgClear.addEventListener('click', ()=>{
+  pgEditor.value = '';
+  pgOutput.textContent = 'Click "Run Code" to see the output here.';
+  pgOutput.classList.remove('err');
+  pgStatus.textContent = 'Ready';
+  pgStatus.className = 'pg-status';
+  refreshLineNumbers();
+  pgEditor.focus();
+});
+
+const PG_EXAMPLES = {
+  hello: `<?php
+$name = "World";
+echo "Hello, $name!";
+?>`,
+  ifelse: `<?php
+$score = 82;
+
+if ($score >= 90) {
+  echo "Grade: A";
+} elseif ($score >= 75) {
+  echo "Grade: B";
+} else {
+  echo "Grade: C";
+}
+?>`,
+  forloop: `<?php
+for ($i = 1; $i <= 10; $i++) {
+  if ($i % 2 == 0) {
+    echo "$i is even\\n";
+  } else {
+    echo "$i is odd\\n";
+  }
+}
+?>`,
+  foreach: `<?php
+$fruits = ["Apple", "Banana", "Mango"];
+
+foreach ($fruits as $index => $fruit) {
+  echo "$index => $fruit\\n";
+}
+?>`,
+  assoc: `<?php
+$student = [
+  "name" => "Aarav",
+  "age" => 21,
+  "course" => "Computer Science"
+];
+
+foreach ($student as $key => $value) {
+  echo "$key: $value\\n";
+}
+?>`
+};
+pgExamples.addEventListener('change', ()=>{
+  const key = pgExamples.value;
+  if(key && PG_EXAMPLES[key]){
+    pgEditor.value = PG_EXAMPLES[key];
+    refreshLineNumbers();
+    runPlayground();
+  }
+  pgExamples.value = '';
+});
+
+// Ctrl/Cmd + Enter to run in playground
+pgEditor.addEventListener('keydown', (e)=>{
+  if((e.ctrlKey || e.metaKey) && e.key === 'Enter'){
+    e.preventDefault();
+    runPlayground();
+  }
+});
+</script>
+
+</body>
+</html>
+

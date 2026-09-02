@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React.js Complete Interactive Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0e14; --bg2:#0f131b; --panel:#121722; --panel2:#161c29; --border:#212936;
+  --text:#e6e9f0; --text-dim:#93a0b4; --text-faint:#5c6779;
+  --accent:#61dafb; --accent-dim:#2f9fce; --accent-glow:rgba(97,218,251,.18);
+  --purple:#c792ea; --green:#7ee787; --yellow:#f2cc60; --red:#ff7b72; --orange:#f0a35f;
+  --radius:10px; --mono:'JetBrains Mono',monospace; --display:'Sora',sans-serif; --body:'Inter',sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg); color:var(--text); font-family:var(--body); line-height:1.65; font-size:15.5px;}
+::selection{background:var(--accent-glow); color:#fff;}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:#263042; border-radius:6px;}
+::-webkit-scrollbar-thumb:hover{background:#324158;}
+
+a{color:var(--accent); text-decoration:none;}
+code, .mono{font-family:var(--mono);}
+h1,h2,h3,h4{font-family:var(--display); font-weight:700; color:#fff; letter-spacing:-.01em;}
+
+/* Progress bar */
+#progress{position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--purple)); z-index:999; width:0%; transition:width .1s;}
+
+/* Topbar (mobile) */
+#topbar{display:none; position:sticky; top:0; z-index:60; background:rgba(11,14,20,.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); padding:12px 16px; align-items:center; justify-content:space-between;}
+#topbar .brand{font-family:var(--display); font-weight:800; font-size:16px;}
+#topbar .brand span{color:var(--accent);}
+#hamburger{width:34px; height:34px; border-radius:8px; border:1px solid var(--border); background:var(--panel); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+#hamburger div{width:16px; height:2px; background:var(--text-dim); position:relative;}
+#hamburger div::before,#hamburger div::after{content:''; position:absolute; width:16px; height:2px; background:var(--text-dim); left:0;}
+#hamburger div::before{top:-5px;} #hamburger div::after{top:5px;}
+
+/* Layout */
+.layout{display:flex; min-height:100vh;}
+#sidebar{width:280px; flex-shrink:0; background:var(--bg2); border-right:1px solid var(--border); position:sticky; top:0; height:100vh; overflow-y:auto; padding:22px 0 60px;}
+#sidebar .brand{font-family:var(--display); font-weight:800; font-size:19px; padding:0 22px 4px;}
+#sidebar .brand span{color:var(--accent);}
+#sidebar .tagline{padding:0 22px 20px; font-size:12px; color:var(--text-faint); border-bottom:1px solid var(--border); margin-bottom:10px;}
+#sidebar nav .group-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.11em; color:var(--text-faint); padding:16px 22px 6px; font-weight:600;}
+#sidebar nav a{display:block; padding:6px 22px; font-size:13.3px; color:var(--text-dim); border-left:2px solid transparent; transition:.15s;}
+#sidebar nav a:hover{color:var(--text); background:var(--panel);}
+#sidebar nav a.active{color:var(--accent); border-left-color:var(--accent); background:var(--accent-glow); font-weight:600;}
+
+main{flex:1; min-width:0; padding:52px 56px 120px; max-width:980px;}
+
+/* Hero */
+.hero{padding:26px 0 46px; border-bottom:1px solid var(--border); margin-bottom:44px;}
+.hero .eyebrow{font-family:var(--mono); font-size:12px; color:var(--accent); letter-spacing:.08em; text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:8px;}
+.hero .eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent);}
+.hero h1{font-size:44px; line-height:1.1; margin-bottom:16px;}
+.hero h1 em{font-style:normal; color:var(--accent);}
+.hero p{color:var(--text-dim); font-size:16px; max-width:640px;}
+.hero .stats{display:flex; gap:28px; margin-top:26px; flex-wrap:wrap;}
+.hero .stat b{display:block; font-family:var(--mono); font-size:22px; color:#fff;}
+.hero .stat span{font-size:11.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em;}
+
+/* Section headers */
+.topic-section{scroll-margin-top:24px; margin-bottom:64px;}
+.topic-head{display:flex; align-items:baseline; gap:12px; margin-bottom:6px;}
+.topic-head h2{font-size:25px;}
+.topic-head .tag{font-family:var(--mono); font-size:11px; color:var(--accent-dim); background:rgba(97,218,251,.08); border:1px solid rgba(97,218,251,.2); padding:2px 8px; border-radius:20px;}
+.topic-intro{color:var(--text-dim); margin:10px 0 24px; max-width:760px;}
+.topic-intro p{margin-bottom:10px;}
+.topic-intro code{background:var(--panel2); padding:1px 6px; border-radius:4px; color:var(--yellow); font-size:.9em; border:1px solid var(--border);}
+
+/* Cards */
+.card{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:20px; overflow:hidden;}
+.card-head{padding:13px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; background:var(--panel2);}
+.card-head h3{font-size:14.5px; color:#fff; font-family:var(--body); font-weight:600;}
+.card-body{padding:16px 18px; color:var(--text-dim); font-size:14px;}
+.card-body p{margin-bottom:8px;}
+.card-body ul{margin:8px 0 8px 20px;}
+.card-body li{margin-bottom:5px;}
+
+/* Code editor */
+.editor-wrap{border-top:1px solid var(--border);}
+.editor-bar{display:flex; align-items:center; justify-content:space-between; padding:8px 14px; background:#0d1118;}
+.editor-bar .fname{font-family:var(--mono); font-size:11.5px; color:var(--text-faint);}
+.editor-bar .btns{display:flex; gap:8px;}
+.btn{font-family:var(--mono); font-size:11.5px; padding:5px 11px; border-radius:6px; border:1px solid var(--border); background:var(--panel2); color:var(--text-dim); cursor:pointer; transition:.15s;}
+.btn:hover{border-color:var(--accent-dim); color:var(--text);}
+.btn.run{background:var(--accent); color:#04202c; border-color:var(--accent); font-weight:700;}
+.btn.run:hover{background:#7fe4ff;}
+textarea.code-input{width:100%; min-height:150px; background:#0a0d13; color:#dbe4f0; border:none; font-family:var(--mono); font-size:12.8px; padding:14px 16px; resize:vertical; line-height:1.55; tab-size:2;}
+textarea.code-input:focus{outline:1px solid var(--accent-dim);}
+.output-wrap{border-top:1px dashed var(--border); background:#0a0d13;}
+.output-label{font-family:var(--mono); font-size:10.5px; color:var(--text-faint); padding:8px 16px 0; text-transform:uppercase; letter-spacing:.08em;}
+iframe.sandbox{width:100%; height:150px; border:none; background:#fff; display:block;}
+.error-box{margin:0 16px 14px; padding:10px 12px; background:rgba(255,123,114,.08); border:1px solid rgba(255,123,114,.3); border-radius:6px; color:var(--red); font-family:var(--mono); font-size:12px; display:none;}
+
+/* Callouts */
+.callout{border-left:3px solid var(--accent); background:var(--panel); padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0; font-size:13.7px; color:var(--text-dim);}
+.callout.warn{border-color:var(--orange);} .callout.tip{border-color:var(--green);} .callout.note{border-color:var(--purple);}
+.callout b{color:#fff;}
+
+/* two-col grid */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+@media (max-width:720px){.grid2{grid-template-columns:1fr;}}
+
+table.ref{width:100%; border-collapse:collapse; font-size:13px; margin:10px 0;}
+table.ref th{text-align:left; color:var(--accent); font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.05em; padding:8px 10px; border-bottom:1px solid var(--border);}
+table.ref td{padding:8px 10px; border-bottom:1px solid var(--border); color:var(--text-dim);}
+table.ref td code{color:var(--yellow); font-family:var(--mono); font-size:12px;}
+
+.pill-row{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0;}
+.pill{font-family:var(--mono); font-size:11.5px; padding:4px 10px; border-radius:20px; background:var(--panel2); border:1px solid var(--border); color:var(--text-dim);}
+
+footer{border-top:1px solid var(--border); padding:36px 0; margin-top:60px; color:var(--text-faint); font-size:12.5px; text-align:center;}
+
+/* mobile */
+@media (max-width:900px){
+  #topbar{display:flex;}
+  #sidebar{position:fixed; left:-300px; top:0; z-index:70; transition:left .25s; box-shadow:20px 0 60px rgba(0,0,0,.5);}
+  #sidebar.open{left:0;}
+  .layout{display:block;}
+  main{padding:28px 18px 100px; max-width:100%;}
+  .hero h1{font-size:32px;}
+  .grid2{grid-template-columns:1fr;}
+  #overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:65;}
+  #overlay.show{display:block;}
+}
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('react-notes')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('react-notes'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+
+<div id="progress"></div>
+<div id="topbar">
+  <div class="brand">React<span>.notes</span></div>
+  <div id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show');"><div></div></div>
+</div>
+<div id="overlay" onclick="document.getElementById('sidebar').classList.remove('open'); this.classList.remove('show');"></div>
+
+<div class="layout">
+  <aside id="sidebar">
+    <div class="brand">React<span>.notes</span></div>
+    <div class="tagline">A→Z interactive reference · JSX, Hooks, Patterns &amp; Projects · runs live in your browser</div>
+    <nav id="nav"></nav>
+  </aside>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Interactive Reference · React 18</div>
+      <h1>React, from <em>first component</em><br>to production patterns.</h1>
+      <p>A self-contained study guide covering JSX, components, hooks, state management, performance and real mini-projects — every example is editable and runs live using an in-browser Babel + React sandbox.</p>
+      <div class="stats">
+        <div class="stat"><b id="stat-topics">–</b><span>Topics</span></div>
+        <div class="stat"><b id="stat-examples">–</b><span>Live examples</span></div>
+        <div class="stat"><b>3</b><span>Mini projects</span></div>
+        <div class="stat"><b>0</b><span>Build tools required</span></div>
+      </div>
+    </section>
+
+    <div id="content"></div>
+
+    <footer>Self-contained reference · React &amp; ReactDOM UMD + Babel Standalone loaded from CDN for live execution · everything else is vanilla HTML/CSS/JS</footer>
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   DATA: every topic in the guide. Each topic has 1..n cards.
+   Each card can optionally include a `code` (JSX) example that
+   is transpiled + executed live inside a sandboxed iframe using
+   React + ReactDOM + Babel Standalone (loaded via CDN inside the
+   iframe's srcdoc so the main document stays framework-free).
+   ============================================================ */
+
+const GUIDE = [
+{ group:"Fundamentals", topics:[
+  { id:"intro", title:"What is React?", tag:"concept", intro:`
+    <p><b>React</b> is a JavaScript library (not a full framework) for building user interfaces out of small, reusable pieces called <code>components</code>. Instead of manually updating the DOM step by step, you describe <em>what the UI should look like for a given state</em>, and React figures out the minimal set of DOM changes needed.</p>
+    <p>It was created at Facebook (2013) and today powers everything from single widgets to entire single-page applications.</p>`,
+    cards:[
+      { title:"Why React exists", body:`
+        <p>Before React, updating the DOM directly (jQuery-style) became unmanageable as apps grew — you had to track which parts of the page needed updating by hand.</p>
+        <ul>
+          <li><b>Declarative:</b> you describe the end result, not the steps to get there.</li>
+          <li><b>Component-based:</b> UI is split into independent, reusable pieces with their own logic and markup.</li>
+          <li><b>Virtual DOM:</b> React keeps a lightweight in-memory copy of the UI tree, diffs it against the previous version, and applies only the minimal real DOM changes.</li>
+          <li><b>Unidirectional data flow:</b> data flows down via props, events flow up via callbacks — this makes apps easier to reason about.</li>
+        </ul>` },
+      { title:"The Virtual DOM, briefly", body:`
+        <p>Every time state changes, React builds a new virtual tree (plain JS objects describing elements), compares (<b>diffs</b>) it against the previous tree, and computes the smallest set of real DOM mutations required — then applies them in one batch (<b>reconciliation</b>). This avoids expensive, wasteful DOM writes.</p>` }
+    ]},
+  { id:"setup", title:"Setting Up React", tag:"tooling", intro:`
+    <p>There are three common ways to start a React project. This guide's live examples use the <b>CDN</b> approach so everything runs without a build step — but real projects almost always use a build tool.</p>`,
+    cards:[
+      { title:"Option 1 — CDN (no build step, used in this guide)", body:`
+        <p>Good for learning, demos, or embedding React in a single HTML file:</p>`,
+        code:`&lt;script src="https://unpkg.com/react@18/umd/react.development.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/@babel/standalone/babel.min.js"&gt;&lt;/script&gt;
+
+&lt;div id="root"&gt;&lt;/div&gt;
+&lt;script type="text/babel"&gt;
+  function App() {
+    return &lt;h1&gt;Hello, React!&lt;/h1&gt;;
+  }
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(&lt;App /&gt;);
+&lt;/script&gt;`, noRun:true },
+      { title:"Option 2 — Vite (recommended for real projects)", body:`<p>Fast dev server + build tool, minimal config:</p>`,
+        code:`npm create vite@latest my-app -- --template react
+cd my-app
+npm install
+npm run dev`, noRun:true },
+      { title:"Option 3 — Create React App (legacy, still seen in older codebases)", body:``,
+        code:`npx create-react-app my-app
+cd my-app
+npm start`, noRun:true }
+    ]},
+  { id:"jsx", title:"JSX Syntax", tag:"syntax", intro:`
+    <p><b>JSX</b> is a syntax extension that lets you write HTML-like markup directly inside JavaScript. It is <em>not</em> a string and not HTML — it compiles (via Babel) into nested <code>React.createElement(...)</code> calls.</p>`,
+    cards:[
+      { title:"JSX compiles to function calls", body:`<p>This JSX...</p><pre style="color:var(--text-dim);font-family:var(--mono);font-size:12px;margin:6px 0">&lt;h1 className="title"&gt;Hi&lt;/h1&gt;</pre><p>...becomes:</p><pre style="color:var(--text-dim);font-family:var(--mono);font-size:12px;margin:6px 0">React.createElement('h1', {className: 'title'}, 'Hi')</pre>` },
+      { title:"Live: embedding expressions with curly braces", body:`<p>Anything inside <code>{ }</code> is evaluated as a plain JS expression.</p>`,
+        code:`function App() {
+  const name = "Sanjay";
+  const items = ["JSX", "Hooks", "Components"];
+  return (
+    &lt;div style={{fontFamily:'sans-serif', padding:12}}&gt;
+      &lt;h2&gt;Hello, {name}!&lt;/h2&gt;
+      &lt;p&gt;2 + 2 = {2 + 2}&lt;/p&gt;
+      &lt;p&gt;You are learning: {items.join(", ")}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` },
+      { title:"JSX rules to remember", body:``, ruleTable:[
+        ["className not class","<code>class</code> is reserved in JS, so use <code>className</code>"],
+        ["camelCase attributes","<code>onClick</code>, <code>tabIndex</code>, <code>strokeWidth</code>"],
+        ["One root element","Wrap siblings in a single parent or a Fragment <code>&lt;&gt;...&lt;/&gt;</code>"],
+        ["Self-close empty tags","<code>&lt;img /&gt;</code>, <code>&lt;br /&gt;</code>"],
+        ["style takes an object","<code>style={{color:'red'}}</code> — outer braces = JS, inner = object"]
+      ]}
+    ]}
+]},
+
+{ group:"Components & Props", topics:[
+  { id:"components", title:"Function Components", tag:"core", intro:`
+    <p>A component is just a JavaScript function that returns JSX. Component names must start with a capital letter (this is how React tells them apart from plain HTML tags).</p>`,
+    cards:[
+      { title:"Live: your first components", body:`<p>Components can call other components — this is <b>composition</b>, the core building block of React apps.</p>`,
+        code:`function Greeting() {
+  return &lt;p&gt;Welcome to the app.&lt;/p&gt;;
+}
+
+function Header() {
+  return (
+    &lt;header style={{padding:12,background:'#222',color:'#fff'}}&gt;
+      &lt;h2&gt;My Dashboard&lt;/h2&gt;
+      &lt;Greeting /&gt;
+    &lt;/header&gt;
+  );
+}
+
+function App() {
+  return &lt;Header /&gt;;
+}
+render(&lt;App /&gt;);` }
+    ]},
+  { id:"props", title:"Props", tag:"core", intro:`
+    <p><b>Props</b> (short for "properties") are how data flows from a parent component into a child. Props are read-only from the child's perspective — a component must never modify its own props.</p>`,
+    cards:[
+      { title:"Live: passing and destructuring props", body:``,
+        code:`function ProfileCard({ name, role, online }) {
+  return (
+    &lt;div style={{border:'1px solid #ccc', padding:10, borderRadius:8, marginBottom:6}}&gt;
+      &lt;b&gt;{name}&lt;/b&gt; — {role}
+      &lt;span style={{color: online ? 'green' : 'gray', marginLeft:8}}&gt;
+        {online ? '● online' : '○ offline'}
+      &lt;/span&gt;
+    &lt;/div&gt;
+  );
+}
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;ProfileCard name="Asha" role="Engineer" online={true} /&gt;
+      &lt;ProfileCard name="Ravi" role="Designer" online={false} /&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` },
+      { title:"props.children", body:`<p>Any JSX nested between a component's opening and closing tags is available as <code>props.children</code> — this is how wrapper/layout components work.</p>`,
+        code:`function Card({ children, title }) {
+  return (
+    &lt;div style={{border:'2px solid #61dafb', borderRadius:8, padding:12}}&gt;
+      &lt;h3 style={{marginTop:0}}&gt;{title}&lt;/h3&gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+
+function App() {
+  return (
+    &lt;Card title="Notice"&gt;
+      &lt;p&gt;This paragraph is passed in as children.&lt;/p&gt;
+      &lt;button&gt;Click me&lt;/button&gt;
+    &lt;/Card&gt;
+  );
+}
+render(&lt;App /&gt;);` },
+      { title:"Default props", body:``,
+        code:`function Badge({ label = "New", color = "#f2cc60" }) {
+  return &lt;span style={{background:color, padding:'2px 8px', borderRadius:12, fontSize:12}}&gt;{label}&lt;/span&gt;;
+}
+function App(){
+  return (&lt;div&gt;&lt;Badge /&gt; &lt;Badge label="Sale" color="#ff7b72" /&gt;&lt;/div&gt;);
+}
+render(&lt;App /&gt;);` }
+    ]}
+]},
+
+{ group:"State & Interactivity", topics:[
+  { id:"usestate", title:"useState", tag:"hook", intro:`
+    <p><code>useState</code> is the most fundamental Hook — it lets a function component hold and update its own local state between renders. Calling the setter triggers a re-render with the new value.</p>`,
+    cards:[
+      { title:"Live: counter with useState", body:``,
+        code:`function Counter() {
+  const [count, setCount] = React.useState(0);
+  return (
+    &lt;div&gt;
+      &lt;p style={{fontSize:22}}&gt;Count: {count}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setCount(count - 1)}&gt;-&lt;/button&gt;
+      &lt;button onClick={() =&gt; setCount(count + 1)} style={{marginLeft:8}}&gt;+&lt;/button&gt;
+      &lt;button onClick={() =&gt; setCount(0)} style={{marginLeft:8}}&gt;reset&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;Counter /&gt;);` },
+      { title:"Functional updates (avoiding stale state)", body:`<p>When the new state depends on the old state, pass a function to the setter instead of a value — this guards against stale closures, especially with rapid updates.</p>`,
+        code:`function Counter() {
+  const [count, setCount] = React.useState(0);
+  function addThree(){
+    // wrong-ish: setCount(count+1) three times would only add 1
+    setCount(c =&gt; c + 1);
+    setCount(c =&gt; c + 1);
+    setCount(c =&gt; c + 1);
+  }
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Count: {count}&lt;/p&gt;
+      &lt;button onClick={addThree}&gt;+3 (safely)&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;Counter /&gt;);` },
+      { title:"State with objects and arrays — always create new copies", body:`<p>Never mutate state directly. Use spread syntax to create a new object/array so React detects the change.</p>`,
+        code:`function ProfileForm() {
+  const [user, setUser] = React.useState({name:'', age:0});
+  return (
+    &lt;div&gt;
+      &lt;input placeholder="name" value={user.name}
+        onChange={e =&gt; setUser({...user, name: e.target.value})} /&gt;
+      &lt;br/&gt;&lt;br/&gt;
+      &lt;p&gt;Hello {user.name || '...'}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;ProfileForm /&gt;);` }
+    ]},
+  { id:"events", title:"Handling Events", tag:"core", intro:`
+    <p>React wraps native DOM events in a cross-browser <b>SyntheticEvent</b> and uses camelCase handler names (<code>onClick</code>, <code>onChange</code>, <code>onSubmit</code>...).</p>`,
+    cards:[
+      { title:"Live: common event handlers", body:``,
+        code:`function App(){
+  const [msg, setMsg] = React.useState('Hover, click or type below');
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{msg}&lt;/p&gt;
+      &lt;button
+        onMouseEnter={() =&gt; setMsg('Mouse entered the button')}
+        onClick={(e) =&gt; setMsg('Clicked! target tag: ' + e.target.tagName)}
+      &gt;Hover / Click me&lt;/button&gt;
+      &lt;br/&gt;&lt;br/&gt;
+      &lt;input onChange={(e)=&gt; setMsg('You typed: ' + e.target.value)} placeholder="type here" /&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]},
+  { id:"conditional", title:"Conditional Rendering", tag:"core", intro:`<p>Because JSX is just JavaScript, you use normal JS control flow — ternaries, <code>&amp;&amp;</code>, early returns — to decide what to render.</p>`,
+    cards:[
+      { title:"Live: three patterns compared", body:``,
+        code:`function StatusBadge({ status }){
+  // 1) ternary
+  return status === 'ok'
+    ? &lt;span style={{color:'green'}}&gt;✔ All good&lt;/span&gt;
+    : &lt;span style={{color:'red'}}&gt;✖ Problem&lt;/span&gt;;
+}
+
+function Notice({ show, text }){
+  // 2) && short-circuit (only render if truthy)
+  return &lt;div&gt;{show &amp;&amp; &lt;p style={{color:'#c792ea'}}&gt;{text}&lt;/p&gt;}&lt;/div&gt;;
+}
+
+function App(){
+  const [ok, setOk] = React.useState(true);
+  return (
+    &lt;div&gt;
+      &lt;StatusBadge status={ok ? 'ok':'fail'} /&gt;
+      &lt;br/&gt;
+      &lt;Notice show={!ok} text="Something needs attention" /&gt;
+      &lt;br/&gt;
+      &lt;button onClick={()=&gt;setOk(!ok)}&gt;Toggle status&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]},
+  { id:"lists", title:"Lists & Keys", tag:"core", intro:`
+    <p>Rendering arrays of data uses <code>.map()</code>. Each resulting element needs a stable, unique <code>key</code> prop so React can track which items changed, were added, or removed across renders — without keys, React may re-use/re-order DOM nodes incorrectly.</p>`,
+    cards:[
+      { title:"Live: rendering a list with keys", body:`<p>Prefer a stable id from your data over the array index. Index keys are okay only for static lists that never reorder.</p>`,
+        code:`function App(){
+  const [todos, setTodos] = React.useState([
+    {id:1, text:'Learn JSX'},
+    {id:2, text:'Learn Hooks'},
+    {id:3, text:'Build a project'},
+  ]);
+  function remove(id){
+    setTodos(todos.filter(t =&gt; t.id !== id));
+  }
+  return (
+    &lt;ul&gt;
+      {todos.map(t =&gt; (
+        &lt;li key={t.id}&gt;
+          {t.text} &lt;button onClick={()=&gt;remove(t.id)}&gt;✕&lt;/button&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]},
+  { id:"forms", title:"Forms & Controlled Components", tag:"core", intro:`
+    <p>In a <b>controlled component</b>, form input values are driven entirely by React state — the input's <code>value</code> comes from state, and every keystroke updates that state via <code>onChange</code>. This gives you a single source of truth.</p>`,
+    cards:[
+      { title:"Live: a small controlled form", body:``,
+        code:`function App(){
+  const [form, setForm] = React.useState({name:'', topic:'React'});
+  const [submitted, setSubmitted] = React.useState(null);
+
+  function handleChange(e){
+    const { name, value } = e.target;
+    setForm(f =&gt; ({...f, [name]: value}));
+  }
+  function handleSubmit(e){
+    e.preventDefault();
+    setSubmitted(form);
+  }
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input name="name" value={form.name} onChange={handleChange} placeholder="your name" /&gt;
+      &lt;br/&gt;&lt;br/&gt;
+      &lt;select name="topic" value={form.topic} onChange={handleChange}&gt;
+        &lt;option&gt;React&lt;/option&gt;
+        &lt;option&gt;Docker&lt;/option&gt;
+        &lt;option&gt;SQL&lt;/option&gt;
+      &lt;/select&gt;
+      &lt;br/&gt;&lt;br/&gt;
+      &lt;button type="submit"&gt;Submit&lt;/button&gt;
+      {submitted &amp;&amp; &lt;p&gt;Saved: {submitted.name} — {submitted.topic}&lt;/p&gt;}
+    &lt;/form&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]}
+]},
+
+{ group:"Hooks Deep Dive", topics:[
+  { id:"useeffect", title:"useEffect", tag:"hook", intro:`
+    <p><code>useEffect</code> lets a component perform <b>side effects</b> — anything that reaches outside pure rendering: data fetching, subscriptions, timers, manually touching the DOM. It runs after the DOM has been updated.</p>`,
+    cards:[
+      { title:"The dependency array controls when it runs", body:``, ruleTable:[
+        ["<code>useEffect(fn)</code>","runs after every render"],
+        ["<code>useEffect(fn, [])</code>","runs once, after the first render (like 'mount')"],
+        ["<code>useEffect(fn, [a,b])</code>","runs after first render, then again whenever a or b changes"],
+        ["<code>return () =&gt; {...}</code>","cleanup function — runs before the next effect and on unmount"]
+      ]},
+      { title:"Live: effect with a timer + cleanup", body:`<p>The cleanup function prevents leaked intervals when the component unmounts or re-runs the effect.</p>`,
+        code:`function Clock(){
+  const [time, setTime] = React.useState(new Date().toLocaleTimeString());
+  React.useEffect(() =&gt; {
+    const id = setInterval(() =&gt; setTime(new Date().toLocaleTimeString()), 1000);
+    return () =&gt; clearInterval(id); // cleanup
+  }, []); // run once
+  return &lt;h2&gt;{time}&lt;/h2&gt;;
+}
+render(&lt;Clock /&gt;);` },
+      { title:"Live: effect that reacts to a dependency (simulated fetch)", body:``,
+        code:`function UserPanel({ userId }){
+  const [data, setData] = React.useState(null);
+  React.useEffect(() =&gt; {
+    setData(null);
+    const timer = setTimeout(() =&gt; {
+      setData({ id: userId, name: 'User #' + userId });
+    }, 500); // simulate network delay
+    return () =&gt; clearTimeout(timer);
+  }, [userId]);
+  return &lt;p&gt;{data ? data.name : 'Loading user ' + userId + '...'}&lt;/p&gt;;
+}
+function App(){
+  const [id, setId] = React.useState(1);
+  return (
+    &lt;div&gt;
+      &lt;UserPanel userId={id} /&gt;
+      &lt;button onClick={()=&gt;setId(id+1)}&gt;Next user&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]},
+  { id:"useref", title:"useRef", tag:"hook", intro:`
+    <p><code>useRef</code> returns a mutable object (<code>{ current: ... }</code>) that persists across renders <em>without</em> causing a re-render when it changes. Two main uses: holding a reference to a DOM node, and storing any mutable value you don't want tracked by React's render cycle.</p>`,
+    cards:[
+      { title:"Live: focusing a DOM input", body:``,
+        code:`function App(){
+  const inputRef = React.useRef(null);
+  return (
+    &lt;div&gt;
+      &lt;input ref={inputRef} placeholder="click the button to focus me" /&gt;
+      &lt;button onClick={() =&gt; inputRef.current.focus()}&gt;Focus input&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` },
+      { title:"Live: a value that survives renders but doesn't trigger one", body:`<p>Compare this to state — updating <code>renderCount.current</code> does <em>not</em> re-render the component; it just tracks a count silently.</p>`,
+        code:`function App(){
+  const [text, setText] = React.useState('');
+  const renderCount = React.useRef(0);
+  renderCount.current++;
+  return (
+    &lt;div&gt;
+      &lt;input value={text} onChange={e =&gt; setText(e.target.value)} /&gt;
+      &lt;p&gt;This component has rendered {renderCount.current} times&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]},
+  { id:"usecontext", title:"useContext", tag:"hook", intro:`
+    <p><b>Context</b> lets you pass data through the component tree without manually threading props down through every level ("prop drilling"). Create a context, wrap a subtree in its <code>Provider</code>, and any descendant can read it with <code>useContext</code>.</p>`,
+    cards:[
+      { title:"Live: a theme context", body:``,
+        code:`const ThemeContext = React.createContext('light');
+
+function ThemedButton(){
+  const theme = React.useContext(ThemeContext);
+  const style = theme === 'dark'
+    ? {background:'#222', color:'#fff'}
+    : {background:'#eee', color:'#111'};
+  return &lt;button style={{...style, padding:'6px 14px'}}&gt;I am {theme}-themed&lt;/button&gt;;
+}
+
+function App(){
+  const [theme, setTheme] = React.useState('light');
+  return (
+    &lt;ThemeContext.Provider value={theme}&gt;
+      &lt;div&gt;
+        &lt;ThemedButton /&gt;
+        &lt;br/&gt;&lt;br/&gt;
+        &lt;button onClick={()=&gt;setTheme(t=&gt;t==='light'?'dark':'light')}&gt;Toggle theme&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/ThemeContext.Provider&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]},
+  { id:"usereducer", title:"useReducer", tag:"hook", intro:`
+    <p>For state logic with multiple sub-values or complex transitions, <code>useReducer</code> centralizes updates in a single <b>reducer function</b> — <code>(state, action) =&gt; newState</code> — similar to Redux's core idea, but built into React.</p>`,
+    cards:[
+      { title:"Live: a reducer-driven counter with history", body:``,
+        code:`function reducer(state, action){
+  switch(action.type){
+    case 'increment': return { count: state.count + 1 };
+    case 'decrement': return { count: state.count - 1 };
+    case 'reset': return { count: 0 };
+    default: throw new Error('Unknown action: ' + action.type);
+  }
+}
+
+function App(){
+  const [state, dispatch] = React.useReducer(reducer, { count: 0 });
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;{state.count}&lt;/h2&gt;
+      &lt;button onClick={()=&gt;dispatch({type:'decrement'})}&gt;-&lt;/button&gt;
+      &lt;button onClick={()=&gt;dispatch({type:'increment'})} style={{margin:'0 8px'}}&gt;+&lt;/button&gt;
+      &lt;button onClick={()=&gt;dispatch({type:'reset'})}&gt;reset&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` },
+      { title:"useState vs useReducer", body:``, ruleTable:[
+        ["Simple, independent values","useState — one call per piece of state"],
+        ["Related values that update together","useReducer — one action can update several fields consistently"],
+        ["Update logic is complex / conditional","useReducer keeps that logic in one testable function"],
+        ["Next state depends on the action type","useReducer's switch statement models this directly"]
+      ]}
+    ]},
+  { id:"usememo-callback", title:"useMemo & useCallback", tag:"hook", intro:`
+    <p>Both hooks exist to <b>skip expensive recomputation</b> between renders. <code>useMemo</code> memoizes a computed <em>value</em>; <code>useCallback</code> memoizes a <em>function reference</em> (useful so child components wrapped in <code>React.memo</code> don't re-render just because a new function was created).</p>`,
+    cards:[
+      { title:"Live: useMemo avoiding an expensive recalculation", body:`<p>Open the console (or just watch the log line) — the expensive calculation only re-runs when <code>n</code> changes, not when the unrelated <code>tick</code> counter updates.</p>`,
+        code:`function slowDouble(n){
+  let result = n;
+  for (let i=0;i&lt;5e6;i++) {} // simulate heavy work
+  return n * 2;
+}
+
+function App(){
+  const [n, setN] = React.useState(5);
+  const [tick, setTick] = React.useState(0);
+
+  const doubled = React.useMemo(() =&gt; slowDouble(n), [n]);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;n = {n}, doubled (memoized) = {doubled}&lt;/p&gt;
+      &lt;button onClick={()=&gt;setN(n+1)}&gt;change n&lt;/button&gt;
+      &lt;button onClick={()=&gt;setTick(tick+1)} style={{marginLeft:8}}&gt;unrelated re-render ({tick})&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` },
+      { title:"Live: useCallback with React.memo", body:`<p><code>Child</code> is wrapped in <code>React.memo</code>, so it only re-renders when its props actually change. <code>useCallback</code> keeps the <code>onClick</code> function reference stable across parent re-renders.</p>`,
+        code:`const Child = React.memo(function Child({ onClick }){
+  console.log('Child rendered');
+  return &lt;button onClick={onClick}&gt;Click (check console)&lt;/button&gt;;
+});
+
+function App(){
+  const [count, setCount] = React.useState(0);
+  const [other, setOther] = React.useState(0);
+
+  const handleClick = React.useCallback(() =&gt; {
+    setCount(c =&gt; c + 1);
+  }, []); // stable reference forever
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;count: {count}&lt;/p&gt;
+      &lt;Child onClick={handleClick} /&gt;
+      &lt;button onClick={()=&gt;setOther(o=&gt;o+1)}&gt;re-render parent ({other})&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]},
+  { id:"customhooks", title:"Custom Hooks", tag:"hook", intro:`
+    <p>A custom Hook is just a JavaScript function whose name starts with <code>use</code> and that calls other Hooks inside it. This is React's mechanism for extracting and reusing stateful logic between components.</p>`,
+    cards:[
+      { title:"Live: a reusable useLocalCounter-style hook", body:`<p>(This sandbox has no real <code>localStorage</code>, so the example below simulates persistence with an in-memory object instead — the pattern is identical to a real <code>useLocalStorage</code> hook.)</p>`,
+        code:`const fakeStore = {};
+function usePersistentCounter(key, initial=0){
+  const [value, setValue] = React.useState(fakeStore[key] ?? initial);
+  React.useEffect(() =&gt; { fakeStore[key] = value; }, [key, value]);
+  return [value, setValue];
+}
+
+function CounterWidget({ storeKey }){
+  const [count, setCount] = usePersistentCounter(storeKey);
+  return (
+    &lt;div style={{marginBottom:8}}&gt;
+      {storeKey}: {count}
+      &lt;button onClick={()=&gt;setCount(c=&gt;c+1)} style={{marginLeft:8}}&gt;+1&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+function App(){
+  return (&lt;div&gt;&lt;CounterWidget storeKey="widgetA" /&gt;&lt;CounterWidget storeKey="widgetB" /&gt;&lt;/div&gt;);
+}
+render(&lt;App /&gt;);` }
+    ]}
+]},
+
+{ group:"Advanced Patterns", topics:[
+  { id:"composition", title:"Composition & Lifting State Up", tag:"pattern", intro:`
+    <p>React favors <b>composition over inheritance</b>. When two sibling components need to share and stay in sync on the same data, move ("lift") that state up to their closest common parent, then pass it down as props — this keeps a single source of truth.</p>`,
+    cards:[
+      { title:"Live: two inputs that stay in sync via a shared parent", body:``,
+        code:`function CelsiusInput({ value, onChange }){
+  return &lt;label&gt;°C: &lt;input value={value} onChange={e=&gt;onChange(e.target.value)} /&gt;&lt;/label&gt;;
+}
+function FahrenheitInput({ value, onChange }){
+  return &lt;label&gt;°F: &lt;input value={value} onChange={e=&gt;onChange(e.target.value)} /&gt;&lt;/label&gt;;
+}
+
+function App(){
+  const [celsius, setCelsius] = React.useState('');
+
+  function handleCelsius(v){ setCelsius(v); }
+  function handleFahrenheit(v){
+    const c = v === '' ? '' : ((Number(v) - 32) * 5/9).toFixed(1);
+    setCelsius(c);
+  }
+  const fahrenheit = celsius === '' ? '' : (Number(celsius) * 9/5 + 32).toFixed(1);
+
+  return (
+    &lt;div&gt;
+      &lt;CelsiusInput value={celsius} onChange={handleCelsius} /&gt;&lt;br/&gt;
+      &lt;FahrenheitInput value={fahrenheit} onChange={handleFahrenheit} /&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]},
+  { id:"fragments-portals", title:"Fragments & Portals", tag:"pattern", intro:`
+    <p><b>Fragments</b> (<code>&lt;&gt;...&lt;/&gt;</code>) group elements without adding an extra wrapper DOM node. <b>Portals</b> render a child into a DOM node outside its parent's DOM hierarchy — ideal for modals, tooltips, and toasts that need to escape overflow/z-index constraints while remaining part of the React tree logically.</p>`,
+    cards:[
+      { title:"Live: Fragment avoiding wrapper divs", body:``,
+        code:`function RowContent(){
+  return (
+    &lt;&gt;
+      &lt;td&gt;Sanjay&lt;/td&gt;
+      &lt;td&gt;Engineer&lt;/td&gt;
+    &lt;/&gt;
+  );
+}
+function App(){
+  return (
+    &lt;table border="1" cellPadding="6"&gt;
+      &lt;tbody&gt;&lt;tr&gt;&lt;RowContent /&gt;&lt;/tr&gt;&lt;/tbody&gt;
+    &lt;/table&gt;
+  );
+}
+render(&lt;App /&gt;);` },
+      { title:"Live: a Portal-based modal", body:`<p>The modal content is rendered into a separate <code>#modal-root</code> DOM node via <code>ReactDOM.createPortal</code>, even though logically it lives inside <code>App</code>.</p>`,
+        code:`function Modal({ onClose, children }){
+  const modalRoot = document.getElementById('modal-root');
+  return ReactDOM.createPortal(
+    &lt;div style={{position:'fixed', inset:0, background:'rgba(0,0,0,.5)', display:'flex', alignItems:'center', justifyContent:'center'}}&gt;
+      &lt;div style={{background:'#fff', padding:20, borderRadius:8}}&gt;
+        {children}
+        &lt;br/&gt;&lt;button onClick={onClose}&gt;Close&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;,
+    modalRoot
+  );
+}
+function App(){
+  const [open, setOpen] = React.useState(false);
+  return (
+    &lt;div&gt;
+      &lt;button onClick={()=&gt;setOpen(true)}&gt;Open modal&lt;/button&gt;
+      {open &amp;&amp; &lt;Modal onClose={()=&gt;setOpen(false)}&gt;&lt;p&gt;Rendered via a Portal!&lt;/p&gt;&lt;/Modal&gt;}
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);`, extraDom:`<div id="modal-root"></div>` }
+    ]},
+  { id:"errorboundary", title:"Error Boundaries", tag:"pattern", intro:`
+    <p>An <b>Error Boundary</b> is a class component that implements <code>static getDerivedStateFromError</code> and/or <code>componentDidCatch</code> to catch JavaScript errors thrown anywhere in its child tree during render, and show a fallback UI instead of crashing the whole app. There is no Hook equivalent — this is one of the few remaining reasons to write a class component.</p>`,
+    cards:[
+      { title:"Live: catching a render error", body:``,
+        code:`class ErrorBoundary extends React.Component {
+  constructor(props){ super(props); this.state = { hasError: false }; }
+  static getDerivedStateFromError(error){ return { hasError: true }; }
+  componentDidCatch(error, info){ console.log('Caught:', error.message); }
+  render(){
+    if (this.state.hasError) return &lt;p style={{color:'red'}}&gt;Something broke. (fallback UI)&lt;/p&gt;;
+    return this.props.children;
+  }
+}
+
+function Bomb(){
+  throw new Error('Boom!');
+}
+
+function App(){
+  const [show, setShow] = React.useState(false);
+  return (
+    &lt;div&gt;
+      &lt;button onClick={()=&gt;setShow(true)}&gt;Trigger error&lt;/button&gt;
+      &lt;ErrorBoundary&gt;
+        {show ? &lt;Bomb /&gt; : &lt;p&gt;All fine so far.&lt;/p&gt;}
+      &lt;/ErrorBoundary&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]},
+  { id:"classcomponents", title:"Class Components (legacy)", tag:"legacy", intro:`
+    <p>Before Hooks (React 16.8, 2019), all stateful components were written as ES6 classes extending <code>React.Component</code>. You'll still encounter this style in older codebases and in Error Boundaries.</p>`,
+    cards:[
+      { title:"Live: a class component with lifecycle methods", body:``,
+        code:`class Timer extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = { seconds: 0 };
+  }
+  componentDidMount(){
+    this.id = setInterval(() =&gt; this.setState(s =&gt; ({ seconds: s.seconds + 1 })), 1000);
+  }
+  componentWillUnmount(){
+    clearInterval(this.id);
+  }
+  render(){
+    return &lt;h2&gt;{this.state.seconds}s elapsed&lt;/h2&gt;;
+  }
+}
+render(&lt;Timer /&gt;);` },
+      { title:"Class ↔ Hook equivalence", body:``, ruleTable:[
+        ["<code>this.state</code> / <code>this.setState</code>","<code>useState</code>"],
+        ["<code>componentDidMount</code>","<code>useEffect(fn, [])</code>"],
+        ["<code>componentDidUpdate</code>","<code>useEffect(fn, [deps])</code>"],
+        ["<code>componentWillUnmount</code>","cleanup function returned from <code>useEffect</code>"],
+        ["<code>getDerivedStateFromError</code> / <code>componentDidCatch</code>","no Hook equivalent — still needs a class (Error Boundaries)"]
+      ]}
+    ]},
+  { id:"hoc-renderprops", title:"HOCs & Render Props", tag:"pattern", intro:`
+    <p>Before Hooks, two patterns were the standard way to reuse stateful logic across components: <b>Higher-Order Components</b> (a function that takes a component and returns an enhanced one) and <b>Render Props</b> (a component that takes a function as a prop/child to control what it renders). Custom Hooks have replaced most use cases, but both patterns still appear in libraries.</p>`,
+    cards:[
+      { title:"Live: a Higher-Order Component", body:``,
+        code:`function withLoading(Wrapped){
+  return function Enhanced({ isLoading, ...rest }){
+    if (isLoading) return &lt;p&gt;Loading...&lt;/p&gt;;
+    return &lt;Wrapped {...rest} /&gt;;
+  };
+}
+
+function UserList({ users }){
+  return &lt;ul&gt;{users.map(u =&gt; &lt;li key={u}&gt;{u}&lt;/li&gt;)}&lt;/ul&gt;;
+}
+const UserListWithLoading = withLoading(UserList);
+
+function App(){
+  const [loading, setLoading] = React.useState(true);
+  return (
+    &lt;div&gt;
+      &lt;UserListWithLoading isLoading={loading} users={['Asha','Ravi','Kiran']} /&gt;
+      &lt;button onClick={()=&gt;setLoading(false)}&gt;Finish loading&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` },
+      { title:"Live: a Render Props component", body:``,
+        code:`function MouseTracker({ render }){
+  const [pos, setPos] = React.useState({x:0,y:0});
+  return (
+    &lt;div onMouseMove={e =&gt; {
+        const rect = e.currentTarget.getBoundingClientRect();
+        setPos({x: Math.round(e.clientX-rect.left), y: Math.round(e.clientY-rect.top)});
+      }}
+      style={{height:100, background:'#eee'}}&gt;
+      {render(pos)}
+    &lt;/div&gt;
+  );
+}
+function App(){
+  return &lt;MouseTracker render={pos =&gt; &lt;p&gt;Mouse at {pos.x}, {pos.y}&lt;/p&gt;} /&gt;;
+}
+render(&lt;App /&gt;);` }
+    ]}
+]},
+
+{ group:"Performance & Ecosystem", topics:[
+  { id:"memo", title:"React.memo & Rendering Behavior", tag:"performance", intro:`
+    <p>By default, when a parent re-renders, <em>all</em> its children re-render too, even if their props didn't change. <code>React.memo</code> wraps a component so React skips re-rendering it when its props are shallowly equal to the previous render.</p>`,
+    cards:[
+      { title:"Live: memo preventing unnecessary re-renders", body:`<p>Type in the input — <code>ExpensiveList</code> does not re-render because its <code>items</code> prop didn't change, even though the parent re-renders on every keystroke.</p>`,
+        code:`const ExpensiveList = React.memo(function ExpensiveList({ items }){
+  console.log('ExpensiveList rendered');
+  return &lt;ul&gt;{items.map(i =&gt; &lt;li key={i}&gt;{i}&lt;/li&gt;)}&lt;/ul&gt;;
+});
+
+function App(){
+  const [text, setText] = React.useState('');
+  const items = React.useMemo(() =&gt; ['apple','banana','cherry'], []);
+  return (
+    &lt;div&gt;
+      &lt;input value={text} onChange={e=&gt;setText(e.target.value)} placeholder="type — watch console" /&gt;
+      &lt;ExpensiveList items={items} /&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;App /&gt;);` },
+      { title:"General performance checklist", body:``, ruleTable:[
+        ["Unnecessary re-renders of pure children","<code>React.memo</code>"],
+        ["Expensive computed value re-runs every render","<code>useMemo</code>"],
+        ["New function identity breaks memo on children","<code>useCallback</code>"],
+        ["Long lists render slowly","Windowing / virtualization (e.g. react-window)"],
+        ["Large component tree loaded upfront","Code-splitting with <code>React.lazy</code> + <code>Suspense</code>"]
+      ]}
+    ]},
+  { id:"suspense", title:"Lazy Loading & Suspense", tag:"performance", intro:`
+    <p><code>React.lazy</code> lets you code-split a component so its bundle is only fetched when needed. <code>&lt;Suspense fallback={...}&gt;</code> shows a fallback UI while the lazily-loaded component is downloading.</p>`,
+    cards:[
+      { title:"Pattern (illustrative — real bundling required)", body:`<p>This pattern requires an actual bundler doing dynamic <code>import()</code>, so it's shown as reference code rather than a live sandbox.</p>`,
+        code:`const SettingsPanel = React.lazy(() =&gt; import('./SettingsPanel'));
+
+function App(){
+  const [show, setShow] = React.useState(false);
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() =&gt; setShow(true)}&gt;Open settings&lt;/button&gt;
+      {show &amp;&amp; (
+        &lt;React.Suspense fallback={&lt;p&gt;Loading settings...&lt;/p&gt;}&gt;
+          &lt;SettingsPanel /&gt;
+        &lt;/React.Suspense&gt;
+      )}
+    &lt;/div&gt;
+  );
+}`, noRun:true }
+    ]},
+  { id:"routing", title:"React Router (concept)", tag:"ecosystem", intro:`
+    <p>React itself has no built-in router. <b>React Router</b> is the most widely used library for client-side routing — mapping URL paths to components without a full page reload.</p>`,
+    cards:[
+      { title:"Typical setup (reference — requires the react-router-dom package)", body:``,
+        code:`import { BrowserRouter, Routes, Route, Link, useParams } from "react-router-dom";
+
+function Home(){ return &lt;h2&gt;Home&lt;/h2&gt;; }
+function UserPage(){
+  const { id } = useParams();
+  return &lt;h2&gt;User #{id}&lt;/h2&gt;;
+}
+
+function App(){
+  return (
+    &lt;BrowserRouter&gt;
+      &lt;nav&gt;
+        &lt;Link to="/"&gt;Home&lt;/Link&gt; | &lt;Link to="/user/7"&gt;User 7&lt;/Link&gt;
+      &lt;/nav&gt;
+      &lt;Routes&gt;
+        &lt;Route path="/" element={&lt;Home /&gt;} /&gt;
+        &lt;Route path="/user/:id" element={&lt;UserPage /&gt;} /&gt;
+      &lt;/Routes&gt;
+    &lt;/BrowserRouter&gt;
+  );
+}`, noRun:true },
+      { title:"Core concepts", body:``, ruleTable:[
+        ["<code>&lt;BrowserRouter&gt;</code>","wraps the app, syncs UI with the browser URL via the History API"],
+        ["<code>&lt;Routes&gt;</code> / <code>&lt;Route&gt;</code>","declares which component renders for which path"],
+        ["<code>&lt;Link&gt;</code>","navigates without a full page reload (unlike <code>&lt;a&gt;</code>)"],
+        ["<code>useParams()</code>","reads dynamic segments like <code>:id</code> from the URL"],
+        ["<code>useNavigate()</code>","navigate programmatically, e.g. after a form submit"]
+      ]}
+    ]},
+  { id:"contextreducer", title:"Context + Reducer (mini state manager)", tag:"pattern", intro:`
+    <p>Combining <code>useReducer</code> with <code>useContext</code> gives you a lightweight global-state pattern — the same idea Redux popularized — without any extra library.</p>`,
+    cards:[
+      { title:"Live: a global cart store via Context + Reducer", body:``,
+        code:`const CartContext = React.createContext(null);
+
+function cartReducer(state, action){
+  switch(action.type){
+    case 'add': return [...state, action.item];
+    case 'clear': return [];
+    default: return state;
+  }
+}
+
+function CartProvider({ children }){
+  const [items, dispatch] = React.useReducer(cartReducer, []);
+  return &lt;CartContext.Provider value={{items, dispatch}}&gt;{children}&lt;/CartContext.Provider&gt;;
+}
+
+function AddItemButton({ name }){
+  const { dispatch } = React.useContext(CartContext);
+  return &lt;button onClick={()=&gt;dispatch({type:'add', item:name})}&gt;Add {name}&lt;/button&gt;;
+}
+function CartSummary(){
+  const { items, dispatch } = React.useContext(CartContext);
+  return (
+    &lt;div&gt;
+      &lt;p&gt;Cart ({items.length}): {items.join(', ')}&lt;/p&gt;
+      &lt;button onClick={()=&gt;dispatch({type:'clear'})}&gt;Clear&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+function App(){
+  return (
+    &lt;CartProvider&gt;
+      &lt;AddItemButton name="Book" /&gt;
+      &lt;AddItemButton name="Pen" /&gt;
+      &lt;CartSummary /&gt;
+    &lt;/CartProvider&gt;
+  );
+}
+render(&lt;App /&gt;);` }
+    ]}
+]},
+
+{ group:"Mini Projects", topics:[
+  { id:"project-todo", title:"Project 1 — Todo App", tag:"project", intro:`
+    <p>Combines <code>useState</code>, controlled forms, list rendering with keys, and conditional rendering into one small full app.</p>`,
+    cards:[
+      { title:"Live: full Todo app", body:``,
+        code:`function TodoApp(){
+  const [todos, setTodos] = React.useState([
+    {id:1, text:'Learn React basics', done:true},
+    {id:2, text:'Build a mini project', done:false},
+  ]);
+  const [input, setInput] = React.useState('');
+
+  function addTodo(e){
+    e.preventDefault();
+    if (!input.trim()) return;
+    setTodos([...todos, { id: Date.now(), text: input, done:false }]);
+    setInput('');
+  }
+  function toggle(id){
+    setTodos(todos.map(t =&gt; t.id===id ? {...t, done: !t.done} : t));
+  }
+  function remove(id){
+    setTodos(todos.filter(t =&gt; t.id !== id));
+  }
+  const remaining = todos.filter(t =&gt; !t.done).length;
+
+  return (
+    &lt;div style={{fontFamily:'sans-serif', maxWidth:360}}&gt;
+      &lt;form onSubmit={addTodo}&gt;
+        &lt;input value={input} onChange={e=&gt;setInput(e.target.value)} placeholder="add a task..." /&gt;
+        &lt;button type="submit"&gt;Add&lt;/button&gt;
+      &lt;/form&gt;
+      &lt;ul style={{paddingLeft:18}}&gt;
+        {todos.map(t =&gt; (
+          &lt;li key={t.id} style={{textDecoration: t.done ? 'line-through' : 'none', color: t.done? '#888':'#000'}}&gt;
+            &lt;label&gt;
+              &lt;input type="checkbox" checked={t.done} onChange={()=&gt;toggle(t.id)} /&gt; {t.text}
+            &lt;/label&gt;
+            &lt;button onClick={()=&gt;remove(t.id)} style={{marginLeft:6}}&gt;✕&lt;/button&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+      &lt;p&gt;{remaining} task(s) remaining&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;TodoApp /&gt;);` }
+    ]},
+  { id:"project-fetch", title:"Project 2 — Data Fetching Dashboard", tag:"project", intro:`
+    <p>Demonstrates <code>useEffect</code>, loading/error state, and dependent re-fetching — using a simulated API (since the sandbox has no network access) that behaves exactly like a real <code>fetch</code> call would.</p>`,
+    cards:[
+      { title:"Live: simulated async data fetching", body:``,
+        code:`function fakeFetchUser(id){
+  return new Promise((resolve, reject) =&gt; {
+    setTimeout(() =&gt; {
+      if (id === 4) reject(new Error('User 4 not found'));
+      else resolve({ id, name: 'User ' + id, joined: 2020 + id });
+    }, 700);
+  });
+}
+
+function UserDashboard(){
+  const [id, setId] = React.useState(1);
+  const [user, setUser] = React.useState(null);
+  const [status, setStatus] = React.useState('idle'); // idle | loading | error | done
+
+  React.useEffect(() =&gt; {
+    let cancelled = false;
+    setStatus('loading');
+    fakeFetchUser(id)
+      .then(u =&gt; { if (!cancelled) { setUser(u); setStatus('done'); } })
+      .catch(() =&gt; { if (!cancelled) { setStatus('error'); } });
+    return () =&gt; { cancelled = true; };
+  }, [id]);
+
+  return (
+    &lt;div style={{fontFamily:'sans-serif'}}&gt;
+      &lt;div&gt;
+        &lt;button onClick={()=&gt;setId(i=&gt;Math.max(1,i-1))}&gt;⟵ prev&lt;/button&gt;
+        &lt;span style={{margin:'0 10px'}}&gt;ID: {id}&lt;/span&gt;
+        &lt;button onClick={()=&gt;setId(i=&gt;i+1)}&gt;next ⟶&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div style={{marginTop:10}}&gt;
+        {status === 'loading' &amp;&amp; &lt;p&gt;Loading user {id}...&lt;/p&gt;}
+        {status === 'error' &amp;&amp; &lt;p style={{color:'red'}}&gt;Failed to load user {id}&lt;/p&gt;}
+        {status === 'done' &amp;&amp; user &amp;&amp; &lt;p&gt;{user.name} — joined {user.joined}&lt;/p&gt;}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;UserDashboard /&gt;);` }
+    ]},
+  { id:"project-stopwatch", title:"Project 3 — Stopwatch (refs + effects)", tag:"project", intro:`
+    <p>Combines <code>useState</code>, <code>useRef</code> (to hold the interval ID without re-rendering) and <code>useEffect</code> cleanup.</p>`,
+    cards:[
+      { title:"Live: stopwatch with start / pause / reset", body:``,
+        code:`function Stopwatch(){
+  const [ms, setMs] = React.useState(0);
+  const [running, setRunning] = React.useState(false);
+  const intervalRef = React.useRef(null);
+
+  React.useEffect(() =&gt; {
+    if (running) {
+      intervalRef.current = setInterval(() =&gt; setMs(m =&gt; m + 100), 100);
+    }
+    return () =&gt; clearInterval(intervalRef.current);
+  }, [running]);
+
+  function format(ms){
+    const s = Math.floor(ms/1000);
+    const tenths = Math.floor((ms%1000)/100);
+    return s + '.' + tenths + 's';
+  }
+
+  return (
+    &lt;div style={{fontFamily:'sans-serif'}}&gt;
+      &lt;h2&gt;{format(ms)}&lt;/h2&gt;
+      &lt;button onClick={()=&gt;setRunning(true)} disabled={running}&gt;Start&lt;/button&gt;
+      &lt;button onClick={()=&gt;setRunning(false)} style={{margin:'0 8px'}} disabled={!running}&gt;Pause&lt;/button&gt;
+      &lt;button onClick={()=&gt;{setRunning(false); setMs(0);}}&gt;Reset&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+render(&lt;Stopwatch /&gt;);` }
+    ]}
+]}
+];
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+let exampleCount = 0, topicCount = 0;
+const contentEl = document.getElementById('content');
+const navEl = document.getElementById('nav');
+
+function esc(s){ return s; } // codes are already HTML-entity-escaped in the data above
+
+GUIDE.forEach(groupObj => {
+  const groupLabel = document.createElement('div');
+  groupLabel.className = 'group-label';
+  groupLabel.textContent = groupObj.group;
+  navEl.appendChild(groupLabel);
+
+  groupObj.topics.forEach(topic => {
+    topicCount++;
+    // nav link
+    const a = document.createElement('a');
+    a.href = '#' + topic.id;
+    a.textContent = topic.title;
+    a.dataset.target = topic.id;
+    navEl.appendChild(a);
+
+    // section
+    const section = document.createElement('section');
+    section.className = 'topic-section';
+    section.id = topic.id;
+
+    let cardsHtml = '';
+    (topic.cards || []).forEach(card => {
+      let bodyExtra = '';
+      if (card.ruleTable){
+        bodyExtra += `<table class="ref"><thead><tr><th>Situation / API</th><th>Use</th></tr></thead><tbody>`;
+        card.ruleTable.forEach(row => {
+          bodyExtra += `<tr><td>${row[0]}</td><td>${row[1]}</td></tr>`;
+        });
+        bodyExtra += `</tbody></table>`;
+      }
+
+      let codeBlock = '';
+      if (card.code){
+        exampleCount++;
+        const uid = 'ex' + exampleCount;
+        const runnable = !card.noRun;
+        codeBlock = `
+          <div class="editor-wrap">
+            <div class="editor-bar">
+              <span class="fname">${runnable ? 'App.jsx — editable' : 'reference.jsx'}</span>
+              <div class="btns">
+                ${runnable ? `<button class="btn" onclick="resetExample('${uid}')">Reset</button><button class="btn run" onclick="runExample('${uid}')">▶ Run</button>` : `<span class="btn" style="cursor:default;opacity:.6">reference only</span>`}
+              </div>
+            </div>
+            <textarea class="code-input" id="input-${uid}" spellcheck="false" data-original="${card.code.replace(/"/g,'&quot;')}">${card.code}</textarea>
+            ${runnable ? `
+            <div class="output-wrap">
+              <div class="output-label">Live output</div>
+              <div class="error-box" id="error-${uid}"></div>
+              <iframe class="sandbox" id="frame-${uid}"></iframe>
+            </div>` : ''}
+          </div>`;
+      }
+
+      cardsHtml += `
+        <div class="card">
+          <div class="card-head"><h3>${card.title}</h3></div>
+          <div class="card-body">${card.body || ''}${bodyExtra}</div>
+          ${codeBlock}
+        </div>`;
+    });
+
+    section.innerHTML = `
+      <div class="topic-head"><h2>${topic.title}</h2><span class="tag">${topic.tag}</span></div>
+      <div class="topic-intro">${topic.intro || ''}</div>
+      ${cardsHtml}
+    `;
+    contentEl.appendChild(section);
+  });
+});
+
+document.getElementById('stat-topics').textContent = topicCount;
+document.getElementById('stat-examples').textContent = exampleCount;
+
+/* store extraDom per uid for iframes that need a portal target etc */
+const EXTRA_DOM = {};
+(function mapExtras(){
+  let counter = 0;
+  GUIDE.forEach(g => g.topics.forEach(t => (t.cards||[]).forEach(c => {
+    if (c.code) { counter++; if (c.extraDom) EXTRA_DOM['ex'+counter] = c.extraDom; }
+  })));
+})();
+
+function buildSrcDoc(jsxSource, extra){
+  const jsx = jsxSource
+    .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&amp;/g,'&');
+  return `<!DOCTYPE html><html><head><meta charset="utf-8">
+    <style>body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;margin:12px;color:#111;font-size:14px} button{cursor:pointer;padding:4px 10px;border-radius:5px;border:1px solid #ccc;background:#f6f6f6} button:hover{background:#eee} input,select{padding:4px 6px;border-radius:5px;border:1px solid #ccc}</style>
+    </head><body>
+    <div id="root"></div>
+    ${extra || ''}
+    <script src="https://unpkg.com/react@18/umd/react.development.js"><\/script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"><\/script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"><\/script>
+    <script type="text/babel" data-presets="react">
+      function render(el){ ReactDOM.createRoot(document.getElementById('root')).render(el); }
+      try {
+        ${jsx}
+      } catch (err) {
+        document.getElementById('root').innerHTML = '<pre style="color:#c00;white-space:pre-wrap">'+ (err && err.message ? err.message : String(err)) +'</pre>';
+      }
+    <\/script>
+    </body></html>`;
+}
+
+function runExample(uid){
+  const ta = document.getElementById('input-' + uid);
+  const frame = document.getElementById('frame-' + uid);
+  const errBox = document.getElementById('error-' + uid);
+  errBox.style.display = 'none';
+  try {
+    frame.srcdoc = buildSrcDoc(ta.value, EXTRA_DOM[uid]);
+  } catch (e) {
+    errBox.style.display = 'block';
+    errBox.textContent = e.message;
+  }
+}
+function resetExample(uid){
+  const ta = document.getElementById('input-' + uid);
+  ta.value = ta.dataset.original.replace(/&quot;/g,'"');
+  runExample(uid);
+}
+
+/* auto-run all examples once on load (staggered a touch to avoid jank) */
+window.addEventListener('load', () => {
+  const allTextareas = document.querySelectorAll('textarea.code-input');
+  let i = 0;
+  allTextareas.forEach(ta => {
+    const uid = ta.id.replace('input-', '');
+    const frame = document.getElementById('frame-' + uid);
+    if (frame) {
+      setTimeout(() => runExample(uid), i * 40);
+      i++;
+    }
+  });
+});
+
+/* ============================================================
+   SCROLL SPY + PROGRESS BAR
+   ============================================================ */
+const sections = Array.from(document.querySelectorAll('.topic-section'));
+const navLinks = Array.from(document.querySelectorAll('#nav a'));
+
+function onScroll(){
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('progress').style.width = (docHeight > 0 ? (scrollTop/docHeight*100) : 0) + '%';
+
+  let current = sections[0] && sections[0].id;
+  for (const sec of sections){
+    if (sec.getBoundingClientRect().top - 100 <= 0) current = sec.id;
+  }
+  navLinks.forEach(a => a.classList.toggle('active', a.dataset.target === current));
+}
+window.addEventListener('scroll', onScroll);
+onScroll();
+
+/* close mobile sidebar on nav click */
+navLinks.forEach(a => a.addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}));
+</script>
+</body>
+</html>

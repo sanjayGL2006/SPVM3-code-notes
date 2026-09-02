@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Field Manual Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF1F5;
+  --panel:#FFFFFF;
+  --ink:#0F1B2D;
+  --ink-soft:#4A5C74;
+  --line:#C7D2E0;
+  --accent:#2F6FED;
+  --accent-2:#E8A33D;
+  --code-bg:#0F1B2D;
+  --code-text:#DCE6F5;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+  --display:'Space Grotesk',sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6}
+a{color:var(--accent)}
+.app{display:flex;min-height:100vh}
+
+/* ---- Sidebar ---- */
+.sidebar{
+  width:290px;flex-shrink:0;background:var(--ink);color:#DCE6F5;
+  position:sticky;top:0;height:100vh;overflow-y:auto;padding:1.2rem 0 3rem;
+  border-right:1px solid #1c2a3f;
+}
+.brand{padding:0 1.2rem 1rem;border-bottom:1px solid #223148;margin-bottom:.8rem}
+.brand .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;color:var(--accent-2);text-transform:uppercase}
+.brand h1{font-family:var(--display);font-size:1.3rem;margin:.3rem 0 0;color:#fff}
+.sidebar-search{padding:0 1.2rem;margin-bottom:.6rem}
+.sidebar-search input{
+  width:100%;padding:.5rem .7rem;border-radius:4px;border:1px solid #2A3B54;
+  background:#12203A;color:#DCE6F5;font-family:var(--mono);font-size:.78rem;
+}
+.sidebar-search input::placeholder{color:#6B7F9C}
+.part{margin-top:.9rem}
+.part-label{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:#6B7F9C;padding:0 1.2rem;margin-bottom:.35rem;
+}
+.navlink{
+  display:flex;gap:.6rem;align-items:baseline;width:100%;text-align:left;
+  background:none;border:none;color:#B9C7DC;padding:.42rem 1.2rem;font-family:var(--sans);
+  font-size:.85rem;cursor:pointer;border-left:3px solid transparent;
+}
+.navlink .n{font-family:var(--mono);color:#5A76A0;font-size:.72rem;min-width:1.6em}
+.navlink:hover{background:#152238;color:#fff}
+.navlink.active{background:#152A4A;border-left-color:var(--accent-2);color:#fff}
+
+/* ---- Main ---- */
+.content{flex:1;min-width:0;padding:0 0 6rem}
+.topbar{
+  position:sticky;top:0;z-index:5;background:rgba(237,241,245,.9);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);padding:.7rem 2.2rem;font-family:var(--mono);
+  font-size:.72rem;color:var(--ink-soft);letter-spacing:.04em;display:flex;justify-content:space-between;
+}
+.menu-btn{display:none;background:var(--ink);color:#fff;border:none;border-radius:4px;padding:.4rem .7rem;font-family:var(--mono);cursor:pointer}
+
+.view{display:none;padding:2.6rem 3rem;max-width:920px}
+.view.active{display:block}
+
+/* Hero */
+#hero.view{max-width:none;padding:0}
+.hero-wrap{background:var(--ink);color:#fff;padding:4rem 3rem 3.5rem;position:relative;overflow:hidden}
+.hero-wrap::after{
+  content:"";position:absolute;inset:0;background-image:
+   linear-gradient(#1a2c47 1px,transparent 1px),linear-gradient(90deg,#1a2c47 1px,transparent 1px);
+  background-size:34px 34px;opacity:.4;pointer-events:none;
+}
+.hero-inner{position:relative;max-width:920px}
+.hero-wrap .tag{font-family:var(--mono);color:var(--accent-2);letter-spacing:.15em;font-size:.75rem;text-transform:uppercase}
+.hero-wrap h1{font-family:var(--display);font-size:clamp(2.2rem,5vw,3.4rem);margin:.5rem 0 .8rem;line-height:1.05}
+.hero-wrap p{max-width:640px;color:#B9C7DC;font-size:1.02rem}
+.hero-cta{margin-top:1.6rem;display:flex;gap:.8rem;flex-wrap:wrap}
+.hero-cta button{
+  font-family:var(--mono);font-size:.8rem;padding:.6rem 1rem;border-radius:5px;cursor:pointer;
+  border:1px solid var(--accent);background:var(--accent);color:#fff;
+}
+.hero-cta button.ghost{background:transparent;color:#fff;border-color:#3A4E6B}
+.hero-body{padding:2.8rem 3rem}
+.hero-body h2{font-family:var(--display);font-size:1.4rem;margin-top:0}
+
+/* Roadmap diagram (hero signature) */
+.roadmap{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:2.2rem}
+.roadmap .stop{
+  font-family:var(--mono);font-size:.72rem;background:#12203A;border:1px solid #27395A;
+  color:#CBD9EE;padding:.4rem .65rem;border-radius:4px;
+}
+.roadmap .sep{color:var(--accent-2);align-self:center}
+
+/* Unit head (title block) */
+.unit-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--ink);padding-bottom:.7rem;margin-bottom:1.7rem;flex-wrap:wrap;gap:.5rem}
+.unit-head .num{font-family:var(--mono);color:var(--accent);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase}
+.unit-head h2{font-family:var(--display);font-size:1.85rem;margin:.15rem 0 0}
+.unit-head .rev{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);border:1px solid var(--line);padding:.22rem .55rem;border-radius:3px;white-space:nowrap}
+
+.view h3{font-family:var(--display);font-size:1.15rem;margin:1.8rem 0 .6rem}
+.view p{color:#243347;font-size:.95rem}
+.lead{font-size:1.02rem;color:var(--ink)}
+
+ul.plain{padding-left:1.1rem;font-size:.92rem;color:#243347}
+ul.plain li{margin-bottom:.3rem}
+
+/* code */
+.code-tab{display:inline-block;background:var(--ink);color:var(--accent-2);font-family:var(--mono);font-size:.68rem;letter-spacing:.03em;padding:.25rem .6rem;border-radius:4px 4px 0 0}
+pre{background:var(--code-bg);color:var(--code-text);padding:1rem 1.1rem;border-radius:0 6px 6px 6px;overflow-x:auto;font-family:var(--mono);font-size:.8rem;line-height:1.6;margin-top:0;border:1px solid #223148}
+pre .cm{color:#7590B5}
+pre .kw{color:var(--accent-2)}
+pre .st{color:#8FD19E}
+pre .tg{color:#8FB8FF}
+
+/* comparison table */
+.cmp-table{width:100%;border-collapse:collapse;margin:1.2rem 0;font-size:.85rem}
+.cmp-table th,.cmp-table td{border:1px solid var(--line);padding:.55rem .75rem;text-align:left;vertical-align:top}
+.cmp-table th{background:var(--ink);color:#fff;font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em}
+.cmp-table tr:nth-child(even) td{background:#F5F8FC}
+
+/* flow diagram */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:1.3rem 0;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:1.1rem}
+.flow.vertical{flex-direction:column;align-items:flex-start}
+.flow .node{background:var(--bg);border:1.5px solid var(--accent);border-radius:5px;padding:.5rem .85rem;font-family:var(--mono);font-size:.76rem;color:var(--ink);white-space:nowrap}
+.flow .node.dim{border-style:dashed;border-color:var(--line);color:var(--ink-soft)}
+.flow .node.warn{border-color:var(--accent-2)}
+.flow .arrow{color:var(--accent-2);font-family:var(--mono);font-size:1rem;flex-shrink:0}
+
+/* tree diagram */
+.tree{font-family:var(--mono);font-size:.8rem;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:1rem 1.2rem;margin:1.2rem 0}
+.tree ul{list-style:none;margin:0;padding-left:1.2rem;border-left:1.5px dashed var(--line)}
+.tree > ul{border-left:none;padding-left:0}
+.tree li{position:relative;padding:.22rem 0 .22rem .8rem}
+.tree ul li::before{content:"";position:absolute;left:-1.2rem;top:.9rem;width:1rem;height:1.5px;background:var(--line)}
+
+.note{border-left:3px solid var(--accent-2);background:#FFF6E9;padding:.7rem 1rem;font-size:.86rem;margin:1.2rem 0;border-radius:0 5px 5px 0}
+.note strong{color:#8A5A0B}
+
+.section-nav{display:flex;justify-content:space-between;margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--line);font-family:var(--mono);font-size:.75rem}
+.section-nav button{background:none;border:1px solid var(--line);border-radius:5px;padding:.5rem .8rem;cursor:pointer;color:var(--ink);font-family:var(--mono);font-size:.75rem}
+.section-nav button:hover{border-color:var(--accent)}
+
+@media (max-width:900px){
+  .sidebar{position:fixed;left:-300px;z-index:20;transition:left .2s ease;box-shadow:8px 0 24px rgba(0,0,0,.25)}
+  .sidebar.open{left:0}
+  .menu-btn{display:inline-block}
+  .view{padding:2rem 1.3rem}
+  .hero-wrap,.hero-body{padding-left:1.3rem;padding-right:1.3rem}
+}
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('react-manual')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('react-manual'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="tag">Curriculum · Rev A</div>
+      <h1>React — Field Manual</h1>
+    </div>
+    <div class="sidebar-search"><input id="navFilter" placeholder="Filter units…" /></div>
+    <nav id="navRoot"></nav>
+  </aside>
+
+  <main class="content">
+    <div class="topbar">
+      <span><button class="menu-btn" id="menuBtn">☰ Units</button> <span id="crumb">Overview</span></span>
+      <span>39 units · beginner → advanced</span>
+    </div>
+
+    <!-- HERO / OVERVIEW -->
+    <section class="view active" id="hero" data-title="Overview">
+      <div class="hero-wrap">
+        <div class="hero-inner">
+          <div class="tag">A → Z Reference</div>
+          <h1>Everything from &lt;div&gt; to<br>deployed React app.</h1>
+          <p>A complete, diagram-first React curriculum — prerequisites, JSX, hooks, routing, state management, testing, and shipping to production. Each unit has an explanation, a diagram, a working example, and comparison tables where a distinction matters.</p>
+          <div class="hero-cta">
+            <button onclick="goTo('u03')">Start at Unit 03 →</button>
+            <button class="ghost" onclick="goTo('u39')">Jump to roadmap</button>
+          </div>
+        </div>
+      </div>
+      <div class="hero-body">
+        <h2>How this manual is organized</h2>
+        <p>Eight parts, thirty-nine units — mirrors the order you'd actually learn this in.</p>
+        <div class="roadmap" id="roadmapChips"></div>
+        <div class="note"><strong>Where to start:</strong> if you already know JavaScript ES6+, skip straight to Unit 03. If forms, hooks, or state feel shaky, that's Units 09–17. Redux/Next.js/TypeScript (Units 22–30) are not needed until you're comfortable with everything before them.</div>
+      </div>
+    </section>
+
+    <!-- Sections injected by JS build below, written directly for content control -->
+
+    <section class="view" id="u01" data-title="HTML & CSS Essentials">
+      <div class="unit-head"><div><div class="num">Part 01 · Unit 01</div><h2>HTML &amp; CSS Essentials</h2></div><div class="rev">Prerequisite</div></div>
+      <p class="lead">React renders to real HTML elements and is styled with real CSS — there's no shortcut around knowing both first.</p>
+      <h3>What you actually need before React</h3>
+      <ul class="plain">
+        <li><strong>HTML:</strong> document structure, semantic tags (<code>header</code>, <code>main</code>, <code>section</code>, <code>footer</code>), forms &amp; input types, accessibility attributes (<code>alt</code>, <code>label</code>, <code>aria-*</code>).</li>
+        <li><strong>CSS:</strong> the box model, Flexbox, Grid, positioning, media queries, transitions. Flexbox and Grid alone cover ~90% of component layout in React apps.</li>
+      </ul>
+      <div class="code-tab">layout.css</div>
+      <pre>.card {
+  display: <span class="tg">flex</span>;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+}</pre>
+      <div class="note"><strong>Why it matters for React:</strong> JSX styling bugs are almost always CSS bugs wearing a React costume. Debug the box model first, the component second.</div>
+      <div class="section-nav"><span></span><button onclick="goTo('u02')">Unit 02: Modern JavaScript →</button></div>
+    </section>
+
+    <section class="view" id="u02" data-title="Modern JavaScript (ES6+)">
+      <div class="unit-head"><div><div class="num">Part 01 · Unit 02</div><h2>Modern JavaScript (ES6+)</h2></div><div class="rev">Prerequisite</div></div>
+      <p class="lead">React code is just JavaScript. Fluency in ES6+ syntax is what makes JSX and hooks feel natural instead of cryptic.</p>
+      <table class="cmp-table">
+        <tr><th>Feature</th><th>Example</th><th>Where you'll see it in React</th></tr>
+        <tr><td>Destructuring</td><td><code>const {name} = props</code></td><td>Reading props &amp; state</td></tr>
+        <tr><td>Spread</td><td><code>{...user, age: 30}</code></td><td>Immutable state updates</td></tr>
+        <tr><td>Arrow functions</td><td><code>() =&gt; doThing()</code></td><td>Event handlers, callbacks</td></tr>
+        <tr><td>Template literals</td><td><code>`Hi ${name}`</code></td><td>Dynamic JSX text</td></tr>
+        <tr><td>Array methods</td><td><code>items.map()</code></td><td>Rendering lists</td></tr>
+        <tr><td>async/await</td><td><code>await fetch(url)</code></td><td>Data fetching in <code>useEffect</code></td></tr>
+        <tr><td>Optional chaining</td><td><code>user?.address?.city</code></td><td>Safe access to async data</td></tr>
+      </table>
+      <div class="code-tab">example.js</div>
+      <pre><span class="kw">const</span> user = { name: <span class="st">"Asha"</span>, age: 28 };
+<span class="kw">const</span> { name, age } = user;              <span class="cm">// destructuring</span>
+<span class="kw">const</span> updated = { ...user, age: 29 };   <span class="cm">// spread — new object</span>
+<span class="kw">const</span> greet = (n) =&gt; `Hello, ${n}`;    <span class="cm">// arrow fn + template literal</span></pre>
+      <div class="section-nav"><button onclick="goTo('u01')">← Unit 01</button><button onclick="goTo('u03')">Unit 03: What is React? →</button></div>
+    </section>
+
+    <section class="view" id="u03" data-title="What is React?">
+      <div class="unit-head"><div><div class="num">Part 02 · Unit 03</div><h2>What is React?</h2></div><div class="rev">Foundations</div></div>
+      <p class="lead">React is a JavaScript <strong>library</strong> (not a framework) for building user interfaces out of small, reusable components — declaratively.</p>
+      <h3>Declarative vs imperative</h3>
+      <table class="cmp-table">
+        <tr><th></th><th>Imperative (vanilla JS)</th><th>Declarative (React)</th></tr>
+        <tr><td>You write</td><td>Step-by-step DOM instructions</td><td>What the UI should look like for a given state</td></tr>
+        <tr><td>Example</td><td><code>el.classList.add("active")</code></td><td><code>&lt;div className={isActive ? "active" : ""}&gt;</code></td></tr>
+        <tr><td>Who tracks DOM changes</td><td>You do, manually</td><td>React does, via the virtual DOM</td></tr>
+      </table>
+      <h3>The virtual DOM, in one diagram</h3>
+      <div class="flow vertical">
+        <div class="node">State changes (e.g. setCount)</div>
+        <div class="arrow">↓</div>
+        <div class="node">React builds a new Virtual DOM tree</div>
+        <div class="arrow">↓</div>
+        <div class="node">Diffs it against the previous tree (reconciliation)</div>
+        <div class="arrow">↓</div>
+        <div class="node warn">Only the changed real DOM nodes are updated</div>
+      </div>
+      <h3>React vs Angular vs Vue</h3>
+      <table class="cmp-table">
+        <tr><th>Aspect</th><th>React</th><th>Angular</th><th>Vue</th></tr>
+        <tr><td>Type</td><td>Library (UI layer only)</td><td>Full framework</td><td>Progressive framework</td></tr>
+        <tr><td>Language</td><td>JavaScript/JSX</td><td>TypeScript</td><td>HTML templates + JS</td></tr>
+        <tr><td>Data flow</td><td>One-way</td><td>Two-way (default)</td><td>Two-way (optional)</td></tr>
+        <tr><td>Learning curve</td><td>Moderate</td><td>Steep</td><td>Gentle</td></tr>
+      </table>
+      <div class="section-nav"><button onclick="goTo('u02')">← Unit 02</button><button onclick="goTo('u04')">Unit 04: Environment Setup →</button></div>
+    </section>
+
+    <section class="view" id="u04" data-title="Environment Setup">
+      <div class="unit-head"><div><div class="num">Part 02 · Unit 04</div><h2>Environment Setup</h2></div><div class="rev">Foundations</div></div>
+      <p class="lead">Node.js + a build tool (Vite) is the standard modern setup — fast dev server, instant hot-reload, optimized production builds.</p>
+      <div class="code-tab">terminal</div>
+      <pre>npm create vite@latest my-app -- --template react
+<span class="kw">cd</span> my-app
+npm install
+npm run dev      <span class="cm"># start dev server</span>
+npm run build    <span class="cm"># production build</span></pre>
+      <h3>Project structure</h3>
+      <div class="tree">
+        <ul>
+          <li>src/
+            <ul>
+              <li>main.jsx <span style="color:#7590B5">— entry point, mounts &lt;App/&gt;</span></li>
+              <li>App.jsx <span style="color:#7590B5">— root component</span></li>
+              <li>components/</li>
+              <li>pages/</li>
+              <li>assets/</li>
+            </ul>
+          </li>
+          <li>public/</li>
+          <li>package.json</li>
+          <li>index.html</li>
+        </ul>
+      </div>
+      <div class="section-nav"><button onclick="goTo('u03')">← Unit 03</button><button onclick="goTo('u05')">Unit 05: JSX →</button></div>
+    </section>
+
+    <section class="view" id="u05" data-title="JSX">
+      <div class="unit-head"><div><div class="num">Part 02 · Unit 05</div><h2>JSX</h2></div><div class="rev">Foundations</div></div>
+      <p class="lead">JSX is HTML-like syntax that compiles to <code>React.createElement()</code> calls — it lets you describe UI using markup, inside JavaScript.</p>
+      <div class="code-tab">Greeting.jsx</div>
+      <pre><span class="kw">function</span> Greeting({ name }) {
+  <span class="kw">return</span> (
+    &lt;h1 className=<span class="st">"title"</span>&gt;
+      Hello, {name}! {<span class="cm">/* JS expression inside {} */</span>}
+    &lt;/h1&gt;
+  );
+}</pre>
+      <h3>JSX vs HTML — key differences</h3>
+      <table class="cmp-table">
+        <tr><th>HTML</th><th>JSX</th><th>Why</th></tr>
+        <tr><td><code>class="btn"</code></td><td><code>className="btn"</code></td><td><code>class</code> is a reserved JS word</td></tr>
+        <tr><td><code>for="id"</code></td><td><code>htmlFor="id"</code></td><td><code>for</code> is a reserved JS word</td></tr>
+        <tr><td><code>onclick="fn()"</code></td><td><code>onClick={fn}</code></td><td>camelCase, function reference not string</td></tr>
+        <tr><td><code>&lt;img&gt;</code></td><td><code>&lt;img /&gt;</code></td><td>all tags must be explicitly closed</td></tr>
+        <tr><td>multiple root tags allowed</td><td>one root element required (or <code>&lt;&gt;&lt;/&gt;</code>)</td><td>JSX compiles to a single expression tree</td></tr>
+      </table>
+      <div class="note"><strong>Rule of thumb:</strong> <code>{}</code> holds a JavaScript <em>expression</em> (something that returns a value) — never a statement like <code>if</code> or a <code>for</code> loop directly.</div>
+      <div class="section-nav"><button onclick="goTo('u04')">← Unit 04</button><button onclick="goTo('u06')">Unit 06: Components →</button></div>
+    </section>
+
+    <section class="view" id="u06" data-title="Components">
+      <div class="unit-head"><div><div class="num">Part 02 · Unit 06</div><h2>Components</h2></div><div class="rev">Foundations</div></div>
+      <p class="lead">A component is a JavaScript function that returns JSX. Apps are trees of small components composed together.</p>
+      <h3>Component tree</h3>
+      <div class="tree">
+        <ul>
+          <li>App
+            <ul>
+              <li>Header</li>
+              <li>Main
+                <ul>
+                  <li>Card</li>
+                  <li>Card</li>
+                </ul>
+              </li>
+              <li>Footer</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="code-tab">Card.jsx</div>
+      <pre><span class="kw">function</span> Card({ title, children }) {
+  <span class="kw">return</span> (
+    &lt;div className=<span class="st">"card"</span>&gt;
+      &lt;h3&gt;{title}&lt;/h3&gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+<span class="cm">// usage: &lt;Card title="Notes"&gt;&lt;p&gt;Body text&lt;/p&gt;&lt;/Card&gt;</span></pre>
+      <div class="section-nav"><button onclick="goTo('u05')">← Unit 05</button><button onclick="goTo('u07')">Unit 07: Props →</button></div>
+    </section>
+
+    <section class="view" id="u07" data-title="Props">
+      <div class="unit-head"><div><div class="num">Part 02 · Unit 07</div><h2>Props</h2></div><div class="rev">Foundations</div></div>
+      <p class="lead">Props are read-only data passed from a parent component down to a child — React's one-way data flow.</p>
+      <div class="flow">
+        <div class="node">Parent (has data)</div>
+        <div class="arrow">— props →</div>
+        <div class="node">Child (reads data)</div>
+      </div>
+      <div class="code-tab">Avatar.jsx</div>
+      <pre><span class="kw">function</span> Avatar({ src, alt = <span class="st">"avatar"</span> }) {
+  <span class="kw">return</span> &lt;img src={src} alt={alt} /&gt;;
+}
+<span class="cm">// &lt;Avatar src="/me.png" /&gt;</span></pre>
+      <h3>Props vs State</h3>
+      <table class="cmp-table">
+        <tr><th></th><th>Props</th><th>State</th></tr>
+        <tr><td>Owned by</td><td>Parent component</td><td>The component itself</td></tr>
+        <tr><td>Mutable?</td><td>No — read-only</td><td>Yes — via setter function</td></tr>
+        <tr><td>Purpose</td><td>Configure a component from outside</td><td>Track data that changes over time</td></tr>
+      </table>
+      <div class="section-nav"><button onclick="goTo('u06')">← Unit 06</button><button onclick="goTo('u08')">Unit 08: Events →</button></div>
+    </section>
+
+    <section class="view" id="u08" data-title="Events">
+      <div class="unit-head"><div><div class="num">Part 02 · Unit 08</div><h2>Events</h2></div><div class="rev">Foundations</div></div>
+      <p class="lead">React wraps native browser events into cross-browser-consistent <strong>SyntheticEvents</strong>, attached with camelCase props.</p>
+      <div class="code-tab">Form.jsx</div>
+      <pre>&lt;button onClick={() =&gt; deleteItem(id)}&gt;Delete&lt;/button&gt;
+&lt;input onChange={(e) =&gt; setValue(e.target.value)} /&gt;
+&lt;form onSubmit={(e) =&gt; { e.preventDefault(); save(); }}&gt;</pre>
+      <table class="cmp-table">
+        <tr><th>Event prop</th><th>Fires when</th></tr>
+        <tr><td><code>onClick</code></td><td>Element is clicked</td></tr>
+        <tr><td><code>onChange</code></td><td>Input value changes</td></tr>
+        <tr><td><code>onSubmit</code></td><td>A form is submitted</td></tr>
+        <tr><td><code>onKeyDown</code> / <code>onKeyUp</code></td><td>A key is pressed/released</td></tr>
+        <tr><td><code>onFocus</code> / <code>onBlur</code></td><td>Element gains/loses focus</td></tr>
+      </table>
+      <div class="section-nav"><button onclick="goTo('u07')">← Unit 07</button><button onclick="goTo('u09')">Unit 09: useState →</button></div>
+    </section>
+
+    <section class="view" id="u09" data-title="State — useState">
+      <div class="unit-head"><div><div class="num">Part 02 · Unit 09</div><h2>State — <code>useState</code></h2></div><div class="rev">Foundations</div></div>
+      <p class="lead">State is data a component owns and can change. Changing it triggers a re-render.</p>
+      <div class="code-tab">Counter.jsx</div>
+      <pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="st">"react"</span>;
+
+<span class="kw">function</span> Counter() {
+  <span class="kw">const</span> [count, setCount] = useState(0);
+  <span class="kw">return</span> (
+    &lt;button onClick={() =&gt; setCount(prev =&gt; prev + 1)}&gt;
+      Count: {count}
+    &lt;/button&gt;
+  );
+}</pre>
+      <div class="note"><strong>Never mutate state directly.</strong> Always create a new value: <code>setUser({...user, age: 30})</code>, <code>setList([...list, item])</code> — not <code>user.age = 30</code>.</div>
+      <div class="section-nav"><button onclick="goTo('u08')">← Unit 08</button><button onclick="goTo('u10')">Unit 10: Conditional Rendering →</button></div>
+    </section>
+
+    <section class="view" id="u10" data-title="Conditional Rendering">
+      <div class="unit-head"><div><div class="num">Part 02 · Unit 10</div><h2>Conditional Rendering</h2></div><div class="rev">Foundations</div></div>
+      <p class="lead">Showing different JSX depending on state — using plain JavaScript, not a special template syntax.</p>
+      <div class="code-tab">states.jsx</div>
+      <pre>{isLoggedIn ? &lt;Dashboard /&gt; : &lt;Login /&gt;}      <span class="cm">// ternary</span>
+{error &amp;&amp; &lt;ErrorBanner text={error} /&gt;}        <span class="cm">// logical AND</span>
+{loading ? &lt;Spinner /&gt; : &lt;Content /&gt;}</pre>
+      <div class="flow">
+        <div class="node">loading</div><div class="arrow">→</div>
+        <div class="node">success</div><div class="arrow">→</div>
+        <div class="node">data shown</div>
+      </div>
+      <div class="section-nav"><button onclick="goTo('u09')">← Unit 09</button><button onclick="goTo('u11')">Unit 11: Lists & Keys →</button></div>
+    </section>
+
+    <section class="view" id="u11" data-title="Lists & Keys">
+      <div class="unit-head"><div><div class="num">Part 02 · Unit 11</div><h2>Lists &amp; Keys</h2></div><div class="rev">Foundations</div></div>
+      <p class="lead">Render arrays with <code>.map()</code>. Each item needs a stable, unique <code>key</code> so React can track it across re-renders.</p>
+      <div class="code-tab">UserList.jsx</div>
+      <pre>{users.map(user =&gt; (
+  &lt;li key={user.id}&gt;{user.name}&lt;/li&gt;
+))}</pre>
+      <div class="note"><strong>Avoid array index as key</strong> when the list can reorder, filter, or insert — React will misidentify items and can mix up state between rows.</div>
+      <div class="section-nav"><button onclick="goTo('u10')">← Unit 10</button><button onclick="goTo('u12')">Unit 12: Forms →</button></div>
+    </section>
+
+    <section class="view" id="u12" data-title="Forms">
+      <div class="unit-head"><div><div class="num">Part 02 · Unit 12</div><h2>Forms</h2></div><div class="rev">Foundations</div></div>
+      <p class="lead">Forms in React are usually <strong>controlled</strong> — the input's value is driven by state, not the DOM.</p>
+      <table class="cmp-table">
+        <tr><th></th><th>Controlled</th><th>Uncontrolled</th></tr>
+        <tr><td>Value lives in</td><td>React state</td><td>The DOM itself</td></tr>
+        <tr><td>Read value via</td><td><code>value</code> + <code>onChange</code></td><td><code>ref.current.value</code></td></tr>
+        <tr><td>Use when</td><td>Validating, formatting, or reacting live</td><td>Simple forms, file inputs</td></tr>
+      </table>
+      <div class="code-tab">LoginForm.jsx</div>
+      <pre><span class="kw">function</span> LoginForm() {
+  <span class="kw">const</span> [email, setEmail] = useState(<span class="st">""</span>);
+  <span class="kw">function</span> handleSubmit(e) {
+    e.preventDefault();
+    login(email);
+  }
+  <span class="kw">return</span> (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input value={email} onChange={e =&gt; setEmail(e.target.value)} /&gt;
+      &lt;button type=<span class="st">"submit"</span>&gt;Log in&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}</pre>
+      <div class="section-nav"><button onclick="goTo('u11')">← Unit 11</button><button onclick="goTo('u13')">Unit 13: Hooks Overview →</button></div>
+    </section>
+
+    <section class="view" id="u13" data-title="Hooks Overview">
+      <div class="unit-head"><div><div class="num">Part 03 · Unit 13</div><h2>Hooks Overview</h2></div><div class="rev">Data Flow</div></div>
+      <p class="lead">Hooks let function components use state, side effects, and other React features — no classes needed.</p>
+      <table class="cmp-table">
+        <tr><th>Hook</th><th>Purpose</th></tr>
+        <tr><td><code>useState</code></td><td>Local component state</td></tr>
+        <tr><td><code>useEffect</code></td><td>Side effects synced with render</td></tr>
+        <tr><td><code>useContext</code></td><td>Read shared data without prop-drilling</td></tr>
+        <tr><td><code>useRef</code></td><td>Persist a value / access a DOM node without re-rendering</td></tr>
+        <tr><td><code>useMemo</code></td><td>Memoize an expensive computed value</td></tr>
+        <tr><td><code>useCallback</code></td><td>Memoize a function reference</td></tr>
+        <tr><td><code>useReducer</code></td><td>Complex state transitions via a reducer</td></tr>
+        <tr><td><code>useLayoutEffect</code></td><td>Effect that runs before the browser paints</td></tr>
+      </table>
+      <div class="note"><strong>Rules of Hooks:</strong> (1) only call at the top level — never in loops/conditions; (2) only call from function components or custom hooks.</div>
+      <div class="section-nav"><button onclick="goTo('u12')">← Unit 12</button><button onclick="goTo('u14')">Unit 14: useEffect Deep Dive →</button></div>
+    </section>
+
+    <section class="view" id="u14" data-title="useEffect Deep Dive">
+      <div class="unit-head"><div><div class="num">Part 03 · Unit 14</div><h2>useEffect Deep Dive</h2></div><div class="rev">Data Flow</div></div>
+      <p class="lead">Side effects — data fetching, subscriptions, timers — happen inside <code>useEffect</code>, synced to the dependency array.</p>
+      <table class="cmp-table">
+        <tr><th>Dependency array</th><th>Runs</th></tr>
+        <tr><td>omitted</td><td>after every render</td></tr>
+        <tr><td><code>[]</code></td><td>once, after first mount</td></tr>
+        <tr><td><code>[a, b]</code></td><td>on mount, then whenever <code>a</code> or <code>b</code> changes</td></tr>
+      </table>
+      <div class="flow">
+        <div class="node">Mount</div><div class="arrow">→</div>
+        <div class="node">Update (deps changed)</div><div class="arrow">→</div>
+        <div class="node warn">Unmount → cleanup runs</div>
+      </div>
+      <div class="code-tab">Timer.jsx</div>
+      <pre>useEffect(() =&gt; {
+  <span class="kw">const</span> id = setInterval(tick, 1000);
+  <span class="kw">return</span> () =&gt; clearInterval(id);   <span class="cm">// cleanup</span>
+}, []);</pre>
+      <div class="note"><strong>Common bug:</strong> missing/wrong dependencies cause stale data or infinite render loops. The <code>eslint-plugin-react-hooks</code> linter catches most of these.</div>
+      <div class="section-nav"><button onclick="goTo('u13')">← Unit 13</button><button onclick="goTo('u15')">Unit 15: Component Communication →</button></div>
+    </section>
+
+    <section class="view" id="u15" data-title="Component Communication">
+      <div class="unit-head"><div><div class="num">Part 03 · Unit 15</div><h2>Component Communication</h2></div><div class="rev">Data Flow</div></div>
+      <p class="lead">How components talk to each other depends on their relationship in the tree.</p>
+      <table class="cmp-table">
+        <tr><th>Relationship</th><th>Mechanism</th></tr>
+        <tr><td>Parent → Child</td><td>Props</td></tr>
+        <tr><td>Child → Parent</td><td>Callback function passed as a prop</td></tr>
+        <tr><td>Sibling → Sibling</td><td>Lift shared state to their common parent</td></tr>
+        <tr><td>Deeply nested</td><td>Context API (avoids prop drilling)</td></tr>
+      </table>
+      <div class="section-nav"><button onclick="goTo('u14')">← Unit 14</button><button onclick="goTo('u16')">Unit 16: Context API →</button></div>
+    </section>
+
+    <section class="view" id="u16" data-title="Context API">
+      <div class="unit-head"><div><div class="num">Part 03 · Unit 16</div><h2>Context API</h2></div><div class="rev">Data Flow</div></div>
+      <p class="lead">Context shares a value with an entire subtree, without threading props through every level.</p>
+      <div class="flow vertical">
+        <div class="node">createContext()</div><div class="arrow">↓</div>
+        <div class="node">&lt;ThemeContext.Provider value="dark"&gt;</div><div class="arrow">↓</div>
+        <div class="node">any depth: useContext(ThemeContext)</div>
+      </div>
+      <div class="code-tab">Theme.jsx</div>
+      <pre><span class="kw">const</span> ThemeContext = createContext(<span class="st">"light"</span>);
+
+<span class="kw">function</span> App() {
+  <span class="kw">return</span> (
+    &lt;ThemeContext.Provider value=<span class="st">"dark"</span>&gt;
+      &lt;Toolbar /&gt;
+    &lt;/ThemeContext.Provider&gt;
+  );
+}
+<span class="kw">function</span> Toolbar() {
+  <span class="kw">const</span> theme = useContext(ThemeContext);
+  <span class="kw">return</span> &lt;div className={theme}&gt;...&lt;/div&gt;;
+}</pre>
+      <div class="note"><strong>Watch out:</strong> every consumer re-renders when the context value changes — don't put fast-changing data in Context; reach for a state library instead.</div>
+      <div class="section-nav"><button onclick="goTo('u15')">← Unit 15</button><button onclick="goTo('u17')">Unit 17: Custom Hooks →</button></div>
+    </section>
+
+    <section class="view" id="u17" data-title="Custom Hooks">
+      <div class="unit-head"><div><div class="num">Part 03 · Unit 17</div><h2>Custom Hooks</h2></div><div class="rev">Data Flow</div></div>
+      <p class="lead">A custom hook is a function starting with <code>use</code> that extracts reusable stateful logic out of components.</p>
+      <div class="code-tab">useFetch.js</div>
+      <pre><span class="kw">function</span> useFetch(url) {
+  <span class="kw">const</span> [data, setData] = useState(<span class="kw">null</span>);
+  <span class="kw">const</span> [loading, setLoading] = useState(<span class="kw">true</span>);
+
+  useEffect(() =&gt; {
+    <span class="kw">let</span> cancelled = <span class="kw">false</span>;
+    fetch(url).then(r =&gt; r.json()).then(d =&gt; {
+      <span class="kw">if</span> (!cancelled) { setData(d); setLoading(<span class="kw">false</span>); }
+    });
+    <span class="kw">return</span> () =&gt; { cancelled = <span class="kw">true</span>; };
+  }, [url]);
+
+  <span class="kw">return</span> { data, loading };
+}</pre>
+      <div class="section-nav"><button onclick="goTo('u16')">← Unit 16</button><button onclick="goTo('u18')">Unit 18: React Router →</button></div>
+    </section>
+
+    <section class="view" id="u18" data-title="React Router">
+      <div class="unit-head"><div><div class="num">Part 04 · Unit 18</div><h2>React Router</h2></div><div class="rev">Routing & Data</div></div>
+      <p class="lead">Client-side routing swaps which component renders based on the URL — without a full page reload.</p>
+      <div class="code-tab">App.jsx</div>
+      <pre><span class="kw">import</span> { BrowserRouter, Routes, Route, Link } <span class="kw">from</span> <span class="st">"react-router-dom"</span>;
+
+&lt;BrowserRouter&gt;
+  &lt;Link to=<span class="st">"/about"</span>&gt;About&lt;/Link&gt;
+  &lt;Routes&gt;
+    &lt;Route path=<span class="st">"/"</span> element={&lt;Home /&gt;} /&gt;
+    &lt;Route path=<span class="st">"/about"</span> element={&lt;About /&gt;} /&gt;
+    &lt;Route path=<span class="st">"/users/:id"</span> element={&lt;UserProfile /&gt;} /&gt;
+    &lt;Route path=<span class="st">"*"</span> element={&lt;NotFound /&gt;} /&gt;
+  &lt;/Routes&gt;
+&lt;/BrowserRouter&gt;</pre>
+      <table class="cmp-table">
+        <tr><th>Hook</th><th>Purpose</th></tr>
+        <tr><td><code>useNavigate()</code></td><td>Navigate programmatically</td></tr>
+        <tr><td><code>useParams()</code></td><td>Read dynamic route segments (<code>:id</code>)</td></tr>
+        <tr><td><code>useLocation()</code></td><td>Read the current URL/path</td></tr>
+        <tr><td><code>useSearchParams()</code></td><td>Read/write query string params</td></tr>
+      </table>
+      <div class="section-nav"><button onclick="goTo('u17')">← Unit 17</button><button onclick="goTo('u19')">Unit 19: API Integration →</button></div>
+    </section>
+
+    <section class="view" id="u19" data-title="API Integration">
+      <div class="unit-head"><div><div class="num">Part 04 · Unit 19</div><h2>API Integration</h2></div><div class="rev">Routing & Data</div></div>
+      <p class="lead">React apps talk to backends via HTTP — most often JSON REST APIs, using <code>fetch</code> or <code>axios</code>.</p>
+      <table class="cmp-table">
+        <tr><th></th><th>fetch (built-in)</th><th>axios (library)</th></tr>
+        <tr><td>JSON parsing</td><td>Manual: <code>res.json()</code></td><td>Automatic</td></tr>
+        <tr><td>Error on 404/500</td><td>No — must check <code>res.ok</code></td><td>Yes — throws automatically</td></tr>
+        <tr><td>Interceptors</td><td>Not built-in</td><td>Built-in</td></tr>
+      </table>
+      <div class="code-tab">useEffect fetch</div>
+      <pre>useEffect(() =&gt; {
+  <span class="kw">async function</span> load() {
+    <span class="kw">const</span> res = <span class="kw">await</span> fetch(<span class="st">"/api/users"</span>);
+    <span class="kw">if</span> (!res.ok) <span class="kw">throw new</span> Error(<span class="st">"Failed"</span>);
+    setUsers(<span class="kw">await</span> res.json());
+  }
+  load();
+}, []);</pre>
+      <div class="flow">
+        <div class="node">loading</div><div class="arrow">→</div>
+        <div class="node">success</div><div class="arrow">/</div>
+        <div class="node warn">error</div>
+      </div>
+      <div class="section-nav"><button onclick="goTo('u18')">← Unit 18</button><button onclick="goTo('u20')">Unit 20: CRUD Applications →</button></div>
+    </section>
+
+    <section class="view" id="u20" data-title="CRUD Applications">
+      <div class="unit-head"><div><div class="num">Part 04 · Unit 20</div><h2>CRUD Applications</h2></div><div class="rev">Routing & Data</div></div>
+      <p class="lead">Create, Read, Update, Delete — the four operations behind nearly every real app (notes, products, students, orders).</p>
+      <table class="cmp-table">
+        <tr><th>Operation</th><th>HTTP Method</th><th>Typical UI</th></tr>
+        <tr><td>Create</td><td>POST</td><td>A form + submit button</td></tr>
+        <tr><td>Read</td><td>GET</td><td>A list or detail view</td></tr>
+        <tr><td>Update</td><td>PUT / PATCH</td><td>An edit form pre-filled with data</td></tr>
+        <tr><td>Delete</td><td>DELETE</td><td>A confirm dialog + delete button</td></tr>
+      </table>
+      <div class="code-tab">deleteItem.js</div>
+      <pre><span class="kw">async function</span> deleteItem(id) {
+  <span class="kw">await</span> fetch(`/api/items/${id}`, { method: <span class="st">"DELETE"</span> });
+  setItems(items.filter(i =&gt; i.id !== id));   <span class="cm">// update UI to match</span>
+}</pre>
+      <div class="section-nav"><button onclick="goTo('u19')">← Unit 19</button><button onclick="goTo('u21')">Unit 21: Authentication →</button></div>
+    </section>
+
+    <section class="view" id="u21" data-title="Authentication">
+      <div class="unit-head"><div><div class="num">Part 04 · Unit 21</div><h2>Authentication</h2></div><div class="rev">Routing & Data</div></div>
+      <p class="lead">Auth in a React SPA typically means: log in against an API, store a token, attach it to future requests, and gate certain routes.</p>
+      <div class="code-tab">ProtectedRoute.jsx</div>
+      <pre><span class="kw">function</span> ProtectedRoute({ children }) {
+  <span class="kw">const</span> { user } = useContext(AuthContext);
+  <span class="kw">if</span> (!user) <span class="kw">return</span> &lt;Navigate to=<span class="st">"/login"</span> /&gt;;
+  <span class="kw">return</span> children;
+}</pre>
+      <div class="note"><strong>Security basics:</strong> store tokens carefully (httpOnly cookies are safer than <code>localStorage</code> against XSS), always use HTTPS, and never hardcode secrets in frontend code.</div>
+      <div class="section-nav"><button onclick="goTo('u20')">← Unit 20</button><button onclick="goTo('u22')">Unit 22: Backend Architecture →</button></div>
+    </section>
+
+    <section class="view" id="u22" data-title="React + Backend Architecture">
+      <div class="unit-head"><div><div class="num">Part 05 · Unit 22</div><h2>React + Backend Architecture</h2></div><div class="rev">Scale</div></div>
+      <p class="lead">React is the frontend only — it needs a backend (Node/Express, Python/Flask/FastAPI, etc.) and a database behind a REST or GraphQL API.</p>
+      <div class="flow vertical">
+        <div class="node">React frontend</div><div class="arrow">↓ REST API</div>
+        <div class="node">Backend (Express / FastAPI)</div><div class="arrow">↓</div>
+        <div class="node warn">Database (Postgres / MongoDB)</div>
+      </div>
+      <div class="section-nav"><button onclick="goTo('u21')">← Unit 21</button><button onclick="goTo('u23')">Unit 23: State Management →</button></div>
+    </section>
+
+    <section class="view" id="u23" data-title="State Management at Scale">
+      <div class="unit-head"><div><div class="num">Part 05 · Unit 23</div><h2>State Management at Scale</h2></div><div class="rev">Scale</div></div>
+      <p class="lead">As apps grow, plain <code>useState</code>/Context stops scaling cleanly — dedicated state libraries take over.</p>
+      <table class="cmp-table">
+        <tr><th>Tool</th><th>Best for</th></tr>
+        <tr><td><code>useState</code>/<code>useReducer</code> + Context</td><td>Small–medium apps, simple shared state</td></tr>
+        <tr><td>Redux Toolkit</td><td>Large apps, complex state, time-travel debugging</td></tr>
+        <tr><td>Zustand</td><td>Lightweight global store, minimal boilerplate</td></tr>
+        <tr><td>TanStack Query</td><td>Server state — caching &amp; syncing with an API (not UI state)</td></tr>
+      </table>
+      <div class="code-tab">store.js (Zustand)</div>
+      <pre><span class="kw">import</span> { create } <span class="kw">from</span> <span class="st">"zustand"</span>;
+
+<span class="kw">const</span> useStore = create(set =&gt; ({
+  count: 0,
+  increment: () =&gt; set(s =&gt; ({ count: s.count + 1 })),
+}));</pre>
+      <div class="section-nav"><button onclick="goTo('u22')">← Unit 22</button><button onclick="goTo('u24')">Unit 24: Project Architecture →</button></div>
+    </section>
+
+    <section class="view" id="u24" data-title="Project Architecture">
+      <div class="unit-head"><div><div class="num">Part 05 · Unit 24</div><h2>Project Architecture</h2></div><div class="rev">Scale</div></div>
+      <p class="lead">Folder structure should grow with the app — flat and simple early, feature-organized once it's large.</p>
+      <div class="tree">
+        <ul>
+          <li>src/ <span style="color:#7590B5">— large-project layout</span>
+            <ul>
+              <li>components/</li>
+              <li>features/</li>
+              <li>pages/</li>
+              <li>hooks/</li>
+              <li>services/ <span style="color:#7590B5">(API calls)</span></li>
+              <li>store/ <span style="color:#7590B5">(Redux/Zustand)</span></li>
+              <li>utils/</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="section-nav"><button onclick="goTo('u23')">← Unit 23</button><button onclick="goTo('u25')">Unit 25: Performance →</button></div>
+    </section>
+
+    <section class="view" id="u25" data-title="Performance Optimization">
+      <div class="unit-head"><div><div class="num">Part 06 · Unit 25</div><h2>Performance Optimization</h2></div><div class="rev">Quality</div></div>
+      <p class="lead">Most React performance problems come from unnecessary re-renders — memoization and code-splitting are the main tools.</p>
+      <table class="cmp-table">
+        <tr><th>Tool</th><th>Prevents</th></tr>
+        <tr><td><code>React.memo(Component)</code></td><td>Re-render when props are unchanged</td></tr>
+        <tr><td><code>useMemo(fn, deps)</code></td><td>Recomputing an expensive value every render</td></tr>
+        <tr><td><code>useCallback(fn, deps)</code></td><td>Recreating a function reference every render</td></tr>
+        <tr><td><code>React.lazy</code> + <code>Suspense</code></td><td>Loading code the user doesn't need yet</td></tr>
+      </table>
+      <div class="code-tab">lazy loading</div>
+      <pre><span class="kw">const</span> Settings = lazy(() =&gt; import(<span class="st">"./Settings"</span>));
+
+&lt;Suspense fallback={&lt;Spinner /&gt;}&gt;
+  &lt;Settings /&gt;
+&lt;/Suspense&gt;</pre>
+      <div class="section-nav"><button onclick="goTo('u24')">← Unit 24</button><button onclick="goTo('u26')">Unit 26: Advanced Rendering →</button></div>
+    </section>
+
+    <section class="view" id="u26" data-title="Advanced Rendering">
+      <div class="unit-head"><div><div class="num">Part 06 · Unit 26</div><h2>Advanced Rendering</h2></div><div class="rev">Quality</div></div>
+      <p class="lead">Suspense, Error Boundaries, and Strict Mode handle loading states, crashes, and dev-time bug detection respectively.</p>
+      <div class="code-tab">ErrorBoundary.jsx</div>
+      <pre><span class="kw">class</span> ErrorBoundary <span class="kw">extends</span> React.Component {
+  state = { hasError: <span class="kw">false</span> };
+  <span class="kw">static</span> getDerivedStateFromError() { <span class="kw">return</span> { hasError: <span class="kw">true</span> }; }
+  render() {
+    <span class="kw">if</span> (this.state.hasError) <span class="kw">return</span> &lt;h1&gt;Something went wrong.&lt;/h1&gt;;
+    <span class="kw">return</span> this.props.children;
+  }
+}</pre>
+      <div class="note"><strong>Strict Mode</strong> double-invokes some functions in development only, to surface side-effect bugs early. It has zero effect in production.</div>
+      <div class="section-nav"><button onclick="goTo('u25')">← Unit 25</button><button onclick="goTo('u27')">Unit 27: Testing →</button></div>
+    </section>
+
+    <section class="view" id="u27" data-title="Testing">
+      <div class="unit-head"><div><div class="num">Part 06 · Unit 27</div><h2>Testing</h2></div><div class="rev">Quality</div></div>
+      <p class="lead">Test components the way a user experiences them — what renders, what happens on click — not internal implementation.</p>
+      <div class="code-tab">Counter.test.jsx</div>
+      <pre><span class="kw">import</span> { render, screen, fireEvent } <span class="kw">from</span> <span class="st">"@testing-library/react"</span>;
+
+test(<span class="st">"increments on click"</span>, () =&gt; {
+  render(&lt;Counter /&gt;);
+  fireEvent.click(screen.getByText(<span class="st">"Increment"</span>));
+  expect(screen.getByText(<span class="st">"Count: 1"</span>)).toBeInTheDocument();
+});</pre>
+      <table class="cmp-table">
+        <tr><th>Layer</th><th>Tool</th></tr>
+        <tr><td>Unit / component</td><td>Vitest or Jest + React Testing Library</td></tr>
+        <tr><td>End-to-end</td><td>Playwright or Cypress</td></tr>
+      </table>
+      <div class="section-nav"><button onclick="goTo('u26')">← Unit 26</button><button onclick="goTo('u28')">Unit 28: TypeScript →</button></div>
+    </section>
+
+    <section class="view" id="u28" data-title="TypeScript with React">
+      <div class="unit-head"><div><div class="num">Part 06 · Unit 28</div><h2>TypeScript with React</h2></div><div class="rev">Quality</div></div>
+      <p class="lead">TypeScript adds type safety to props, state, and API responses — catching bugs before the app even runs.</p>
+      <div class="code-tab">Greeting.tsx</div>
+      <pre><span class="kw">interface</span> Props {
+  name: <span class="tg">string</span>;
+  age?: <span class="tg">number</span>;
+}
+
+<span class="kw">function</span> Greeting({ name, age = 18 }: Props) {
+  <span class="kw">return</span> &lt;p&gt;{name} is {age}&lt;/p&gt;;
+}
+
+<span class="kw">const</span> [count, setCount] = useState&lt;<span class="tg">number</span>&gt;(0);</pre>
+      <div class="section-nav"><button onclick="goTo('u27')">← Unit 27</button><button onclick="goTo('u29')">Unit 29: Styling →</button></div>
+    </section>
+
+    <section class="view" id="u29" data-title="Styling Approaches">
+      <div class="unit-head"><div><div class="num">Part 07 · Unit 29</div><h2>Styling Approaches</h2></div><div class="rev">Production</div></div>
+      <p class="lead">React doesn't enforce a styling method — teams pick based on scale and preference.</p>
+      <table class="cmp-table">
+        <tr><th>Approach</th><th>Good for</th></tr>
+        <tr><td>Plain CSS / CSS Modules</td><td>Simple apps, scoped class names</td></tr>
+        <tr><td>Inline style objects</td><td>Small dynamic style tweaks</td></tr>
+        <tr><td>Tailwind CSS</td><td>Fast utility-first styling, design consistency</td></tr>
+        <tr><td>Component libraries (MUI, shadcn/ui)</td><td>Pre-built accessible components</td></tr>
+      </table>
+      <div class="section-nav"><button onclick="goTo('u28')">← Unit 28</button><button onclick="goTo('u30')">Unit 30: SSR & Next.js →</button></div>
+    </section>
+
+    <section class="view" id="u30" data-title="Server Rendering & Next.js">
+      <div class="unit-head"><div><div class="num">Part 07 · Unit 30</div><h2>Server Rendering &amp; Next.js</h2></div><div class="rev">Production</div></div>
+      <p class="lead">Where HTML gets generated changes performance, SEO, and architecture.</p>
+      <table class="cmp-table">
+        <tr><th>Mode</th><th>HTML generated</th><th>Best for</th></tr>
+        <tr><td>CSR (plain React)</td><td>In the browser</td><td>Dashboards, internal tools</td></tr>
+        <tr><td>SSR</td><td>On the server, per request</td><td>SEO-sensitive, dynamic content</td></tr>
+        <tr><td>SSG</td><td>At build time</td><td>Blogs, marketing pages</td></tr>
+      </table>
+      <p><strong>Next.js</strong> is the most common React framework adding SSR/SSG, file-based routing, API routes, and React Server Components on top of React.</p>
+      <div class="section-nav"><button onclick="goTo('u29')">← Unit 29</button><button onclick="goTo('u31')">Unit 31: Security →</button></div>
+    </section>
+
+    <section class="view" id="u31" data-title="Security">
+      <div class="unit-head"><div><div class="num">Part 07 · Unit 31</div><h2>Security</h2></div><div class="rev">Production</div></div>
+      <p class="lead">Frontend security is mostly about not trusting the client and never exposing secrets.</p>
+      <ul class="plain">
+        <li>Never store API secret keys, DB passwords, or private tokens in frontend code.</li>
+        <li>Escape/sanitize any user-generated content rendered as HTML to prevent XSS.</li>
+        <li>Use HTTPS everywhere; prefer httpOnly cookies for sensitive tokens over <code>localStorage</code>.</li>
+        <li>Validate input on the server too — client-side validation is UX, not security.</li>
+      </ul>
+      <div class="section-nav"><button onclick="goTo('u30')">← Unit 30</button><button onclick="goTo('u32')">Unit 32: Accessibility →</button></div>
+    </section>
+
+    <section class="view" id="u32" data-title="Accessibility">
+      <div class="unit-head"><div><div class="num">Part 07 · Unit 32</div><h2>Accessibility</h2></div><div class="rev">Production</div></div>
+      <p class="lead">Accessible React apps start with semantic HTML — ARIA is a supplement, not a replacement.</p>
+      <ul class="plain">
+        <li>Use real <code>&lt;button&gt;</code>/<code>&lt;label&gt;</code> elements instead of styled <code>&lt;div&gt;</code>s where possible.</li>
+        <li>Manage focus explicitly after route changes or modal open/close.</li>
+        <li>Ensure sufficient color contrast and visible keyboard focus states.</li>
+        <li>Announce dynamic content changes to screen readers via <code>aria-live</code>.</li>
+      </ul>
+      <div class="section-nav"><button onclick="goTo('u31')">← Unit 31</button><button onclick="goTo('u33')">Unit 33: Env Variables →</button></div>
+    </section>
+
+    <section class="view" id="u33" data-title="Environment Variables">
+      <div class="unit-head"><div><div class="num">Part 07 · Unit 33</div><h2>Environment Variables</h2></div><div class="rev">Production</div></div>
+      <p class="lead"><code>.env</code> files hold config that differs between development and production — API URLs, feature flags.</p>
+      <div class="code-tab">.env</div>
+      <pre>VITE_API_URL=https://api.example.com</pre>
+      <div class="note"><strong>Rule:</strong> anything in a frontend <code>.env</code> file ships to the browser and is publicly visible — never put secrets there.</div>
+      <div class="section-nav"><button onclick="goTo('u32')">← Unit 32</button><button onclick="goTo('u34')">Unit 34: Git & GitHub →</button></div>
+    </section>
+
+    <section class="view" id="u34" data-title="Git & GitHub">
+      <div class="unit-head"><div><div class="num">Part 07 · Unit 34</div><h2>Git &amp; GitHub</h2></div><div class="rev">Production</div></div>
+      <p class="lead">Version control for tracking changes and collaborating on a React codebase.</p>
+      <div class="code-tab">terminal</div>
+      <pre>git init
+git add .
+git commit -m <span class="st">"initial commit"</span>
+git remote add origin &lt;repo-url&gt;
+git push -u origin main</pre>
+      <div class="section-nav"><button onclick="goTo('u33')">← Unit 33</button><button onclick="goTo('u35')">Unit 35: Debugging →</button></div>
+    </section>
+
+    <section class="view" id="u35" data-title="Debugging">
+      <div class="unit-head"><div><div class="num">Part 07 · Unit 35</div><h2>Debugging</h2></div><div class="rev">Production</div></div>
+      <p class="lead">Most React bugs fall into a handful of repeat categories — knowing the pattern makes them fast to spot.</p>
+      <table class="cmp-table">
+        <tr><th>Symptom</th><th>Usual cause</th></tr>
+        <tr><td>Infinite re-renders</td><td>Missing/incorrect <code>useEffect</code> dependency array</td></tr>
+        <tr><td>"Cannot read property of undefined"</td><td>Data not loaded yet — render a loading state first</td></tr>
+        <tr><td>UI doesn't update</td><td>State mutated directly instead of replaced</td></tr>
+        <tr><td>Warnings about "key" prop</td><td>Missing/unstable keys in a list</td></tr>
+        <tr><td>CORS error in console</td><td>Backend not allowing requests from your frontend origin</td></tr>
+      </table>
+      <div class="section-nav"><button onclick="goTo('u34')">← Unit 34</button><button onclick="goTo('u36')">Unit 36: Deployment →</button></div>
+    </section>
+
+    <section class="view" id="u36" data-title="Deployment">
+      <div class="unit-head"><div><div class="num">Part 07 · Unit 36</div><h2>Deployment</h2></div><div class="rev">Production</div></div>
+      <p class="lead">Ship the production build to a static host or platform like Vercel/Netlify.</p>
+      <div class="flow">
+        <div class="node">npm run build</div><div class="arrow">→</div>
+        <div class="node">push to GitHub</div><div class="arrow">→</div>
+        <div class="node warn">host deploys automatically</div>
+      </div>
+      <div class="code-tab">terminal</div>
+      <pre>npm run build      <span class="cm"># outputs static files to /dist</span>
+npm run preview    <span class="cm"># test the production build locally</span></pre>
+      <div class="section-nav"><button onclick="goTo('u35')">← Unit 35</button><button onclick="goTo('u37')">Unit 37: React + AI →</button></div>
+    </section>
+
+    <section class="view" id="u37" data-title="React + AI Integration">
+      <div class="unit-head"><div><div class="num">Part 08 · Unit 37</div><h2>React + AI Integration</h2></div><div class="rev">Beyond React</div></div>
+      <p class="lead">AI features (chatbots, assistants) are just another API — React handles the chat UI, streaming, and history.</p>
+      <div class="flow vertical">
+        <div class="node">React chat UI</div><div class="arrow">↓ prompt</div>
+        <div class="node">Backend (Flask/FastAPI)</div><div class="arrow">↓</div>
+        <div class="node warn">LLM API</div><div class="arrow">↑ streamed response</div>
+        <div class="node dim">rendered back into chat</div>
+      </div>
+      <div class="section-nav"><button onclick="goTo('u36')">← Unit 36</button><button onclick="goTo('u38')">Unit 38: Project Roadmap →</button></div>
+    </section>
+
+    <section class="view" id="u38" data-title="Project Roadmap">
+      <div class="unit-head"><div><div class="num">Part 08 · Unit 38</div><h2>Project Roadmap</h2></div><div class="rev">Beyond React</div></div>
+      <p class="lead">Practice in this order — each project layers on skills from the last.</p>
+      <table class="cmp-table">
+        <tr><th>Level</th><th>Projects</th><th>Teaches</th></tr>
+        <tr><td>Beginner</td><td>Counter, To-Do, Calculator, Clock, Quiz</td><td>State, events, arrays, timers</td></tr>
+        <tr><td>Intermediate</td><td>Weather app, Notes app, Expense tracker, Blog</td><td>APIs, CRUD, routing</td></tr>
+        <tr><td>Advanced</td><td>E-commerce, Admin dashboard, Full-stack app, AI chatbot</td><td>Auth, state management, real backends</td></tr>
+      </table>
+      <div class="section-nav"><button onclick="goTo('u37')">← Unit 37</button><button onclick="goTo('u39')">Unit 39: Final Roadmap →</button></div>
+    </section>
+
+    <section class="view" id="u39" data-title="Final Learning Roadmap">
+      <div class="unit-head"><div><div class="num">Part 08 · Unit 39</div><h2>Final Learning Roadmap</h2></div><div class="rev">Beyond React</div></div>
+      <p class="lead">The full path, end to end.</p>
+      <div class="roadmap" id="roadmapChips2"></div>
+      <div class="note"><strong>Don't start with Redux, Next.js, or advanced hooks.</strong> Get comfortable through Unit 21 (Authentication) first — the rest builds on that foundation.</div>
+      <div class="section-nav"><button onclick="goTo('u38')">← Unit 38</button><button onclick="goTo('hero')">Back to overview →</button></div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+const parts = [
+  {label:"Part 01 · Prerequisites", units:[["u01","01","HTML & CSS Essentials"],["u02","02","Modern JavaScript"]]},
+  {label:"Part 02 · Foundations", units:[["u03","03","What is React?"],["u04","04","Environment Setup"],["u05","05","JSX"],["u06","06","Components"],["u07","07","Props"],["u08","08","Events"],["u09","09","useState"],["u10","10","Conditional Rendering"],["u11","11","Lists & Keys"],["u12","12","Forms"]]},
+  {label:"Part 03 · Hooks & Data Flow", units:[["u13","13","Hooks Overview"],["u14","14","useEffect Deep Dive"],["u15","15","Component Communication"],["u16","16","Context API"],["u17","17","Custom Hooks"]]},
+  {label:"Part 04 · Routing & Data", units:[["u18","18","React Router"],["u19","19","API Integration"],["u20","20","CRUD Applications"],["u21","21","Authentication"]]},
+  {label:"Part 05 · Scale", units:[["u22","22","Backend Architecture"],["u23","23","State Management"],["u24","24","Project Architecture"]]},
+  {label:"Part 06 · Quality", units:[["u25","25","Performance"],["u26","26","Advanced Rendering"],["u27","27","Testing"],["u28","28","TypeScript"]]},
+  {label:"Part 07 · Production", units:[["u29","29","Styling"],["u30","30","SSR & Next.js"],["u31","31","Security"],["u32","32","Accessibility"],["u33","33","Env Variables"],["u34","34","Git & GitHub"],["u35","35","Debugging"],["u36","36","Deployment"]]},
+  {label:"Part 08 · Beyond React", units:[["u37","37","React + AI"],["u38","38","Project Roadmap"],["u39","39","Final Roadmap"]]},
+];
+
+const navRoot = document.getElementById('navRoot');
+let allLinks = [];
+parts.forEach(part => {
+  const label = document.createElement('div');
+  label.className = 'part-label';
+  label.textContent = part.label;
+  const wrap = document.createElement('div');
+  wrap.className = 'part';
+  wrap.appendChild(label);
+  part.units.forEach(([id, num, title]) => {
+    const btn = document.createElement('button');
+    btn.className = 'navlink';
+    btn.dataset.target = id;
+    btn.dataset.search = (num + ' ' + title).toLowerCase();
+    btn.innerHTML = '<span class="n">' + num + '</span><span>' + title + '</span>';
+    btn.onclick = () => goTo(id);
+    wrap.appendChild(btn);
+    allLinks.push(btn);
+  });
+  navRoot.appendChild(wrap);
+});
+
+function goTo(id){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById(id);
+  target.classList.add('active');
+  allLinks.forEach(l => l.classList.toggle('active', l.dataset.target === id));
+  document.getElementById('crumb').textContent = target.dataset.title || 'Overview';
+  document.querySelector('.content').scrollTo(0,0);
+  window.scrollTo(0,0);
+  history.replaceState(null, '', '#' + id);
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+document.getElementById('menuBtn').onclick = () => document.getElementById('sidebar').classList.toggle('open');
+document.getElementById('navFilter').addEventListener('input', (e) => {
+  const q = e.target.value.toLowerCase();
+  allLinks.forEach(l => { l.style.display = l.dataset.search.includes(q) ? '' : 'none'; });
+});
+
+// roadmap chips (hero + final unit)
+const roadmapSteps = ["HTML/CSS/JS","ES6+","Vite","JSX","Components","Props","State","Hooks","Router","APIs","CRUD","Context","State Mgmt","Testing","TypeScript","Deployment","Next.js","AI Integration"];
+[document.getElementById('roadmapChips'), document.getElementById('roadmapChips2')].forEach(container => {
+  if(!container) return;
+  roadmapSteps.forEach((s,i) => {
+    const chip = document.createElement('span');
+    chip.className = 'stop';
+    chip.textContent = s;
+    container.appendChild(chip);
+    if(i < roadmapSteps.length - 1){
+      const sep = document.createElement('span');
+      sep.className = 'sep';
+      sep.textContent = '→';
+      container.appendChild(sep);
+    }
+  });
+});
+
+// load from hash on open
+window.addEventListener('load', () => {
+  const hash = location.hash.replace('#','');
+  if(hash && document.getElementById(hash)) goTo(hash);
+});
+</script>
+</body>
+</html>

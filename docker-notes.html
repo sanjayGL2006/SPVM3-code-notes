@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker Containerization Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0e14; --bg2:#0f1420; --panel:#121826; --panel2:#161d2e;
+  --border:#212a3d; --border2:#2a3550;
+  --text:#dbe2f0; --muted:#8493b3; --dim:#5b6785;
+  --accent:#2496ed; --accent2:#0db7ed; --accent3:#66d9ef;
+  --green:#3ddc97; --yellow:#f4c95d; --red:#ff6b6b; --purple:#c792ea; --orange:#ff9d5c;
+  --sidebar-w:290px; --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Inter',sans-serif; line-height:1.65;
+  font-size:15.5px;
+}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:6px;}
+::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+
+h1,h2,h3,h4{font-family:'Sora',sans-serif;color:#fff;}
+code, pre, .mono{font-family:'JetBrains Mono',monospace;}
+a{color:var(--accent3);text-decoration:none;}
+
+/* ---------- progress bar ---------- */
+#progress-bar{
+  position:fixed; top:0; left:0; height:3px; width:0%;
+  background:linear-gradient(90deg,var(--accent2),var(--accent3),var(--green));
+  z-index:9999; transition:width .1s ease-out;
+}
+
+/* ---------- top bar (mobile) ---------- */
+#topbar{
+  display:none; position:fixed; top:0; left:0; right:0; height:56px;
+  background:rgba(11,14,20,.95); backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border); z-index:900;
+  align-items:center; justify-content:space-between; padding:0 16px;
+}
+#topbar .brand{font-family:'Sora',sans-serif;font-weight:700;color:#fff;font-size:16px;display:flex;align-items:center;gap:8px;}
+#hamburger{
+  width:38px;height:38px;border-radius:8px;background:var(--panel2);
+  border:1px solid var(--border2); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; flex-direction:column; gap:4px;
+}
+#hamburger span{width:18px;height:2px;background:var(--text);border-radius:2px;}
+
+/* ---------- layout ---------- */
+.layout{display:flex; min-height:100vh;}
+#sidebar{
+  width:var(--sidebar-w); flex-shrink:0; position:fixed; top:0; left:0; bottom:0;
+  background:var(--bg2); border-right:1px solid var(--border);
+  overflow-y:auto; padding:22px 0 40px; z-index:800;
+}
+#sidebar .brand{
+  display:flex; align-items:center; gap:10px; padding:0 22px 20px;
+  border-bottom:1px solid var(--border); margin-bottom:14px;
+}
+#sidebar .brand .logo{
+  width:36px;height:36px;border-radius:9px;
+  background:linear-gradient(135deg,var(--accent2),var(--accent3));
+  display:flex;align-items:center;justify-content:center;font-size:19px;
+}
+#sidebar .brand h1{font-size:17px;}
+#sidebar .brand .sub{font-size:11px;color:var(--muted);font-weight:500;}
+
+.progress-wrap{padding:0 22px 18px;}
+.progress-wrap .label{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;}
+.progress-track{height:6px;border-radius:4px;background:var(--panel2);overflow:hidden;}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent2),var(--green));transition:width .2s;}
+
+.navgroup{margin-bottom:6px;}
+.navgroup > .gtitle{
+  font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim);
+  padding:14px 22px 6px; font-weight:600;
+}
+.navlink{
+  display:flex; align-items:center; gap:10px; padding:8px 22px;
+  font-size:13.5px; color:var(--muted); cursor:pointer; border-left:3px solid transparent;
+  transition:.15s;
+}
+.navlink .n{
+  width:20px;height:20px;border-radius:5px;background:var(--panel2);
+  font-size:10px; display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  color:var(--dim); font-family:'JetBrains Mono',monospace;
+}
+.navlink:hover{color:var(--text); background:rgba(36,150,237,.06);}
+.navlink.active{color:#fff; border-left-color:var(--accent2); background:rgba(36,150,237,.1);}
+.navlink.active .n{background:var(--accent2); color:#04121f;}
+.navlink.done .n{background:var(--green); color:#04121f;}
+
+/* ---------- main ---------- */
+#main{margin-left:var(--sidebar-w); flex:1; min-width:0;}
+.container{max-width:960px; margin:0 auto; padding:0 40px 100px;}
+
+/* ---------- hero ---------- */
+.hero{
+  padding:80px 40px 60px; max-width:960px; margin:0 auto;
+  border-bottom:1px solid var(--border); position:relative; overflow:hidden;
+}
+.hero::before{
+  content:""; position:absolute; top:-100px; right:-100px; width:400px;height:400px;
+  background:radial-gradient(circle,rgba(36,150,237,.18),transparent 70%); pointer-events:none;
+}
+.hero .tag{
+  display:inline-flex; align-items:center; gap:8px; font-size:12px; color:var(--accent3);
+  background:rgba(36,150,237,.1); border:1px solid rgba(36,150,237,.3);
+  padding:6px 14px; border-radius:20px; margin-bottom:22px; font-weight:600; letter-spacing:.03em;
+}
+.hero h1{font-size:42px; line-height:1.15; margin-bottom:16px;}
+.hero h1 span{background:linear-gradient(90deg,var(--accent2),var(--accent3),var(--green)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+.hero p{font-size:16px; color:var(--muted); max-width:640px; margin-bottom:28px;}
+.hero .stats{display:flex; gap:28px; flex-wrap:wrap;}
+.stat{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:14px 20px; min-width:120px;}
+.stat .num{font-family:'Sora',sans-serif; font-size:24px; font-weight:800; color:#fff;}
+.stat .lbl{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
+
+/* ---------- category headers ---------- */
+.cat-header{
+  padding:50px 0 18px; margin-top:10px;
+  display:flex; align-items:center; gap:14px;
+}
+.cat-header .icon{
+  width:42px;height:42px;border-radius:10px; display:flex;align-items:center;justify-content:center;
+  font-size:20px; background:var(--panel2); border:1px solid var(--border2);
+}
+.cat-header h2{font-size:23px;}
+.cat-header .count{font-size:12px; color:var(--muted); font-weight:500;}
+
+/* ---------- concept card ---------- */
+.card{
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  padding:28px 30px; margin-bottom:22px; scroll-margin-top:80px;
+}
+.card .chead{display:flex; align-items:baseline; gap:12px; margin-bottom:12px; flex-wrap:wrap;}
+.card .chead .idx{
+  font-family:'JetBrains Mono',monospace; color:var(--accent2); font-size:13px; font-weight:600;
+  background:rgba(36,150,237,.1); padding:2px 9px; border-radius:6px;
+}
+.card h3{font-size:19px;}
+.card .desc{color:var(--muted); margin-bottom:16px; font-size:14.8px;}
+.card .desc code{background:var(--panel2); padding:1px 6px; border-radius:4px; color:var(--accent3); font-size:13px;}
+
+.codewrap{border:1px solid var(--border2); border-radius:9px; overflow:hidden; margin-bottom:12px;}
+.codebar{
+  background:var(--panel2); padding:8px 14px; display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border2); font-size:11.5px; color:var(--muted);
+}
+.codebar .dots{display:flex;gap:6px;}
+.codebar .dots span{width:9px;height:9px;border-radius:50%;}
+.codebar .dots span:nth-child(1){background:#ff5f56;}
+.codebar .dots span:nth-child(2){background:#ffbd2e;}
+.codebar .dots span:nth-child(3){background:#27c93f;}
+.codebar .fname{font-family:'JetBrains Mono',monospace;}
+.copybtn{
+  background:var(--panel); border:1px solid var(--border2); color:var(--muted);
+  padding:3px 10px; border-radius:6px; font-size:11px; cursor:pointer; font-family:'Inter',sans-serif;
+}
+.copybtn:hover{color:var(--text); border-color:var(--accent2);}
+pre.codeblock{
+  margin:0; padding:16px; overflow-x:auto; font-size:13.2px; line-height:1.65;
+  background:#0d1119; font-family:'JetBrains Mono',monospace;
+}
+.kw{color:var(--purple);} .str{color:var(--green);} .com{color:var(--dim); font-style:italic;}
+.num{color:var(--orange);} .func{color:var(--accent3);} .flag{color:var(--yellow);}
+.prompt{color:var(--dim);}
+
+.runbtn{
+  display:inline-flex; align-items:center; gap:6px; background:var(--accent);
+  color:#fff; border:none; padding:8px 16px; border-radius:7px; font-size:13px;
+  font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; margin-bottom:12px;
+}
+.runbtn:hover{background:var(--accent2);}
+.outpanel{
+  background:#080a10; border:1px solid var(--border2); border-radius:9px;
+  padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:12.8px;
+  color:#8de29b; white-space:pre-wrap; min-height:20px; display:none;
+}
+.outpanel.show{display:block;}
+.outpanel .tag-sim{color:var(--dim); font-style:italic; display:block; margin-bottom:6px; font-family:'Inter',sans-serif; font-size:11px;}
+
+.note-box{
+  border-left:3px solid var(--accent2); background:rgba(36,150,237,.06);
+  padding:12px 16px; border-radius:0 8px 8px 0; font-size:13.6px; color:var(--muted); margin-top:14px;
+}
+.note-box b{color:var(--accent3);}
+.warn-box{
+  border-left:3px solid var(--yellow); background:rgba(244,201,93,.06);
+  padding:12px 16px; border-radius:0 8px 8px 0; font-size:13.6px; color:var(--muted); margin-top:14px;
+}
+.warn-box b{color:var(--yellow);}
+
+/* ---------- table ---------- */
+table.reftable{width:100%; border-collapse:collapse; margin:10px 0 4px; font-size:13.3px;}
+table.reftable th{
+  text-align:left; padding:9px 12px; background:var(--panel2); color:var(--accent3);
+  border:1px solid var(--border2); font-family:'JetBrains Mono',monospace; font-size:12px;
+}
+table.reftable td{padding:9px 12px; border:1px solid var(--border); color:var(--muted);}
+table.reftable td code{color:var(--accent3);}
+
+/* ---------- project cards ---------- */
+.project-card{
+  background:linear-gradient(160deg,var(--panel),var(--panel2));
+  border:1px solid var(--border2); border-radius:16px; padding:32px; margin-bottom:30px;
+}
+.project-card .phead{display:flex; align-items:center; gap:14px; margin-bottom:6px;}
+.project-card .pnum{
+  width:44px;height:44px;border-radius:12px; background:linear-gradient(135deg,var(--accent2),var(--green));
+  display:flex; align-items:center;justify-content:center; font-family:'Sora',sans-serif; font-weight:800;
+  color:#04121f; font-size:18px; flex-shrink:0;
+}
+.project-card h3{font-size:21px;}
+.project-card .ptag{font-size:12px; color:var(--muted); margin-bottom:18px;}
+.project-card .steps{display:flex; flex-direction:column; gap:4px; margin:16px 0;}
+.step-title{
+  font-size:12.5px; color:var(--accent3); text-transform:uppercase; letter-spacing:.05em;
+  font-weight:700; margin:18px 0 8px; display:flex; align-items:center; gap:8px;
+}
+.step-title::before{content:"▸"; color:var(--green);}
+
+/* ---------- footer ---------- */
+footer{text-align:center; padding:50px 20px; color:var(--dim); font-size:13px; border-top:1px solid var(--border); margin-top:30px;}
+
+/* ---------- responsive ---------- */
+@media(max-width:980px){
+  :root{--sidebar-w:270px;}
+}
+@media(max-width:820px){
+  #topbar{display:flex;}
+  #sidebar{
+    transform:translateX(-100%); transition:transform .25s ease; top:56px; width:82%; max-width:320px;
+    box-shadow:20px 0 60px rgba(0,0,0,.5);
+  }
+  #sidebar.open{transform:translateX(0);}
+  #main{margin-left:0; padding-top:56px;}
+  .hero{padding:36px 20px 40px;}
+  .hero h1{font-size:30px;}
+  .container{padding:0 18px 80px;}
+  .card{padding:20px 18px;}
+  #overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:750;}
+  #overlay.show{display:block;}
+}
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('docker-notes')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('docker-notes'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+
+<div id="progress-bar"></div>
+
+<div id="topbar">
+  <div class="brand">🐳 Docker A–Z</div>
+  <div id="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></div>
+</div>
+<div id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <nav id="sidebar">
+    <div class="brand">
+      <div class="logo">🐳</div>
+      <div>
+        <h1>Docker A–Z</h1>
+        <div class="sub">Complete Reference Guide</div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="label"><span>Progress</span><span id="progress-pct">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div id="navcontainer"></div>
+  </nav>
+
+  <div id="main">
+    <header class="hero">
+      <div class="tag">🐳 CONTAINERIZATION · A TO Z</div>
+      <h1>The Complete <span>Docker</span> Reference &amp; Build Guide</h1>
+      <p>A single-file, self-contained interactive guide to Docker — from "what is a container" to writing Dockerfiles, Compose stacks, networking, volumes, security, and three full mini-projects you can build today.</p>
+      <div class="stats">
+        <div class="stat"><div class="num">26</div><div class="lbl">Concepts</div></div>
+        <div class="stat"><div class="num">8</div><div class="lbl">Categories</div></div>
+        <div class="stat"><div class="num">3</div><div class="lbl">Mini Projects</div></div>
+        <div class="stat"><div class="num">0</div><div class="lbl">Dependencies</div></div>
+      </div>
+    </header>
+
+    <div class="container" id="content"></div>
+
+    <footer>Built as a standalone reference file · No external frameworks · Works fully offline once loaded (except Google Fonts)</footer>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DATA: categories -> concepts
+   Each concept: { title, desc, lang, code, output, note, warn }
+   ============================================================ */
+const DATA = [
+{
+  group:"Fundamentals",
+  icon:"📦",
+  items:[
+    {
+      title:"What is Docker?",
+      desc:"Docker is a platform that packages an application together with everything it needs — code, runtime, system libraries, settings — into a single unit called a <code>container</code>. That container runs identically on a laptop, a test server, or in the cloud, solving the classic \"it works on my machine\" problem.",
+      lang:"bash",
+      code:`# Check that Docker is installed and see version info
+docker --version
+docker info`,
+      output:`Docker version 27.3.1, build ce12230
+Server:
+ Containers: 3
+ Images: 12
+ Server Version: 27.3.1
+ Storage Driver: overlay2
+ Operating System: Ubuntu 24.04 LTS`,
+      note:"Docker was created by Solomon Hykes in 2013. It uses Linux kernel features (namespaces & cgroups) under the hood — on Windows/Mac, Docker Desktop runs a lightweight Linux VM to provide the same kernel features."
+    },
+    {
+      title:"What is a Container?",
+      desc:"A container is an isolated, lightweight, runnable instance of an image. It shares the host machine's OS kernel but has its own filesystem, process space, network interface, and resource limits — think of it as a sandboxed mini-Linux system running one (or a few) processes.",
+      lang:"bash",
+      code:`# Run your very first container
+docker run hello-world
+
+# See it listed
+docker ps -a`,
+      output:`Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+CONTAINER ID   IMAGE          STATUS                     NAMES
+a1b2c3d4e5f6   hello-world    Exited (0) 2 seconds ago   festive_hopper`,
+      note:"A container is just a running (or stopped) process wrapped in isolation layers — it is NOT a full operating system, which is why it starts in milliseconds, not minutes."
+    },
+    {
+      title:"Containers vs Virtual Machines",
+      desc:"VMs virtualize hardware and each VM carries a full guest OS (heavy, slow to boot, GBs in size). Containers virtualize the OS layer and share the host kernel — they're lightweight (MBs), start in milliseconds, and you can run dozens on one machine.",
+      lang:"text",
+      code:`┌──────────────────────────┐   ┌──────────────────────────┐
+│   VIRTUAL MACHINES        │   │   CONTAINERS               │
+├──────────────────────────┤   ├──────────────────────────┤
+│ App A │ App B │ App C     │   │ App A │ App B │ App C     │
+│ Bins  │ Bins  │ Bins      │   │ Bins  │ Bins  │ Bins      │
+│ Guest │ Guest │ Guest     │   │ ---------------------     │
+│ OS    │ OS    │ OS        │   │   Docker Engine            │
+├──────────────────────────┤   ├──────────────────────────┤
+│      Hypervisor            │   │      Host OS                │
+├──────────────────────────┤   ├──────────────────────────┤
+│      Host OS               │   │      Infrastructure         │
+├──────────────────────────┤   └──────────────────────────┘
+│      Infrastructure        │
+└──────────────────────────┘`,
+      output:``,
+      note:"Rule of thumb: VM = isolate the whole OS. Container = isolate just the application process. Both can be used together (many companies run Docker containers inside cloud VMs)."
+    },
+    {
+      title:"Images vs Containers",
+      desc:"An <code>image</code> is a read-only template — a snapshot of a filesystem plus metadata (like a class in programming). A <code>container</code> is a running instance of that image, with a writable layer on top (like an object/instance of that class).",
+      lang:"bash",
+      code:`# List images (the templates)
+docker images
+
+# List containers (the running/stopped instances)
+docker ps -a
+
+# Create MANY containers from the SAME image
+docker run -d --name web1 nginx
+docker run -d --name web2 nginx
+docker run -d --name web3 nginx`,
+      output:`REPOSITORY   TAG       IMAGE ID       SIZE
+nginx        latest    605c77e624dd   187MB
+
+CONTAINER ID   IMAGE   NAMES   STATUS
+f1a2...        nginx   web1    Up 2 seconds
+b3c4...        nginx   web2    Up 1 second
+d5e6...        nginx   web3    Up 1 second`,
+      note:"One image → unlimited containers. Deleting a container doesn't remove the image; deleting an image requires that no containers reference it."
+    },
+    {
+      title:"Docker Architecture",
+      desc:"Docker uses a client-server model. The <code>Docker CLI</code> (client) sends commands to the <code>Docker daemon</code> (dockerd), which does the heavy lifting: building images, running containers, managing networks/volumes. The daemon can also talk to a remote <code>registry</code> (like Docker Hub) to push/pull images.",
+      lang:"text",
+      code:`  DOCKER CLIENT                DOCKER HOST (dockerd)
+  ┌────────────┐   REST API   ┌───────────────────────┐
+  │ docker run │ ───────────► │  Docker Daemon          │
+  │ docker build│              │  ├── Images             │
+  │ docker pull│              │  ├── Containers          │
+  └────────────┘              │  └── Networks/Volumes    │
+                               └───────────┬───────────┘
+                                           │ pull / push
+                                    ┌──────▼───────┐
+                                    │  REGISTRY      │
+                                    │  (Docker Hub)  │
+                                    └───────────────┘`,
+      output:``,
+      note:"The client and daemon can run on the same machine (default) or the client can connect to a remote daemon over a network socket — this is how CI/CD pipelines often build images."
+    }
+  ]
+},
+{
+  group:"Installation & Setup",
+  icon:"⚙️",
+  items:[
+    {
+      title:"Installing Docker on Windows",
+      desc:"On Windows 10/11, install <code>Docker Desktop</code>, which bundles the Docker Engine, CLI, Compose, and a GUI. It requires WSL2 (Windows Subsystem for Linux) as the backend for best performance.",
+      lang:"bash",
+      code:`# 1. Enable WSL2 (PowerShell as Administrator)
+wsl --install
+
+# 2. Download Docker Desktop from docker.com and run the installer
+#    (docker.com/products/docker-desktop)
+
+# 3. Restart your machine, then verify:
+docker --version
+docker run hello-world`,
+      output:`Docker version 27.3.1, build ce12230
+Hello from Docker!`,
+      note:"Docker Desktop auto-starts the daemon on boot. You'll see a whale 🐳 icon in the system tray when it's running."
+    },
+    {
+      title:"Installing Docker on macOS",
+      desc:"Download <code>Docker Desktop for Mac</code> (choose Apple Silicon or Intel chip build). It runs a lightweight Linux VM under the hood since macOS has no container-native kernel.",
+      lang:"bash",
+      code:`# Using Homebrew (fastest way)
+brew install --cask docker
+
+# Then launch Docker.app from Applications,
+# wait for the whale icon to stop animating, then:
+docker --version
+docker run hello-world`,
+      output:`Docker version 27.3.1, build ce12230
+Hello from Docker! This message shows that your installation
+appears to be working correctly.`,
+      note:"Apple Silicon (M1/M2/M3/M4) Macs run ARM64 images natively. If you pull an x86-only image, Docker will emulate it via QEMU — slower, so prefer multi-arch images."
+    },
+    {
+      title:"Installing Docker on Linux",
+      desc:"On Linux, Docker Engine installs directly (no VM layer needed) — this gives the best performance. Ubuntu/Debian use apt, and Docker runs as a systemd service.",
+      lang:"bash",
+      code:`# Ubuntu/Debian — official installer script
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Start and enable the Docker service
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Run Docker without typing "sudo" every time
+sudo usermod -aG docker $USER
+newgrp docker
+
+# Verify
+docker run hello-world`,
+      output:`Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+Status: Downloaded newer image for hello-world:latest
+Hello from Docker!`,
+      note:"After adding your user to the 'docker' group you must log out and back in (or run 'newgrp docker') for the change to take effect."
+    },
+    {
+      title:"Docker Desktop vs Docker Engine",
+      desc:"<code>Docker Engine</code> is the core runtime (daemon + CLI + API) — free, open source, runs natively on Linux servers. <code>Docker Desktop</code> is a GUI application for Windows/Mac (and Linux) that bundles Engine + Compose + Kubernetes + a dashboard; it requires a paid license for larger companies.",
+      lang:"text",
+      code:`Docker Engine   →  dockerd + CLI + API   (servers, CI/CD, Linux)
+Docker Desktop  →  Engine + GUI + Compose + K8s  (local dev, Win/Mac)
+Docker Compose  →  tool for multi-container apps (docker-compose.yml)
+Docker Hub      →  public registry for storing/sharing images`,
+      output:``,
+      note:"For production servers you almost always install Docker Engine directly on Linux — Docker Desktop is meant for local development machines."
+    },
+    {
+      title:"First Health Check Commands",
+      desc:"A handful of commands to sanity-check any Docker installation before you start building.",
+      lang:"bash",
+      code:`docker version        # client + server version details
+docker info            # system-wide info: containers, images, driver
+docker system df       # disk usage by images/containers/volumes
+docker context ls      # which daemon the CLI is talking to`,
+      output:`Client: Docker Engine - Community
+ Version:    27.3.1
+Server: Docker Desktop 4.34.0
+
+TYPE            TOTAL   ACTIVE   SIZE
+Images          12      5        2.1GB
+Containers      5       3        340MB
+Local Volumes   3       2        120MB`,
+      note:""
+    }
+  ]
+},
+{
+  group:"Core CLI Commands",
+  icon:"⌨️",
+  items:[
+    {
+      title:"docker run — Launching Containers",
+      desc:"<code>docker run</code> creates AND starts a new container from an image in one step. Flags control how it runs — detached mode, port mapping, naming, environment variables, and more.",
+      lang:"bash",
+      code:`# Run nginx, map host port 8080 -> container port 80,
+# detached (-d), custom name
+docker run -d -p 8080:80 --name my-nginx nginx
+
+# Run interactively with a terminal (-it), auto-remove on exit (--rm)
+docker run -it --rm ubuntu bash
+
+# Pass environment variables
+docker run -e APP_ENV=production -e PORT=3000 my-app`,
+      output:`Unable to find image 'nginx:latest' locally
+latest: Pulling from library/nginx
+Status: Downloaded newer image for nginx:latest
+a7f3e9c21d4b8f6e0a1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3
+
+# nginx is now reachable at http://localhost:8080`,
+      note:"-d = detached (background), -p host:container = port mapping, -it = interactive terminal, --rm = auto-delete container on exit, -e = environment variable, --name = friendly name."
+    },
+    {
+      title:"docker ps — Listing Containers",
+      desc:"Shows running containers by default. Add <code>-a</code> to see ALL containers including stopped ones.",
+      lang:"bash",
+      code:`docker ps                 # running containers only
+docker ps -a               # all containers (running + stopped)
+docker ps -q               # only container IDs (useful for scripting)
+docker ps --filter "status=exited"`,
+      output:`CONTAINER ID   IMAGE     COMMAND                  STATUS         PORTS                  NAMES
+a7f3e9c21d4b   nginx     "/docker-entrypoint.…"   Up 2 minutes   0.0.0.0:8080->80/tcp   my-nginx`,
+      note:""
+    },
+    {
+      title:"docker stop / start / restart / rm",
+      desc:"Lifecycle management commands. <code>stop</code> sends SIGTERM (graceful), <code>kill</code> sends SIGKILL (immediate). <code>rm</code> deletes a stopped container permanently.",
+      lang:"bash",
+      code:`docker stop my-nginx        # gracefully stop
+docker start my-nginx       # start a stopped container
+docker restart my-nginx     # stop + start
+docker kill my-nginx        # force-kill immediately
+docker rm my-nginx          # remove a stopped container
+docker rm -f my-nginx       # force remove (stops first if running)
+
+# Clean up ALL stopped containers at once
+docker container prune`,
+      output:`my-nginx
+my-nginx
+my-nginx
+Total reclaimed space: 45.2MB`,
+      note:""
+    },
+    {
+      title:"docker exec — Running Commands Inside a Container",
+      desc:"<code>exec</code> runs a new command inside an already-running container — the most common way to \"get inside\" a container for debugging.",
+      lang:"bash",
+      code:`# Open an interactive shell inside a running container
+docker exec -it my-nginx bash
+
+# Run a one-off command without a shell
+docker exec my-nginx cat /etc/nginx/nginx.conf
+docker exec my-nginx ls /usr/share/nginx/html`,
+      output:`root@a7f3e9c21d4b:/# ls
+bin  boot  dev  etc  home  lib  media ...
+root@a7f3e9c21d4b:/# exit`,
+      note:"If a container's base image doesn't have 'bash' (e.g. Alpine-based images), use 'sh' instead: docker exec -it container_name sh"
+    },
+    {
+      title:"docker logs — Viewing Container Output",
+      desc:"Streams the stdout/stderr of a container — essential for debugging. Use <code>-f</code> to follow logs live, like <code>tail -f</code>.",
+      lang:"bash",
+      code:`docker logs my-nginx           # print all logs so far
+docker logs -f my-nginx         # follow logs in real time
+docker logs --tail 50 my-nginx  # last 50 lines only
+docker logs --since 10m my-nginx  # logs from the last 10 minutes`,
+      output:`172.17.0.1 - - [18/Aug/2026:10:22:14] "GET / HTTP/1.1" 200 615
+172.17.0.1 - - [18/Aug/2026:10:22:15] "GET /favicon.ico HTTP/1.1" 404 153`,
+      note:""
+    },
+    {
+      title:"docker pull / push — Working with Registries",
+      desc:"<code>pull</code> downloads an image from a registry (default: Docker Hub). <code>push</code> uploads your own image so others can pull it. You must <code>docker login</code> first to push.",
+      lang:"bash",
+      code:`docker pull node:20-alpine
+docker pull postgres:16
+
+docker login
+docker tag my-app:latest myusername/my-app:latest
+docker push myusername/my-app:latest`,
+      output:`20-alpine: Pulling from library/node
+Status: Downloaded newer image for node:20-alpine
+
+Login Succeeded
+The push refers to repository [docker.io/myusername/my-app]
+latest: digest: sha256:8f3a... size: 1571`,
+      note:"Image names follow the pattern: [registry/]namespace/repository[:tag]. If you omit the registry, Docker Hub is assumed. If you omit the tag, ':latest' is assumed."
+    },
+    {
+      title:"Common CLI Cheat Sheet",
+      desc:"A quick reference table of the commands you'll type dozens of times a day.",
+      lang:"table",
+      table:[
+        ["docker images","List all local images"],
+        ["docker rmi <image>","Remove an image"],
+        ["docker inspect <name>","Full JSON metadata of a container/image"],
+        ["docker stats","Live CPU/memory usage per container"],
+        ["docker cp file.txt container:/path","Copy files into/out of a container"],
+        ["docker system prune -a","Remove ALL unused images/containers/networks"],
+        ["docker top <container>","Show running processes inside a container"],
+        ["docker diff <container>","Show filesystem changes since it started"]
+      ],
+      note:""
+    }
+  ]
+},
+{
+  group:"Images & Dockerfile",
+  icon:"🧱",
+  items:[
+    {
+      title:"What is a Dockerfile?",
+      desc:"A <code>Dockerfile</code> is a plain-text script of instructions that tells Docker exactly how to build an image, step by step — starting from a base image, adding your code, installing dependencies, and defining how the container should start.",
+      lang:"dockerfile",
+      code:`# Dockerfile
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["node", "server.js"]`,
+      output:``,
+      note:"Each instruction (FROM, RUN, COPY...) creates a new cached LAYER in the image. Order matters — put things that change rarely (like dependency installs) BEFORE things that change often (like your source code)."
+    },
+    {
+      title:"docker build — Building an Image",
+      desc:"Reads a Dockerfile and builds a tagged image from it. The <code>.</code> at the end is the 'build context' — the folder Docker can see while building.",
+      lang:"bash",
+      code:`# Build an image tagged "my-app:1.0" from the Dockerfile in current dir
+docker build -t my-app:1.0 .
+
+# Build using a Dockerfile with a different name/path
+docker build -f Dockerfile.prod -t my-app:prod .
+
+# Build without using cache (force fresh rebuild)
+docker build --no-cache -t my-app:1.0 .`,
+      output:`[+] Building 12.4s (10/10) FINISHED
+ => [1/5] FROM docker.io/library/node:20-alpine
+ => [2/5] WORKDIR /app
+ => [3/5] COPY package*.json ./
+ => [4/5] RUN npm install
+ => [5/5] COPY . .
+ => exporting to image
+ => => naming to docker.io/library/my-app:1.0`,
+      note:""
+    },
+    {
+      title:"Key Dockerfile Instructions",
+      desc:"The core vocabulary every Dockerfile is built from.",
+      lang:"table",
+      table:[
+        ["FROM","Base image to start from (e.g. FROM python:3.12-slim)"],
+        ["WORKDIR","Sets the working directory for following instructions"],
+        ["COPY / ADD","Copy files from host into the image (ADD also handles URLs/tar extraction)"],
+        ["RUN","Executes a command at BUILD time (e.g. install packages) — creates a layer"],
+        ["CMD","Default command to run when container STARTS (only one CMD is used)"],
+        ["ENTRYPOINT","Fixed executable for the container; CMD becomes its default arguments"],
+        ["EXPOSE","Documents which port the app listens on (doesn't publish it)"],
+        ["ENV","Sets environment variables available at build & run time"],
+        ["ARG","Build-time-only variable, passed via --build-arg"],
+        ["VOLUME","Declares a mount point for persistent/external data"],
+        ["USER","Runs subsequent instructions/container as a specific (non-root) user"]
+      ],
+      note:""
+    },
+    {
+      title:"CMD vs ENTRYPOINT",
+      desc:"Both define what runs when a container starts. <code>CMD</code> is easily overridden by arguments after <code>docker run image</code>; <code>ENTRYPOINT</code> is the fixed command, and CMD (if present) supplies its default arguments.",
+      lang:"dockerfile",
+      code:`# CMD only — fully overridable
+FROM alpine
+CMD ["echo", "Hello from CMD"]
+# docker run image        -> "Hello from CMD"
+# docker run image echo hi -> "hi"  (CMD replaced entirely)
+
+# ENTRYPOINT + CMD — CMD supplies default args
+FROM alpine
+ENTRYPOINT ["echo"]
+CMD ["Hello from ENTRYPOINT"]
+# docker run image        -> "Hello from ENTRYPOINT"
+# docker run image Hi!    -> "Hi!"  (only the argument changes)`,
+      output:``,
+      note:"Best practice: use ENTRYPOINT for the fixed executable of your app (e.g. ['python','app.py']) and CMD for default flags/arguments that users may want to override."
+    },
+    {
+      title:"Multi-Stage Builds",
+      desc:"Multi-stage builds use multiple <code>FROM</code> statements in one Dockerfile to separate the build environment from the runtime environment — dramatically shrinking final image size by discarding compilers, dev dependencies, and build tools.",
+      lang:"dockerfile",
+      code:`# ---- Stage 1: build ----
+FROM node:20 AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# ---- Stage 2: production (tiny final image) ----
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]`,
+      output:`[+] Building 34.1s (14/14) FINISHED
+ => [builder 5/5] RUN npm run build
+ => [stage-1 2/3] COPY --from=builder /app/dist /usr/share/nginx/html
+ => naming to docker.io/library/my-app:prod
+
+Image size comparison:
+  single-stage build : 1.2GB
+  multi-stage build  : 43MB`,
+      note:"This is one of the single biggest wins for production Docker images — a Node/React build image can shrink from 1GB+ down to under 50MB."
+    },
+    {
+      title:"Image Layers & Caching",
+      desc:"Every instruction in a Dockerfile creates an immutable, cacheable layer. If a layer's inputs haven't changed, Docker reuses the cached layer instead of rebuilding — this is why instruction ORDER dramatically affects build speed.",
+      lang:"dockerfile",
+      code:`# ❌ BAD: any source change invalidates the npm install cache
+FROM node:20
+WORKDIR /app
+COPY . .
+RUN npm install
+CMD ["node", "server.js"]
+
+# ✅ GOOD: dependency install is cached separately from source code
+FROM node:20
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+CMD ["node", "server.js"]`,
+      output:`Rebuild after editing server.js only:
+
+BAD version  -> re-runs "npm install" every time (slow, ~40s)
+GOOD version -> reuses cached npm install layer (fast, ~1s)`,
+      note:""
+    },
+    {
+      title:".dockerignore",
+      desc:"A file listing paths to exclude from the build context — just like <code>.gitignore</code>. Keeps images small and builds fast by not sending unnecessary files (like node_modules or .git) to the Docker daemon.",
+      lang:"text",
+      code:`# .dockerignore
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+Dockerfile
+*.md
+dist
+coverage`,
+      output:``,
+      note:"Always .dockerignore node_modules and .git — sending a huge .git history or node_modules folder into the build context can slow builds down dramatically."
+    },
+    {
+      title:"Tagging & Versioning Images",
+      desc:"Tags identify specific versions of an image. Using <code>:latest</code> for everything makes deployments unpredictable — real projects use semantic versioning or git-commit-based tags.",
+      lang:"bash",
+      code:`docker build -t my-app:1.0.0 .
+docker build -t my-app:latest .
+
+# Tag an existing image with an additional name
+docker tag my-app:1.0.0 myusername/my-app:1.0.0
+
+# List all tags for an image
+docker images my-app`,
+      output:`REPOSITORY   TAG      IMAGE ID       SIZE
+my-app       1.0.0    3f2a1b9c8d7e   210MB
+my-app       latest   3f2a1b9c8d7e   210MB`,
+      note:"In production, always deploy a fixed version tag (e.g. 1.4.2), never :latest — 'latest' can silently change and break reproducibility."
+    }
+  ]
+},
+{
+  group:"Data & Networking",
+  icon:"🔌",
+  items:[
+    {
+      title:"Volumes — Persistent Storage",
+      desc:"Containers are ephemeral — delete the container and its writable layer's data is gone. <code>Volumes</code> are Docker-managed storage that live outside any single container's lifecycle, ideal for databases and any data that must survive restarts.",
+      lang:"bash",
+      code:`# Create a named volume
+docker volume create db-data
+
+# Mount it into a container
+docker run -d --name mydb -v db-data:/var/lib/mysql mysql:8
+
+# Inspect and list volumes
+docker volume ls
+docker volume inspect db-data
+
+# Remove unused volumes
+docker volume prune`,
+      output:`DRIVER    VOLUME NAME
+local     db-data
+
+[
+  {
+    "Name": "db-data",
+    "Driver": "local",
+    "Mountpoint": "/var/lib/docker/volumes/db-data/_data"
+  }
+]`,
+      note:"Delete and recreate the 'mydb' container and the data in db-data survives — that's the whole point of volumes."
+    },
+    {
+      title:"Bind Mounts",
+      desc:"A bind mount maps a specific folder on your HOST machine directly into the container. Unlike volumes (Docker-managed), bind mounts point at a path you control — perfect for live-reloading source code during development.",
+      lang:"bash",
+      code:`# Mount your current project folder into the container
+docker run -it -v $(pwd):/app -w /app node:20 npm run dev
+
+# Read-only bind mount (container can't modify host files)
+docker run -v $(pwd)/config:/etc/app/config:ro my-app`,
+      output:`> app@1.0.0 dev
+> nodemon server.js
+
+[nodemon] watching path(s): *.*
+[nodemon] starting node server.js
+Server listening on port 3000`,
+      note:"Volumes vs Bind Mounts: use VOLUMES for data Docker should manage (databases, persistent app state). Use BIND MOUNTS for local development so code edits reflect instantly in the container."
+    },
+    {
+      title:"Docker Networking Basics",
+      desc:"By default, Docker creates a <code>bridge</code> network so containers can talk to each other and reach the internet, but are isolated from the host network unless you publish ports.",
+      lang:"bash",
+      code:`# List networks
+docker network ls
+
+# Create a custom bridge network
+docker network create my-network
+
+# Run two containers on the same custom network —
+# they can reach each other BY CONTAINER NAME
+docker run -d --name api --network my-network my-api-image
+docker run -d --name db --network my-network postgres
+
+# Inside "api" container, connect to db using hostname "db":
+# postgresql://db:5432/mydb`,
+      output:`NETWORK ID     NAME          DRIVER    SCOPE
+8f3a1b9c8d7e   bridge        bridge    local
+a1b2c3d4e5f6   my-network    bridge    local
+f9e8d7c6b5a4   host          host      local
+c3b2a1d0e9f8   none          null      local`,
+      note:"On a custom bridge network, Docker provides built-in DNS — containers can resolve each other by NAME, no IP addresses or config needed. This is exactly how Docker Compose links services together."
+    },
+    {
+      title:"Port Mapping (-p)",
+      desc:"Containers are isolated by default — a service running on port 80 INSIDE a container is invisible from outside until you explicitly publish/map that port to the host.",
+      lang:"bash",
+      code:`# HOST_PORT : CONTAINER_PORT
+docker run -d -p 8080:80 nginx      # localhost:8080 -> container:80
+docker run -d -p 127.0.0.1:8080:80 nginx  # bind only to localhost
+docker run -d -P nginx               # auto-map ALL exposed ports randomly
+
+# Multiple port mappings
+docker run -d -p 8080:80 -p 8443:443 nginx`,
+      output:`CONTAINER ID   PORTS
+a7f3e9c21d4b   0.0.0.0:8080->80/tcp, 0.0.0.0:8443->443/tcp`,
+      note:""
+    },
+    {
+      title:"Environment Variables & .env Files",
+      desc:"Pass configuration into containers without hardcoding it in the image — critical for keeping secrets and environment-specific values (DB passwords, API keys, URLs) out of your Dockerfile.",
+      lang:"bash",
+      code:`# Inline
+docker run -e NODE_ENV=production -e PORT=4000 my-app
+
+# From a file
+docker run --env-file .env my-app`,
+      output:`# .env
+NODE_ENV=production
+PORT=4000
+DATABASE_URL=postgres://user:pass@db:5432/mydb
+API_KEY=sk-xxxxxxxxxxxx`,
+      note:"Never COPY a .env file with real secrets into an image with COPY — that bakes secrets into every layer, permanently. Pass secrets at RUN time instead (--env-file, or a secrets manager)."
+    }
+  ]
+},
+{
+  group:"Docker Compose",
+  icon:"🧩",
+  items:[
+    {
+      title:"What is Docker Compose?",
+      desc:"Compose lets you define and run multi-container applications using a single YAML file. Instead of typing long <code>docker run</code> commands for each service, you describe your whole stack (app, database, cache, etc.) declaratively and bring it all up with one command.",
+      lang:"yaml",
+      code:`# docker-compose.yml
+version: "3.9"
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: myapp
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:`,
+      output:``,
+      note:""
+    },
+    {
+      title:"docker compose up / down",
+      desc:"<code>up</code> builds (if needed) and starts every service defined in the compose file. <code>down</code> stops and removes them, including the network Compose auto-creates.",
+      lang:"bash",
+      code:`docker compose up             # start in foreground (logs streamed)
+docker compose up -d           # start detached (background)
+docker compose up --build      # force rebuild images first
+docker compose down            # stop & remove containers + network
+docker compose down -v         # also remove named volumes`,
+      output:`[+] Running 3/3
+ ✔ Network myapp_default   Created
+ ✔ Container myapp-db-1    Started
+ ✔ Container myapp-web-1   Started
+
+myapp-web-1  | Server listening on port 3000
+myapp-db-1   | database system is ready to accept connections`,
+      note:"Compose automatically creates a shared network so 'web' can reach 'db' just by using the hostname 'db' — matching the service name in the YAML."
+    },
+    {
+      title:"Useful Compose Commands",
+      desc:"Daily-driver Compose commands for managing a running stack.",
+      lang:"table",
+      table:[
+        ["docker compose ps","List containers for this project"],
+        ["docker compose logs -f web","Follow logs for one service"],
+        ["docker compose exec web sh","Shell into a running service"],
+        ["docker compose restart web","Restart a single service"],
+        ["docker compose stop","Stop containers without removing them"],
+        ["docker compose config","Validate & print the resolved YAML"],
+        ["docker compose pull","Pull latest images for all services"]
+      ],
+      note:""
+    },
+    {
+      title:"Compose Networking & depends_on",
+      desc:"Every service in a compose file joins the same default network automatically and can reach every other service by its service name. <code>depends_on</code> controls start ORDER (not full readiness — the app itself should still retry connections).",
+      lang:"yaml",
+      code:`services:
+  api:
+    build: ./api
+    depends_on:
+      - db
+      - cache
+    environment:
+      DB_HOST: db          # resolves via Docker's internal DNS
+      REDIS_HOST: cache
+
+  db:
+    image: postgres:16
+
+  cache:
+    image: redis:7`,
+      output:``,
+      note:"depends_on only waits for the container to START, not for Postgres/Redis to be READY to accept connections. For real readiness checks, add a 'healthcheck' + 'condition: service_healthy'."
+    }
+  ]
+},
+{
+  group:"Advanced Concepts",
+  icon:"🚀",
+  items:[
+    {
+      title:"Docker Networks in Depth",
+      desc:"Docker supports several network drivers for different use cases beyond the default bridge network.",
+      lang:"table",
+      table:[
+        ["bridge","Default. Private internal network on a single host."],
+        ["host","Container shares the host's network stack directly (no isolation, max performance)."],
+        ["none","Completely disables networking for the container."],
+        ["overlay","Connects containers across MULTIPLE Docker hosts — used in Swarm/clusters."],
+        ["macvlan","Assigns a container its own MAC address, appears as a physical device on the LAN."]
+      ],
+      note:""
+    },
+    {
+      title:"Health Checks",
+      desc:"A <code>HEALTHCHECK</code> instruction tells Docker how to actively test whether a container is actually working, not just running — Docker will mark it as <code>healthy</code>, <code>unhealthy</code>, or <code>starting</code>.",
+      lang:"dockerfile",
+      code:`FROM nginx:alpine
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \\
+  CMD wget -q --spider http://localhost/ || exit 1`,
+      output:`docker ps
+CONTAINER ID   IMAGE   STATUS
+a7f3e9c21d4b   web     Up 2 minutes (healthy)`,
+      note:"Orchestrators like Kubernetes and Swarm use health status to decide whether to restart a container or route traffic to it."
+    },
+    {
+      title:"Resource Limits (CPU & Memory)",
+      desc:"By default a container can use unlimited host resources. In production you should cap CPU and memory to prevent one runaway container from starving the whole host.",
+      lang:"bash",
+      code:`docker run -d \\
+  --memory="512m" \\
+  --memory-swap="512m" \\
+  --cpus="1.5" \\
+  --name limited-app my-app
+
+# Watch live usage
+docker stats limited-app`,
+      output:`CONTAINER ID   NAME          CPU %   MEM USAGE / LIMIT   MEM %
+a7f3e9c21d4b   limited-app   23.4%   210MiB / 512MiB     41.0%`,
+      note:""
+    },
+    {
+      title:"Docker Swarm — Native Orchestration",
+      desc:"Swarm is Docker's built-in clustering/orchestration tool — it turns a group of Docker hosts into a single virtual host, handling scaling, load balancing, and self-healing across multiple machines.",
+      lang:"bash",
+      code:`# On the manager node
+docker swarm init
+
+# On worker nodes (uses the join token printed above)
+docker swarm join --token SWMTKN-1-xxxx 192.168.1.10:2377
+
+# Deploy a service across the swarm, scaled to 5 replicas
+docker service create --name web --replicas 5 -p 80:80 nginx
+
+# Scale up/down live
+docker service scale web=10
+docker service ls`,
+      output:`Swarm initialized: current node is now a manager.
+
+ID    NAME   MODE         REPLICAS   IMAGE
+xk3f  web    replicated   5/5        nginx:latest`,
+      note:"For small-to-medium clusters Swarm is simpler than Kubernetes. For large-scale, complex deployments, most companies choose Kubernetes instead — but the underlying container tech is the same Docker images."
+    },
+    {
+      title:"Docker vs Kubernetes",
+      desc:"Docker builds and runs individual containers. Kubernetes (K8s) is a separate, much larger orchestration system for running containers reliably at scale across many machines — Kubernetes can run containers built by Docker (or other tools).",
+      lang:"table",
+      table:[
+        ["Docker","Build images, run/manage individual containers on one host"],
+        ["Docker Compose","Run a small multi-container app on one host"],
+        ["Docker Swarm","Docker's native clustering across multiple hosts"],
+        ["Kubernetes","Industry-standard orchestration: auto-scaling, self-healing, rolling updates across large clusters"]
+      ],
+      note:"You still write a Dockerfile and build a Docker image even when deploying to Kubernetes — K8s just takes over running/scaling/networking those containers."
+    },
+    {
+      title:"Debugging a Broken Container",
+      desc:"A practical checklist for when a container won't start or crashes immediately.",
+      lang:"bash",
+      code:`# 1. Check status and exit code
+docker ps -a
+
+# 2. Read the logs
+docker logs container_name
+
+# 3. Inspect full config/mounts/env
+docker inspect container_name
+
+# 4. Override the entrypoint to get a shell instead of crashing
+docker run -it --entrypoint sh my-image
+
+# 5. Check what changed on the filesystem
+docker diff container_name`,
+      output:`CONTAINER ID   STATUS
+a7f3e9c21d4b   Exited (1) 5 seconds ago
+
+Error: Cannot find module 'express'
+    at Function.Module._resolveFilename ...`,
+      note:"An exit code of 0 = clean shutdown. 137 = killed (often out-of-memory, SIGKILL). 1 = generic application error — always check logs first."
+    }
+  ]
+},
+{
+  group:"Security & Best Practices",
+  icon:"🛡️",
+  items:[
+    {
+      title:"Run as a Non-Root User",
+      desc:"By default, processes inside a container run as <code>root</code>, which is a security risk if a container is compromised — the attacker gets root inside the container (and possibly closer to the host). Always create and switch to a non-root user.",
+      lang:"dockerfile",
+      code:`FROM node:20-alpine
+WORKDIR /app
+COPY --chown=node:node . .
+RUN npm install
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]`,
+      output:``,
+      note:"Many official images (like 'node') already ship a built-in non-root user you can switch to — check the image's documentation before creating your own."
+    },
+    {
+      title:"Use Small, Trusted Base Images",
+      desc:"Smaller base images mean smaller attack surface, faster pulls, and faster deploys. Prefer <code>alpine</code> or <code>slim</code> variants, and always use official/verified images.",
+      lang:"table",
+      table:[
+        ["node:20","~1.1GB — full Debian-based image"],
+        ["node:20-slim","~200MB — trimmed Debian, fewer tools"],
+        ["node:20-alpine","~130MB — musl-based, extremely small"],
+        ["scratch","0MB — empty image, used for fully static Go binaries"]
+      ],
+      note:"Alpine uses musl libc instead of glibc — occasionally causes subtle compatibility issues with native Node modules. Test thoroughly before shipping alpine to production."
+    },
+    {
+      title:"Scan Images for Vulnerabilities",
+      desc:"Before deploying, scan images for known CVEs in OS packages and dependencies using built-in or third-party scanners.",
+      lang:"bash",
+      code:`# Docker Scout (built into modern Docker CLI)
+docker scout cves my-app:latest
+
+# Trivy (popular open-source scanner)
+trivy image my-app:latest`,
+      output:`✗ 3 vulnerabilities found
+  1 Critical, 1 High, 1 Medium
+
+CRITICAL  CVE-2024-XXXX  openssl  3.0.2 -> fixed in 3.0.13`,
+      note:""
+    },
+    {
+      title:"Secrets Management",
+      desc:"Never bake passwords, API keys, or tokens into an image layer — they remain retrievable forever, even if a later layer 'deletes' them. Use runtime secrets instead.",
+      lang:"bash",
+      code:`# ❌ NEVER do this in a Dockerfile
+# ENV DB_PASSWORD=supersecret123
+
+# ✅ Pass secrets at RUN time instead
+docker run --env-file .env.production my-app
+
+# ✅ Or use Docker Swarm secrets (encrypted at rest)
+echo "supersecret123" | docker secret create db_password -
+docker service create --secret db_password my-app`,
+      output:``,
+      note:"Add .env files to .dockerignore AND .gitignore. Rotate any secret that was ever accidentally committed to a Dockerfile or image layer."
+    },
+    {
+      title:"Production Dockerfile Checklist",
+      desc:"A quick pre-deployment checklist worth running through on every Dockerfile.",
+      lang:"text",
+      code:`✔ Pinned base image version (not :latest)
+✔ Multi-stage build to strip build tools from final image
+✔ Non-root USER set
+✔ .dockerignore excludes node_modules, .git, .env
+✔ HEALTHCHECK defined
+✔ No secrets baked into layers
+✔ Minimal final image size (alpine/slim where possible)
+✔ Only necessary ports EXPOSEd
+✔ Dependencies installed before COPYing source (cache-friendly)`,
+      output:``,
+      note:""
+    }
+  ]
+}
+];
+
+/* ============================================================
+   PROJECTS DATA
+   ============================================================ */
+const PROJECTS = [
+{
+  num:1,
+  title:"Static Website with Nginx",
+  tag:"Beginner · Single Dockerfile · ~10 minutes",
+  desc:"Containerize a plain HTML/CSS/JS site and serve it with Nginx — the simplest real-world Docker project and the perfect starting point.",
+  steps:[
+    {t:"1. Project structure", lang:"text", code:`my-website/
+├── index.html
+├── style.css
+└── Dockerfile`},
+    {t:"2. index.html", lang:"html", code:`<!DOCTYPE html>
+<html>
+<head>
+  <title>Docker Containerization Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Hello from inside a container! 🐳</h1>
+</body>
+</html>`},
+    {t:"3. Dockerfile", lang:"dockerfile", code:`FROM nginx:alpine
+COPY . /usr/share/nginx/html
+EXPOSE 80`},
+    {t:"4. Build & run", lang:"bash", code:`docker build -t my-website .
+docker run -d -p 8080:80 --name website my-website
+
+# Open http://localhost:8080 in your browser`, output:`[+] Building 2.1s (6/6) FINISHED
+ => naming to docker.io/library/my-website
+✔ Container "website" started
+✔ Visit: http://localhost:8080`}
+  ]
+},
+{
+  num:2,
+  title:"Node.js API + PostgreSQL (Docker Compose)",
+  tag:"Intermediate · Multi-container · ~25 minutes",
+  desc:"Build a small Express REST API backed by PostgreSQL, wired together with Docker Compose — the most common real-world stack pattern.",
+  steps:[
+    {t:"1. Project structure", lang:"text", code:`node-api/
+├── server.js
+├── package.json
+├── Dockerfile
+└── docker-compose.yml`},
+    {t:"2. server.js", lang:"javascript", code:`const express = require('express');
+const { Pool } = require('pg');
+
+const app = express();
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+app.get('/', (req, res) => res.send('API is running 🚀'));
+
+app.get('/time', async (req, res) => {
+  const result = await pool.query('SELECT NOW()');
+  res.json(result.rows[0]);
+});
+
+app.listen(3000, () => console.log('Listening on port 3000'));`},
+    {t:"3. Dockerfile (multi-stage, cache-friendly)", lang:"dockerfile", code:`FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --production
+COPY . .
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]`},
+    {t:"4. docker-compose.yml", lang:"yaml", code:`version: "3.9"
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres:secret@db:5432/apidb
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: apidb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:`},
+    {t:"5. Run the stack", lang:"bash", code:`docker compose up --build -d
+curl http://localhost:3000/time`, output:`[+] Running 3/3
+ ✔ Network node-api_default  Created
+ ✔ Container node-api-db-1   Started
+ ✔ Container node-api-api-1  Started
+
+{"now":"2026-08-18T10:42:01.113Z"}`}
+  ]
+},
+{
+  num:3,
+  title:"Python Flask App — Multi-Stage & Production Ready",
+  tag:"Advanced · Security-hardened · ~20 minutes",
+  desc:"A Flask microservice with a multi-stage Dockerfile, non-root user, health check, and pinned versions — a template you can reuse for real production services.",
+  steps:[
+    {t:"1. app.py", lang:"python", code:`from flask import Flask, jsonify
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return jsonify(status="ok", message="Flask running in Docker")
+
+@app.route("/health")
+def health():
+    return jsonify(status="healthy"), 200
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)`},
+    {t:"2. requirements.txt", lang:"text", code:`flask==3.0.3
+gunicorn==22.0.0`},
+    {t:"3. Production Dockerfile", lang:"dockerfile", code:`# ---- Stage 1: install dependencies ----
+FROM python:3.12-slim AS builder
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+# ---- Stage 2: final runtime image ----
+FROM python:3.12-slim
+WORKDIR /app
+COPY --from=builder /root/.local /root/.local
+COPY . .
+ENV PATH=/root/.local/bin:$PATH
+RUN useradd -m appuser
+USER appuser
+EXPOSE 5000
+HEALTHCHECK --interval=30s --timeout=3s CMD \\
+  python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')" || exit 1
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]`},
+    {t:"4. Build, run & verify health", lang:"bash", code:`docker build -t flask-app:1.0 .
+docker run -d -p 5000:5000 --name flask-app flask-app:1.0
+
+curl http://localhost:5000/
+docker ps`, output:`{"message":"Flask running in Docker","status":"ok"}
+
+CONTAINER ID   IMAGE            STATUS
+c9d8e7f6a5b4   flask-app:1.0    Up 30 seconds (healthy)`}
+  ]
+}
+];
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+function highlight(code, lang){
+  code = esc(code);
+  if(lang==="bash"){
+    code = code.replace(/^(#.*)$/gm,'<span class="com">$1</span>');
+    code = code.replace(/\b(docker|sudo|curl|wsl|brew|npm|systemctl|usermod|newgrp|trivy|echo|wget|cat|ls|node|python|gunicorn|pip)\b/g,'<span class="kw">$1</span>');
+    code = code.replace(/(--?[a-zA-Z][a-zA-Z0-9-]*)/g,'<span class="flag">$1</span>');
+    code = code.replace(/(".*?"|'.*?')/g,'<span class="str">$1</span>');
+  } else if(lang==="dockerfile"){
+    code = code.replace(/^(#.*)$/gm,'<span class="com">$1</span>');
+    code = code.replace(/^(FROM|WORKDIR|COPY|ADD|RUN|CMD|ENTRYPOINT|EXPOSE|ENV|ARG|VOLUME|USER|HEALTHCHECK|LABEL)\b/gm,'<span class="kw">$1</span>');
+    code = code.replace(/(".*?")/g,'<span class="str">$1</span>');
+    code = code.replace(/\b(AS)\b/g,'<span class="flag">$1</span>');
+  } else if(lang==="yaml"){
+    code = code.replace(/^(\s*#.*)$/gm,'<span class="com">$1</span>');
+    code = code.replace(/^(\s*)([a-zA-Z_][a-zA-Z0-9_.]*)(:)/gm,'$1<span class="func">$2</span>$3');
+    code = code.replace(/(".*?")/g,'<span class="str">$1</span>');
+  } else if(lang==="javascript"){
+    code = code.replace(/(\/\/.*)$/gm,'<span class="com">$1</span>');
+    code = code.replace(/\b(const|let|require|function|return|app|async|await)\b/g,'<span class="kw">$1</span>');
+    code = code.replace(/(`.*?`|'.*?'|".*?")/g,'<span class="str">$1</span>');
+  } else if(lang==="python"){
+    code = code.replace(/(#.*)$/gm,'<span class="com">$1</span>');
+    code = code.replace(/\b(from|import|def|return|if|__name__|__main__|app)\b/g,'<span class="kw">$1</span>');
+    code = code.replace(/(".*?"|'.*?')/g,'<span class="str">$1</span>');
+  } else if(lang==="html"){
+    code = code.replace(/(&lt;\/?[a-zA-Z0-9]+)/g,'<span class="kw">$1</span>');
+  }
+  return code;
+}
+
+function fileLabel(lang){
+  const map = {bash:"terminal", dockerfile:"Dockerfile", yaml:"docker-compose.yml", javascript:"server.js", python:"app.py", html:"index.html", text:"notes"};
+  return map[lang] || lang;
+}
+
+let globalIdx = 0;
+function renderCodeCard(item, uid){
+  const hasOut = item.output && item.output.trim().length>0;
+  const codeHTML = highlight(item.code, item.lang);
+  return `
+    <div class="codewrap">
+      <div class="codebar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span class="fname">${fileLabel(item.lang)}</span>
+        <button class="copybtn" onclick="copyCode('${uid}')">Copy</button>
+      </div>
+      <pre class="codeblock" id="${uid}">${codeHTML}</pre>
+    </div>
+    ${hasOut ? `<button class="runbtn" onclick="toggleOut('${uid}-out')">▶ Show simulated output</button>
+    <div class="outpanel" id="${uid}-out"><span class="tag-sim">Simulated terminal output</span>${esc(item.output)}</div>` : ``}
+  `;
+}
+
+function renderTable(rows){
+  let html = `<table class="reftable"><tr><th>Command / Item</th><th>Description</th></tr>`;
+  rows.forEach(r=>{
+    html += `<tr><td><code>${esc(r[0])}</code></td><td>${esc(r[1])}</td></tr>`;
+  });
+  html += `</table>`;
+  return html;
+}
+
+function buildContent(){
+  const content = document.getElementById('content');
+  const nav = document.getElementById('navcontainer');
+  let navHTML = '';
+  let bodyHTML = '';
+  let counter = 0;
+
+  DATA.forEach((cat, ci)=>{
+    navHTML += `<div class="navgroup"><div class="gtitle">${cat.icon} ${cat.group}</div>`;
+    bodyHTML += `<div class="cat-header"><div class="icon">${cat.icon}</div><div><h2>${cat.group}</h2><div class="count">${cat.items.length} topics</div></div></div>`;
+
+    cat.items.forEach((item)=>{
+      counter++;
+      const id = `sec-${counter}`;
+      navHTML += `<div class="navlink" data-target="${id}" onclick="scrollTo('${id}')"><span class="n">${counter}</span><span>${item.title}</span></div>`;
+
+      let body = `<p class="desc">${item.desc}</p>`;
+      if(item.lang==="table"){
+        body += renderTable(item.table);
+      } else {
+        body += renderCodeCard(item, id+"-code");
+      }
+      if(item.note) body += `<div class="note-box"><b>Note:</b> ${item.note}</div>`;
+      if(item.warn) body += `<div class="warn-box"><b>Warning:</b> ${item.warn}</div>`;
+
+      bodyHTML += `
+        <div class="card" id="${id}">
+          <div class="chead"><span class="idx">#${counter}</span><h3>${item.title}</h3></div>
+          ${body}
+        </div>`;
+    });
+    navHTML += `</div>`;
+  });
+
+  // Projects nav group
+  navHTML += `<div class="navgroup"><div class="gtitle">🏗️ Mini Projects</div>`;
+  PROJECTS.forEach(p=>{
+    const id = `proj-${p.num}`;
+    navHTML += `<div class="navlink" data-target="${id}" onclick="scrollTo('${id}')"><span class="n">P${p.num}</span><span>${p.title}</span></div>`;
+  });
+  navHTML += `</div>`;
+
+  bodyHTML += `<div class="cat-header"><div class="icon">🏗️</div><div><h2>Mini Projects</h2><div class="count">${PROJECTS.length} full builds, start to finish</div></div></div>`;
+
+  PROJECTS.forEach(p=>{
+    let stepsHTML = '';
+    p.steps.forEach(s=>{
+      stepsHTML += `<div class="step-title">${s.t}</div>`;
+      stepsHTML += renderCodeCard(s, `${p.num}-${s.t.replace(/[^a-zA-Z0-9]/g,'')}`);
+    });
+    bodyHTML += `
+      <div class="project-card" id="proj-${p.num}">
+        <div class="phead">
+          <div class="pnum">${p.num}</div>
+          <div><h3>${p.title}</h3></div>
+        </div>
+        <div class="ptag">${p.tag}</div>
+        <p class="desc">${p.desc}</p>
+        <div class="steps">${stepsHTML}</div>
+      </div>`;
+  });
+
+  nav.innerHTML = navHTML;
+  content.innerHTML = bodyHTML;
+}
+
+function copyCode(uid){
+  const el = document.getElementById(uid);
+  const text = el.innerText;
+  navigator.clipboard && navigator.clipboard.writeText(text).catch(()=>{});
+  const btn = el.parentElement.querySelector('.copybtn');
+  if(btn){ const old = btn.textContent; btn.textContent = "Copied!"; setTimeout(()=>btn.textContent=old, 1200); }
+}
+
+function toggleOut(id){
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+}
+
+function scrollTo(id){
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  if(window.innerWidth<=820) toggleSidebar(true);
+}
+
+function toggleSidebar(forceClose){
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  if(forceClose){ sb.classList.remove('open'); ov.classList.remove('show'); return; }
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
+}
+
+/* ---------- scroll spy + progress ---------- */
+function initScrollSpy(){
+  const cards = Array.from(document.querySelectorAll('.card, .project-card'));
+  const links = Array.from(document.querySelectorAll('.navlink'));
+  const seen = new Set();
+
+  function onScroll(){
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight>0 ? Math.min(100, Math.round((scrollTop/docHeight)*100)) : 0;
+    document.getElementById('progress-bar').style.width = pct+'%';
+    document.getElementById('progress-fill').style.width = pct+'%';
+    document.getElementById('progress-pct').textContent = pct+'%';
+
+    let currentId = null;
+    for(const c of cards){
+      const rect = c.getBoundingClientRect();
+      if(rect.top < 140){ currentId = c.id; seen.add(c.id); }
+    }
+    links.forEach(l=>{
+      l.classList.toggle('active', l.dataset.target===currentId);
+      if(seen.has(l.dataset.target)) l.classList.add('done');
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+}
+
+buildContent();
+initScrollSpy();
+</script>
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++ Programming Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;
+  --bg-alt:#11151c;
+  --panel:#161b22;
+  --panel-2:#1c2230;
+  --border:#262c38;
+  --text:#e6edf3;
+  --text-dim:#8b96a5;
+  --accent:#5ec8f8;
+  --accent-2:#7ee787;
+  --accent-3:#f0a8d0;
+  --warn:#f2c14e;
+  --danger:#ff7b72;
+  --mono:'JetBrains Mono', monospace;
+  --sora:'Sora', sans-serif;
+  --inter:'Inter', sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--inter);
+  line-height:1.6;
+}
+::-webkit-scrollbar{width:10px; height:10px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:#2a3140; border-radius:6px;}
+
+/* ---------- TOP BAR ---------- */
+.topbar{
+  position:fixed; top:0; left:0; right:0; height:56px;
+  background:rgba(13,17,23,0.92); backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 20px; z-index:100;
+}
+.brand{display:flex; align-items:center; gap:10px; font-family:var(--sora); font-weight:700; font-size:17px;}
+.brand .tag{color:var(--accent); font-family:var(--mono);}
+.topbar-right{display:flex; align-items:center; gap:16px; font-family:var(--mono); font-size:12px; color:var(--text-dim);}
+.progress-wrap{width:140px; height:6px; background:var(--panel-2); border-radius:4px; overflow:hidden;}
+.progress-bar{height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition:width .2s;}
+.menu-toggle{display:none; background:none; border:1px solid var(--border); color:var(--text); border-radius:6px; padding:6px 10px; cursor:pointer;}
+
+/* ---------- LAYOUT ---------- */
+.layout{display:flex; margin-top:56px;}
+.sidebar{
+  width:270px; flex-shrink:0; height:calc(100vh - 56px);
+  position:sticky; top:56px; overflow-y:auto;
+  border-right:1px solid var(--border); background:var(--bg-alt);
+  padding:18px 0 60px;
+}
+.sidebar .cat{margin-bottom:6px;}
+.sidebar .cat-title{
+  font-family:var(--mono); font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--text-dim); padding:14px 20px 8px;
+}
+.sidebar a{
+  display:flex; align-items:flex-start; gap:8px;
+  padding:7px 20px; font-size:13.5px; color:var(--text-dim);
+  text-decoration:none; border-left:2px solid transparent;
+  transition:.15s; line-height:1.35;
+}
+.sidebar a .num{font-family:var(--mono); font-size:11px; color:#4b5566; width:20px; flex-shrink:0; padding-top:1px;}
+.sidebar a:hover{color:var(--text); background:var(--panel);}
+.sidebar a.active{color:var(--accent); border-left-color:var(--accent); background:var(--panel); font-weight:600;}
+
+.main{flex:1; min-width:0; padding:0 0 100px;}
+
+/* ---------- HERO ---------- */
+.hero{
+  padding:70px 60px 60px; border-bottom:1px solid var(--border);
+  background:
+    radial-gradient(circle at 15% 20%, rgba(94,200,248,0.10), transparent 45%),
+    radial-gradient(circle at 85% 0%, rgba(126,231,135,0.08), transparent 40%);
+}
+.hero .eyebrow{font-family:var(--mono); color:var(--accent-2); font-size:13px; letter-spacing:2px; text-transform:uppercase; margin-bottom:14px;}
+.hero h1{font-family:var(--sora); font-size:44px; font-weight:800; line-height:1.15; max-width:820px;}
+.hero h1 span{color:var(--accent);}
+.hero p{color:var(--text-dim); max-width:640px; margin-top:16px; font-size:15.5px;}
+.hero-stats{display:flex; gap:34px; margin-top:32px; flex-wrap:wrap;}
+.hero-stats div b{display:block; font-family:var(--sora); font-size:26px; color:var(--text);}
+.hero-stats div span{font-size:12px; color:var(--text-dim); font-family:var(--mono);}
+
+/* ---------- SECTION / TOPIC ---------- */
+.section-block{padding:52px 60px; border-bottom:1px solid var(--border); scroll-margin-top:70px;}
+.section-block:nth-child(odd){background:var(--bg-alt);}
+.topic-head{display:flex; align-items:baseline; gap:12px; margin-bottom:6px;}
+.topic-index{font-family:var(--mono); color:var(--accent-3); font-size:14px;}
+.topic-head h2{font-family:var(--sora); font-size:26px; font-weight:700;}
+.badge-row{display:flex; gap:8px; margin:10px 0 18px; flex-wrap:wrap;}
+.badge{font-family:var(--mono); font-size:11px; padding:3px 9px; border-radius:20px; border:1px solid var(--border); color:var(--text-dim);}
+.badge.cat{color:var(--accent); border-color:rgba(94,200,248,0.35);}
+
+.definition{
+  background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--accent);
+  padding:16px 18px; border-radius:6px; margin-bottom:18px; font-size:14.5px;
+}
+.definition b{color:var(--accent);}
+
+.points{display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:10px; margin-bottom:22px;}
+.point{
+  background:var(--panel); border:1px solid var(--border); border-radius:8px;
+  padding:12px 14px; font-size:13.5px; color:var(--text-dim);
+}
+.point b{color:var(--text); display:block; font-size:13px; margin-bottom:3px; font-family:var(--inter);}
+
+/* ---------- CODE PANEL ---------- */
+.code-card{
+  background:var(--panel-2); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:14px;
+}
+.code-toolbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:9px 14px; background:#131720; border-bottom:1px solid var(--border);
+}
+.code-toolbar .fname{font-family:var(--mono); font-size:12.5px; color:var(--text-dim); display:flex; align-items:center; gap:8px;}
+.dots{display:flex; gap:5px;}
+.dots span{width:9px; height:9px; border-radius:50%; display:inline-block;}
+.dots span:nth-child(1){background:#ff5f57;}
+.dots span:nth-child(2){background:#febc2e;}
+.dots span:nth-child(3){background:#28c840;}
+.code-actions{display:flex; gap:8px;}
+.icon-btn{
+  background:var(--panel); border:1px solid var(--border); color:var(--text);
+  width:30px; height:30px; border-radius:6px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:.15s;
+}
+.icon-btn:hover{border-color:var(--accent); color:var(--accent);}
+.icon-btn.run{background:var(--accent-2); border-color:var(--accent-2); color:#0d1117;}
+.icon-btn.run:hover{filter:brightness(1.1); color:#0d1117;}
+.icon-btn svg{width:14px; height:14px;}
+
+pre.code{
+  margin:0; padding:16px 18px; font-family:var(--mono); font-size:13px; line-height:1.65;
+  overflow-x:auto; color:#c9d1d9; white-space:pre;
+}
+.tok-kw{color:#ff7b72;} .tok-type{color:#79c0ff;} .tok-str{color:#a5d6ff;}
+.tok-com{color:#8b96a5; font-style:italic;} .tok-num{color:#f0a8d0;} .tok-fn{color:#d2a8ff;}
+.tok-pre{color:#f2c14e;}
+
+.output-panel{
+  border-top:1px dashed var(--border); background:#0a0d12;
+  font-family:var(--mono); font-size:13px; padding:14px 18px; min-height:44px;
+  color:var(--accent-2);
+}
+.output-panel .ph{color:#4b5566; font-style:italic;}
+.output-panel .line{opacity:0; transform:translateY(4px); animation:fadeUp .28s forwards;}
+@keyframes fadeUp{to{opacity:1; transform:translateY(0);}}
+.output-panel .prompt{color:var(--text-dim);}
+.output-label{font-family:var(--mono); font-size:10.5px; letter-spacing:1px; text-transform:uppercase; color:#4b5566; padding:8px 18px 0;}
+
+/* ---------- QUICK REF / INTERVIEW ---------- */
+.qa-list{display:flex; flex-direction:column; gap:10px;}
+.qa{background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden;}
+.qa summary{padding:13px 16px; cursor:pointer; font-size:14px; font-weight:600; list-style:none; display:flex; gap:10px; align-items:flex-start;}
+.qa summary::-webkit-details-marker{display:none;}
+.qa summary::before{content:"Q"; font-family:var(--mono); color:var(--accent); font-size:12px; border:1px solid var(--border); border-radius:4px; padding:1px 6px; flex-shrink:0; margin-top:1px;}
+.qa[open] summary{border-bottom:1px solid var(--border);}
+.qa .a{padding:13px 16px 16px 44px; font-size:13.5px; color:var(--text-dim);}
+.qa .a code{font-family:var(--mono); background:var(--panel-2); padding:1px 6px; border-radius:4px; color:var(--accent-2); font-size:12.5px;}
+
+/* footer */
+.footer{padding:40px 60px; text-align:center; color:var(--text-dim); font-family:var(--mono); font-size:12px;}
+
+@media (max-width:900px){
+  .sidebar{position:fixed; left:-280px; top:56px; z-index:99; background:var(--bg); transition:.25s; box-shadow:8px 0 30px rgba(0,0,0,0.4); height:calc(100vh - 56px);}
+  .sidebar.open{left:0;}
+  .menu-toggle{display:block;}
+  .hero, .section-block{padding:36px 22px;}
+  .hero h1{font-size:30px;}
+  .topbar{padding:0 12px;}
+  .brand{font-size:14px; gap:6px; white-space:nowrap;}
+  #progressText{display:none;}
+  .progress-wrap{width:60px;}
+  .points{grid-template-columns:1fr;}
+}
+@media (max-width:480px){
+  .hero h1{font-size:25px;}
+  pre.code{font-size:11.5px;}
+}
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('cpp-notes')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('cpp-notes'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+
+<div class="topbar">
+  <div class="brand"><button class="menu-toggle" id="menuToggle">☰</button> C<span class="tag">++</span> // notes.exe</div>
+  <div class="topbar-right">
+    <span id="progressText">0 / 0 topics viewed</span>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="main">
+    <section class="hero">
+      <div class="eyebrow">// A to Z Reference · Exam &amp; Interview Ready</div>
+      <h1>Master <span>C++</span> from <span>int main()</span> to move semantics.</h1>
+      <p>A complete, self-contained interactive guide — definitions, example programs, simulated compiler output, and the exact questions examiners and interviewers actually ask. Click the run icon on any example to see it execute line by line.</p>
+      <div class="hero-stats" id="heroStats"></div>
+    </section>
+    <div id="content"></div>
+    <div class="footer">Built for offline study · Single-file HTML · No dependencies except Google Fonts</div>
+  </main>
+</div>
+
+<script id="lesson-data" type="application/json">
+[{"cat": "start", "catLabel": "Getting Started", "title": "What is C++?", "definition": "<b>C++</b> is a general-purpose, statically typed, compiled programming language created as an extension of the C language, adding support for object-oriented, generic, and low-level memory manipulation features.", "points": [{"t": "Invented by", "d": "Bjarne Stroustrup at Bell Labs, starting in 1979 (originally called 'C with Classes')"}, {"t": "Standardized", "d": "ISO/IEC 14882, first released 1998 (C++98), latest widely-used: C++20/C++23"}, {"t": "Paradigm", "d": "Procedural + Object-Oriented + Generic + (some) Functional"}, {"t": "Type", "d": "Compiled, statically typed, middle-level language"}], "code": "// hello.cpp\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Hello, C++ World!\" << endl;\n    return 0;\n}", "output": ["$ g++ hello.cpp -o hello", "$ ./hello", "Hello, C++ World!"], "badges": [], "id": "what-is-c"}, {"cat": "start", "catLabel": "Getting Started", "title": "Features of C++", "definition": "C++ combines the low-level power of C with high-level abstractions like classes, templates, and the STL, making it suitable for everything from OS kernels to game engines.", "points": [{"t": "Object-Oriented", "d": "Classes, inheritance, polymorphism, encapsulation"}, {"t": "Platform Independent", "d": "Source code portable; compiled binary is platform-specific"}, {"t": "Rich Standard Library", "d": "STL provides containers, algorithms, iterators"}, {"t": "Memory Control", "d": "Manual memory management via pointers, new/delete"}, {"t": "Fast & Efficient", "d": "Compiles to native machine code, minimal runtime overhead"}, {"t": "Multi-paradigm", "d": "Supports procedural, OOP, and generic programming"}], "code": "#include <iostream>\nusing namespace std;\n\nclass Feature {\npublic:\n    void show() { cout << \"OOP + Speed + Control\" << endl; }\n};\n\nint main() {\n    Feature f;\n    f.show();\n}", "output": ["$ g++ features.cpp -o features && ./features", "OOP + Speed + Control"], "badges": [], "id": "features-of-c"}, {"cat": "start", "catLabel": "Getting Started", "title": "Advantages & Disadvantages", "definition": "Like every language, C++ trades simplicity for control and performance — understanding this trade-off is a common exam and interview question.", "points": [{"t": "Advantage: Performance", "d": "Compiles directly to machine code, near-hardware speed"}, {"t": "Advantage: Control", "d": "Manual memory management, pointer-level access"}, {"t": "Advantage: Portability", "d": "Runs on almost every platform with a compiler"}, {"t": "Advantage: Rich Ecosystem", "d": "STL, Boost, huge legacy codebase in industry"}, {"t": "Disadvantage: Complexity", "d": "Steep learning curve — pointers, templates, multiple inheritance"}, {"t": "Disadvantage: No Garbage Collection", "d": "Manual memory management risks leaks/dangling pointers"}, {"t": "Disadvantage: No built-in Security", "d": "No native memory-safety, prone to buffer overflows"}, {"t": "Disadvantage: Compile Time", "d": "Large template-heavy projects can compile slowly"}], "code": "// Manual memory management shows both power and risk\n#include <iostream>\nusing namespace std;\n\nint main() {\n    int* p = new int(10);   // advantage: full control\n    cout << *p << endl;\n    delete p;                // disadvantage: must remember this!\n    // cout << *p;           // dangling pointer if used after delete\n}", "output": ["$ g++ adv.cpp -o adv && ./adv", "10"], "badges": [], "id": "advantages-disadvantages"}, {"cat": "start", "catLabel": "Getting Started", "title": "Applications of C++", "definition": "C++ is chosen when raw performance and hardware control matter, alongside the ability to build large, structured systems.", "points": [{"t": "System Software", "d": "Operating systems, device drivers (parts of Windows, Linux)"}, {"t": "Game Engines", "d": "Unreal Engine, most AAA game engines"}, {"t": "Browsers", "d": "Chrome, Firefox rendering engines"}, {"t": "Embedded Systems", "d": "Firmware, robotics, IoT devices"}, {"t": "Finance", "d": "High-frequency trading systems"}, {"t": "Databases", "d": "MySQL, MongoDB core engines"}], "code": "// Where C++ shows up\n#include <iostream>\nusing namespace std;\nint main(){\n    cout << \"Game Engines | OS Kernels | Browsers | Trading Systems\" << endl;\n}", "output": ["$ g++ apps.cpp -o apps && ./apps", "Game Engines | OS Kernels | Browsers | Trading Systems"], "badges": [], "id": "applications-of-c"}, {"cat": "start", "catLabel": "Getting Started", "title": "Structure of a C++ Program", "definition": "Every C++ program follows a predictable skeleton: preprocessor directives, namespace declarations, function definitions, and one mandatory <b>main()</b> function which is the entry point.", "points": [{"t": "Preprocessor directives", "d": "#include statements processed before compilation"}, {"t": "Namespace", "d": "using namespace std; avoids prefixing std::"}, {"t": "main() function", "d": "Execution always starts here, returns int to the OS"}, {"t": "Statements", "d": "Terminated by semicolons, grouped in blocks with { }"}], "code": "#include <iostream>      // preprocessor directive\nusing namespace std;     // namespace declaration\n\nint main() {              // entry point\n    int a = 5, b = 3;      // declaration\n    cout << a + b << endl; // statement\n    return 0;               // exit status\n}", "output": ["$ g++ structure.cpp -o structure && ./structure", "8"], "badges": [], "id": "structure-of-a-c-program"}, {"cat": "start", "catLabel": "Getting Started", "title": "Compilation Process", "definition": "C++ source code passes through four stages before becoming an executable: preprocessing, compilation, assembly, and linking.", "points": [{"t": "1. Preprocessing", "d": "Expands #include, #define macros → produces .i file"}, {"t": "2. Compilation", "d": "Translates preprocessed code to assembly → .s file"}, {"t": "3. Assembly", "d": "Assembler converts to machine code (object file) → .o file"}, {"t": "4. Linking", "d": "Linker combines object files + libraries → final executable"}], "code": "$ g++ -E hello.cpp -o hello.i    # preprocessing\n$ g++ -S hello.i -o hello.s      # compilation to assembly\n$ g++ -c hello.s -o hello.o      # assembling\n$ g++ hello.o -o hello           # linking", "output": ["hello.i generated (expanded source)", "hello.s generated (assembly)", "hello.o generated (object code)", "hello  → final executable linked successfully"], "badges": [], "id": "compilation-process"}, {"cat": "fund", "catLabel": "Fundamentals", "title": "Data Types", "definition": "C++ is statically typed — every variable's type is known at compile time. Data types are split into <b>primitive</b>, <b>derived</b>, and <b>user-defined</b> categories.", "points": [{"t": "int", "d": "Whole numbers, typically 4 bytes"}, {"t": "float / double", "d": "Single (4B) and double (8B) precision decimals"}, {"t": "char", "d": "Single character, 1 byte"}, {"t": "bool", "d": "true or false, 1 byte"}, {"t": "Derived", "d": "Arrays, pointers, references, functions"}, {"t": "User-defined", "d": "struct, class, union, enum"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int age = 21;\n    float pi = 3.14f;\n    double precise = 3.14159265;\n    char grade = 'A';\n    bool isPass = true;\n    cout << age << \" \" << pi << \" \" << precise << \" \" << grade << \" \" << isPass;\n}", "output": ["$ g++ types.cpp -o types && ./types", "21 3.14 3.14159 A 1"], "badges": [], "id": "data-types"}, {"cat": "fund", "catLabel": "Fundamentals", "title": "Variables & Constants", "definition": "A <b>variable</b> is a named memory location whose value can change; a <b>constant</b> is fixed at compile time using <code>const</code> or <code>#define</code>.", "points": [{"t": "Declaration", "d": "type name; e.g. int x;"}, {"t": "Initialization", "d": "int x = 5; assigns a value at declaration"}, {"t": "const keyword", "d": "const int MAX = 100; — value cannot change after"}, {"t": "Scope", "d": "local, global, static, and namespace scope"}], "code": "#include <iostream>\nusing namespace std;\nconst double PI = 3.14159;\nint main() {\n    int radius = 4;\n    double area = PI * radius * radius;\n    cout << \"Area = \" << area << endl;\n}", "output": ["$ g++ const.cpp -o const && ./const", "Area = 50.2654"], "badges": [], "id": "variables-constants"}, {"cat": "fund", "catLabel": "Fundamentals", "title": "Operators — Complete List", "definition": "C++ provides operators grouped by function: arithmetic, relational, logical, bitwise, assignment, and special operators like ternary, sizeof, and comma.", "points": [{"t": "Arithmetic", "d": "+  -  *  /  %  (modulus only for integers)"}, {"t": "Relational", "d": "==  !=  &gt;  &lt;  &gt;=  &lt;="}, {"t": "Logical", "d": "&& (AND)  || (OR)  ! (NOT)"}, {"t": "Bitwise", "d": "&  |  ^  ~  &lt;&lt;  &gt;&gt;"}, {"t": "Assignment", "d": "=  +=  -=  *=  /=  %="}, {"t": "Special", "d": "?: (ternary), sizeof(), , (comma), ::  (scope resolution)"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int a = 10, b = 3;\n    cout << \"Sum: \" << a + b << endl;\n    cout << \"Mod: \" << a % b << endl;\n    cout << \"a>b?: \" << (a > b ? \"yes\" : \"no\") << endl;\n    cout << \"Bitwise AND: \" << (a & b) << endl;\n    cout << \"Left shift: \" << (a << 1) << endl;\n}", "output": ["$ g++ ops.cpp -o ops && ./ops", "Sum: 13", "Mod: 1", "a>b?: yes", "Bitwise AND: 2", "Left shift: 20"], "badges": [], "id": "operators-complete-list"}, {"cat": "fund", "catLabel": "Fundamentals", "title": "Input & Output (cin / cout)", "definition": "C++ uses stream-based I/O via the <b>iostream</b> library: <code>cin</code> reads from standard input, <code>cout</code> writes to standard output, using the extraction <code>&gt;&gt;</code> and insertion <code>&lt;&lt;</code> operators.", "points": [{"t": "cout", "d": "Sends data to the console using <<"}, {"t": "cin", "d": "Reads data from keyboard using >>"}, {"t": "endl", "d": "Inserts newline and flushes the buffer"}, {"t": "getline()", "d": "Reads an entire line including spaces"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    string name;\n    cout << \"Enter your name: \";\n    getline(cin, name);\n    cout << \"Hello, \" << name << \"!\" << endl;\n}", "output": ["$ ./io", "Enter your name: Sanjay", "Hello, Sanjay!"], "badges": [], "id": "input-output-cin-cout"}, {"cat": "fund", "catLabel": "Fundamentals", "title": "Type Conversion & Casting", "definition": "Type conversion changes a value from one data type to another — either <b>implicit</b> (automatic) or <b>explicit</b> (manual casting).", "points": [{"t": "Implicit", "d": "Compiler auto-converts, e.g. int → float in expressions"}, {"t": "Explicit (C-style)", "d": "(int)3.99 → 3"}, {"t": "static_cast", "d": "Safe, compile-time checked conversion — preferred in modern C++"}, {"t": "dynamic_cast", "d": "Used for safe downcasting in polymorphic class hierarchies"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    double d = 9.7;\n    int i = static_cast<int>(d);   // explicit\n    double result = 5 / 2;          // implicit int division first\n    double result2 = 5.0 / 2;       // implicit promotion\n    cout << i << \" \" << result << \" \" << result2;\n}", "output": ["$ g++ cast.cpp -o cast && ./cast", "9 2 2.5"], "badges": [], "id": "type-conversion-casting"}, {"cat": "flow", "catLabel": "Control Flow", "title": "if / else / else-if", "definition": "Conditional statements let a program choose between different execution paths based on boolean expressions.", "points": [{"t": "if", "d": "Executes a block only if the condition is true"}, {"t": "if-else", "d": "Provides an alternate block when false"}, {"t": "else if", "d": "Chains multiple conditions in sequence"}, {"t": "Nested if", "d": "An if inside another if for compound logic"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int marks = 72;\n    if (marks >= 90) cout << \"Grade A\";\n    else if (marks >= 75) cout << \"Grade B\";\n    else if (marks >= 60) cout << \"Grade C\";\n    else cout << \"Grade D\";\n}", "output": ["$ g++ ifelse.cpp -o ifelse && ./ifelse", "Grade C"], "badges": [], "id": "if-else-else-if"}, {"cat": "flow", "catLabel": "Control Flow", "title": "switch Statement", "definition": "<b>switch</b> selects one of many code blocks to execute, comparing a variable against constant values — a cleaner alternative to long else-if chains.", "points": [{"t": "case", "d": "Each possible matching value"}, {"t": "break", "d": "Prevents fall-through to the next case"}, {"t": "default", "d": "Executes when no case matches"}, {"t": "Fall-through", "d": "Omitting break intentionally runs subsequent cases too"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int day = 3;\n    switch (day) {\n        case 1: cout << \"Mon\"; break;\n        case 2: cout << \"Tue\"; break;\n        case 3: cout << \"Wed\"; break;\n        default: cout << \"Invalid\";\n    }\n}", "output": ["$ g++ switch.cpp -o switch && ./switch", "Wed"], "badges": [], "id": "switch-statement"}, {"cat": "flow", "catLabel": "Control Flow", "title": "for Loop", "definition": "The <b>for</b> loop repeats a block a known number of times, combining initialization, condition, and increment in one line.", "points": [{"t": "Syntax", "d": "for(init; condition; update) { }"}, {"t": "Best for", "d": "Situations where iteration count is known"}, {"t": "Range-based for", "d": "for(auto x : container) — iterates every element (C++11+)"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    for (int i = 1; i <= 5; i++) {\n        cout << i << \" \";\n    }\n}", "output": ["$ g++ for.cpp -o for && ./for", "1 2 3 4 5 "], "badges": [], "id": "for-loop"}, {"cat": "flow", "catLabel": "Control Flow", "title": "while & do-while Loop", "definition": "<b>while</b> checks the condition before executing (0 or more times); <b>do-while</b> executes the body first, guaranteeing at least one run.", "points": [{"t": "while", "d": "Entry-controlled loop, checks condition first"}, {"t": "do-while", "d": "Exit-controlled loop, checks condition after execution"}, {"t": "Use case", "d": "do-while is ideal for menu-driven programs needing 1+ run"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int i = 1;\n    do {\n        cout << i << \" \";\n        i++;\n    } while (i <= 5);\n}", "output": ["$ g++ dowhile.cpp -o dowhile && ./dowhile", "1 2 3 4 5 "], "badges": [], "id": "while-do-while-loop"}, {"cat": "flow", "catLabel": "Control Flow", "title": "break, continue & goto", "definition": "Jump statements alter the normal flow of loops: <code>break</code> exits entirely, <code>continue</code> skips to the next iteration, and <code>goto</code> jumps to a labeled statement (rarely used).", "points": [{"t": "break", "d": "Immediately exits the nearest loop or switch"}, {"t": "continue", "d": "Skips remaining code in the current iteration"}, {"t": "goto", "d": "Unconditional jump to a label — discouraged in modern code"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    for (int i = 1; i <= 10; i++) {\n        if (i == 6) break;\n        if (i % 2 == 0) continue;\n        cout << i << \" \";\n    }\n}", "output": ["$ g++ jump.cpp -o jump && ./jump", "1 3 5 "], "badges": [], "id": "break-continue-goto"}, {"cat": "flow", "catLabel": "Control Flow", "title": "Nested Loops & Patterns", "definition": "A loop inside another loop — the outer loop controls rows, the inner loop controls columns, commonly used for pattern printing and matrix traversal.", "points": [{"t": "Complexity", "d": "n nested loops of size N run in O(N^n) time"}, {"t": "Common use", "d": "Pattern printing, 2D array traversal, multiplication tables"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    for (int i = 1; i <= 4; i++) {\n        for (int j = 1; j <= i; j++) cout << \"*\";\n        cout << endl;\n    }\n}", "output": ["$ g++ pattern.cpp -o pattern && ./pattern", "*", "**", "***", "****"], "badges": [], "id": "nested-loops-patterns"}, {"cat": "func", "catLabel": "Functions", "title": "Function Basics", "definition": "A <b>function</b> is a named, reusable block of code that performs a specific task, optionally taking parameters and returning a value.", "points": [{"t": "Declaration", "d": "returnType name(parameters); — the prototype"}, {"t": "Definition", "d": "Actual body implementing the logic"}, {"t": "Call", "d": "Invoking the function by name with arguments"}, {"t": "void functions", "d": "Perform an action without returning a value"}], "code": "#include <iostream>\nusing namespace std;\nint add(int a, int b) {   // definition\n    return a + b;\n}\nint main() {\n    cout << add(4, 7);    // call\n}", "output": ["$ g++ func.cpp -o func && ./func", "11"], "badges": [], "id": "function-basics"}, {"cat": "func", "catLabel": "Functions", "title": "Parameters & Default Arguments", "definition": "Functions can pass data by <b>value</b>, <b>reference</b>, or <b>pointer</b>, and can define default values used when an argument is omitted.", "points": [{"t": "Pass by value", "d": "Copies the argument, original is unaffected"}, {"t": "Pass by reference", "d": "void f(int &x) — modifies the caller's original variable"}, {"t": "Pass by pointer", "d": "void f(int *x) — passes the memory address"}, {"t": "Default arguments", "d": "void greet(string name = \"Guest\")"}], "code": "#include <iostream>\nusing namespace std;\nvoid greet(string name = \"Guest\") {\n    cout << \"Hello, \" << name << endl;\n}\nvoid addOne(int &x) { x++; }\nint main() {\n    greet();\n    greet(\"Sanjay\");\n    int n = 5;\n    addOne(n);\n    cout << n;\n}", "output": ["$ g++ params.cpp -o params && ./params", "Hello, Guest", "Hello, Sanjay", "6"], "badges": [], "id": "parameters-default-arguments"}, {"cat": "func", "catLabel": "Functions", "title": "Function Overloading", "definition": "<b>Overloading</b> lets multiple functions share the same name but differ in parameter type or count — resolved at compile time (compile-time polymorphism).", "points": [{"t": "Rule", "d": "Must differ in number or type of parameters, not just return type"}, {"t": "Resolved", "d": "At compile time, based on argument matching"}], "code": "#include <iostream>\nusing namespace std;\nint area(int side) { return side * side; }\nint area(int l, int b) { return l * b; }\ndouble area(double r) { return 3.14 * r * r; }\nint main() {\n    cout << area(4) << endl;\n    cout << area(3, 5) << endl;\n    cout << area(2.0) << endl;\n}", "output": ["$ g++ overload.cpp -o overload && ./overload", "16", "15", "12.56"], "badges": [], "id": "function-overloading"}, {"cat": "func", "catLabel": "Functions", "title": "Recursion", "definition": "A <b>recursive</b> function calls itself to solve smaller instances of the same problem, always requiring a base case to terminate.", "points": [{"t": "Base case", "d": "Stops recursion, prevents infinite calls"}, {"t": "Recursive case", "d": "Function calling itself with a reduced problem"}, {"t": "Trade-off", "d": "Elegant but uses call-stack memory — risk of stack overflow"}], "code": "#include <iostream>\nusing namespace std;\nint factorial(int n) {\n    if (n <= 1) return 1;       // base case\n    return n * factorial(n-1);  // recursive case\n}\nint main() {\n    cout << factorial(5);\n}", "output": ["$ g++ recur.cpp -o recur && ./recur", "120"], "badges": [], "id": "recursion"}, {"cat": "func", "catLabel": "Functions", "title": "Inline Functions & Lambdas", "definition": "<b>inline</b> requests the compiler substitute the function body directly at the call site to avoid call overhead. <b>Lambdas</b> (C++11+) create anonymous inline function objects.", "points": [{"t": "inline", "d": "Best for small, frequently-called functions"}, {"t": "Lambda syntax", "d": "[capture](params) -> returnType { body }"}, {"t": "Capture list", "d": "[=] by value, [&] by reference, [x] specific variable"}], "code": "#include <iostream>\nusing namespace std;\ninline int square(int x) { return x * x; }\nint main() {\n    cout << square(6) << endl;\n    auto add = [](int a, int b) { return a + b; };\n    cout << add(3, 4);\n}", "output": ["$ g++ lambda.cpp -o lambda && ./lambda", "36", "7"], "badges": [], "id": "inline-functions-lambdas"}, {"cat": "arr", "catLabel": "Arrays & Strings", "title": "Arrays (1D & 2D)", "definition": "An <b>array</b> is a fixed-size collection of elements of the same type stored in contiguous memory, accessed via zero-based indexing.", "points": [{"t": "Declaration", "d": "int arr[5]; — fixed size, cannot grow"}, {"t": "2D Array", "d": "int grid[3][3]; — matrix layout, row-major order"}, {"t": "Indexing", "d": "arr[0] is the first element, arr[n-1] the last"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int arr[5] = {10, 20, 30, 40, 50};\n    for (int i = 0; i < 5; i++) cout << arr[i] << \" \";\n}", "output": ["$ g++ arr.cpp -o arr && ./arr", "10 20 30 40 50 "], "badges": [], "id": "arrays-1d-2d"}, {"cat": "arr", "catLabel": "Arrays & Strings", "title": "C-Strings vs std::string", "definition": "C++ supports old-style null-terminated <b>char arrays</b> (C-strings) alongside the modern, safer <b>std::string</b> class from the STL.", "points": [{"t": "C-string", "d": "char name[] = \"Sanjay\"; — null-terminated char array"}, {"t": "std::string", "d": "Dynamic, resizable, rich member functions (.length(), .substr())"}, {"t": "Common functions", "d": "strlen, strcpy, strcat (cstring) vs .size(), +, .find() (string class)"}], "code": "#include <iostream>\n#include <string>\nusing namespace std;\nint main() {\n    string first = \"Sanjay\";\n    string last = \"Kumar\";\n    string full = first + \" \" + last;\n    cout << full << \" (\" << full.length() << \" chars)\";\n}", "output": ["$ g++ str.cpp -o str && ./str", "Sanjay Kumar (12 chars)"], "badges": [], "id": "c-strings-vs-std-string"}, {"cat": "ptr", "catLabel": "Pointers & References", "title": "Pointers", "definition": "A <b>pointer</b> is a variable that stores the memory address of another variable, enabling indirect access and manipulation of data.", "points": [{"t": "Declaration", "d": "int *p; declares a pointer to an int"}, {"t": "& operator", "d": "Gets the address of a variable"}, {"t": "* operator", "d": "Dereferences — accesses the value at the address"}, {"t": "Null pointer", "d": "int *p = nullptr; points to nothing (C++11+)"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int x = 25;\n    int *p = &x;\n    cout << \"Value: \" << *p << endl;\n    cout << \"Address: \" << p << endl;\n    *p = 50;\n    cout << \"x is now: \" << x;\n}", "output": ["$ g++ ptr.cpp -o ptr && ./ptr", "Value: 25", "Address: 0x7ffee2a1c9ac", "x is now: 50"], "badges": [], "id": "pointers"}, {"cat": "ptr", "catLabel": "Pointers & References", "title": "Pointer Arithmetic & Arrays", "definition": "Pointers can be incremented or decremented, moving by the size of the pointed-to type — this is the mechanism underlying array traversal.", "points": [{"t": "p++", "d": "Moves pointer forward by sizeof(type) bytes"}, {"t": "Array decay", "d": "An array name decays to a pointer to its first element"}, {"t": "arr[i] == *(arr+i)", "d": "Array indexing is really pointer arithmetic"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int arr[3] = {5, 10, 15};\n    int *p = arr;\n    for (int i = 0; i < 3; i++) {\n        cout << *(p + i) << \" \";\n    }\n}", "output": ["$ g++ ptrarr.cpp -o ptrarr && ./ptrarr", "5 10 15 "], "badges": [], "id": "pointer-arithmetic-arrays"}, {"cat": "ptr", "catLabel": "Pointers & References", "title": "References", "definition": "A <b>reference</b> is an alias for an existing variable — unlike a pointer, it must be initialized and can never be reseated or null.", "points": [{"t": "Syntax", "d": "int &ref = x; — ref becomes another name for x"}, {"t": "Pointer vs Reference", "d": "Pointers can be reassigned/null; references cannot"}, {"t": "Common use", "d": "Pass-by-reference function parameters, avoiding copies"}], "code": "#include <iostream>\nusing namespace std;\nvoid doubleIt(int &n) { n *= 2; }\nint main() {\n    int x = 8;\n    int &ref = x;\n    doubleIt(ref);\n    cout << x;\n}", "output": ["$ g++ ref.cpp -o ref && ./ref", "16"], "badges": [], "id": "references"}, {"cat": "ptr", "catLabel": "Pointers & References", "title": "Dynamic Memory (new / delete)", "definition": "C++ allows manual heap allocation with <code>new</code> and deallocation with <code>delete</code>, giving explicit control unlike Java or JavaScript's garbage collector.", "points": [{"t": "new", "d": "Allocates memory on the heap, returns a pointer"}, {"t": "delete", "d": "Frees memory — required to prevent memory leaks"}, {"t": "new[] / delete[]", "d": "Used for dynamic arrays"}, {"t": "Memory leak", "d": "Occurs when allocated memory is never delete'd"}], "code": "#include <iostream>\nusing namespace std;\nint main() {\n    int *p = new int(99);\n    cout << *p << endl;\n    delete p;\n\n    int *arr = new int[5]{1,2,3,4,5};\n    cout << arr[4];\n    delete[] arr;\n}", "output": ["$ g++ heap.cpp -o heap && ./heap", "99", "5"], "badges": [], "id": "dynamic-memory-new-delete"}, {"cat": "struct", "catLabel": "Structures & Unions", "title": "struct & union", "definition": "A <b>struct</b> groups related variables of different types under one name (public by default). A <b>union</b> also groups variables but they share the same memory location.", "points": [{"t": "struct", "d": "Each member has its own memory — like a lightweight class"}, {"t": "union", "d": "All members share the same memory; only one is valid at a time"}, {"t": "struct vs class", "d": "struct members are public by default, class members are private"}], "code": "#include <iostream>\nusing namespace std;\nstruct Student {\n    string name;\n    int age;\n};\nint main() {\n    Student s1 = {\"Sanjay\", 21};\n    cout << s1.name << \" is \" << s1.age;\n}", "output": ["$ g++ struct.cpp -o struct && ./struct", "Sanjay is 21"], "badges": [], "id": "struct-union"}, {"cat": "oop", "catLabel": "Object-Oriented Programming", "title": "Classes & Objects", "definition": "A <b>class</b> is a user-defined blueprint bundling data (attributes) and behavior (methods); an <b>object</b> is a concrete instance of that class.", "points": [{"t": "class", "d": "Defines structure; members are private by default"}, {"t": "object", "d": "ClassName obj; creates an instance in memory"}, {"t": "Access specifiers", "d": "private, public, protected control visibility"}], "code": "#include <iostream>\nusing namespace std;\nclass Car {\npublic:\n    string brand;\n    void honk() { cout << brand << \" says Beep!\" << endl; }\n};\nint main() {\n    Car c1;\n    c1.brand = \"Tesla\";\n    c1.honk();\n}", "output": ["$ g++ class.cpp -o class && ./class", "Tesla says Beep!"], "badges": [], "id": "classes-objects"}, {"cat": "oop", "catLabel": "Object-Oriented Programming", "title": "Constructors & Destructors", "definition": "A <b>constructor</b> automatically initializes an object when it's created; a <b>destructor</b> automatically cleans up when the object goes out of scope.", "points": [{"t": "Default constructor", "d": "No parameters, auto-generated if none defined"}, {"t": "Parameterized constructor", "d": "Accepts arguments to initialize members"}, {"t": "Copy constructor", "d": "ClassName(const ClassName &obj) — copies from another object"}, {"t": "Destructor", "d": "~ClassName() — runs automatically at end of object lifetime"}], "code": "#include <iostream>\nusing namespace std;\nclass Demo {\npublic:\n    Demo() { cout << \"Constructor called\" << endl; }\n    ~Demo() { cout << \"Destructor called\" << endl; }\n};\nint main() {\n    Demo d;\n    cout << \"Inside main\" << endl;\n}", "output": ["$ g++ ctor.cpp -o ctor && ./ctor", "Constructor called", "Inside main", "Destructor called"], "badges": [], "id": "constructors-destructors"}, {"cat": "oop", "catLabel": "Object-Oriented Programming", "title": "Encapsulation", "definition": "<b>Encapsulation</b> bundles data and methods together while restricting direct access to internal state, exposed only through public getter/setter methods.", "points": [{"t": "private members", "d": "Hidden from outside access"}, {"t": "getters/setters", "d": "Controlled public access to private data"}, {"t": "Benefit", "d": "Protects data integrity, hides implementation details"}], "code": "#include <iostream>\nusing namespace std;\nclass Account {\nprivate:\n    double balance = 0;\npublic:\n    void deposit(double amt) { if (amt > 0) balance += amt; }\n    double getBalance() { return balance; }\n};\nint main() {\n    Account a;\n    a.deposit(500);\n    cout << a.getBalance();\n}", "output": ["$ g++ encap.cpp -o encap && ./encap", "500"], "badges": [], "id": "encapsulation"}, {"cat": "oop", "catLabel": "Object-Oriented Programming", "title": "Inheritance", "definition": "<b>Inheritance</b> lets a class (derived) acquire properties and behavior from another class (base), enabling code reuse and hierarchical relationships.", "points": [{"t": "Single", "d": "One derived class from one base class"}, {"t": "Multiple", "d": "Derived class inherits from more than one base class"}, {"t": "Multilevel", "d": "A chain: A → B → C"}, {"t": "Hierarchical", "d": "Multiple derived classes from one base class"}, {"t": "Hybrid", "d": "Combination of two or more inheritance types"}], "code": "#include <iostream>\nusing namespace std;\nclass Animal {\npublic:\n    void eat() { cout << \"Eating...\" << endl; }\n};\nclass Dog : public Animal {\npublic:\n    void bark() { cout << \"Barking...\" << endl; }\n};\nint main() {\n    Dog d;\n    d.eat();\n    d.bark();\n}", "output": ["$ g++ inherit.cpp -o inherit && ./inherit", "Eating...", "Barking..."], "badges": [], "id": "inheritance"}, {"cat": "oop", "catLabel": "Object-Oriented Programming", "title": "Polymorphism", "definition": "<b>Polymorphism</b> means 'many forms' — the ability of a function or object to behave differently based on context. C++ supports <b>compile-time</b> (overloading) and <b>run-time</b> (overriding via virtual functions) polymorphism.", "points": [{"t": "Compile-time", "d": "Function overloading, operator overloading — resolved at compile time"}, {"t": "Run-time", "d": "Virtual functions, resolved via vtable at runtime"}, {"t": "Requires", "d": "Run-time polymorphism needs a base class pointer/reference + virtual keyword"}], "code": "#include <iostream>\nusing namespace std;\nclass Shape {\npublic:\n    virtual void draw() { cout << \"Drawing a shape\" << endl; }\n};\nclass Circle : public Shape {\npublic:\n    void draw() override { cout << \"Drawing a circle\" << endl; }\n};\nint main() {\n    Shape *s = new Circle();\n    s->draw();   // runtime decides -> Circle::draw()\n    delete s;\n}", "output": ["$ g++ poly.cpp -o poly && ./poly", "Drawing a circle"], "badges": [], "id": "polymorphism"}, {"cat": "oop", "catLabel": "Object-Oriented Programming", "title": "Operator Overloading", "definition": "C++ allows redefining how built-in operators behave for user-defined types, making custom classes usable with natural syntax like <code>+</code> or <code>==</code>.", "points": [{"t": "Syntax", "d": "ReturnType operator+(const ClassName &obj)"}, {"t": "Common overloads", "d": "+, -, ==, <<, [], ()"}, {"t": "Restriction", "d": "Cannot overload ::, ., sizeof, or ?:"}], "code": "#include <iostream>\nusing namespace std;\nclass Point {\npublic:\n    int x, y;\n    Point(int x, int y) : x(x), y(y) {}\n    Point operator+(const Point &p) {\n        return Point(x + p.x, y + p.y);\n    }\n};\nint main() {\n    Point a(2,3), b(4,5);\n    Point c = a + b;\n    cout << c.x << \", \" << c.y;\n}", "output": ["$ g++ opover.cpp -o opover && ./opover", "6, 8"], "badges": [], "id": "operator-overloading"}, {"cat": "oop", "catLabel": "Object-Oriented Programming", "title": "Virtual Functions & Abstract Classes", "definition": "A <b>virtual function</b> enables run-time polymorphism. A class with at least one <b>pure virtual function</b> (<code>= 0</code>) becomes <b>abstract</b> and cannot be instantiated directly.", "points": [{"t": "virtual", "d": "Marks a function as overridable, enables dynamic dispatch"}, {"t": "Pure virtual", "d": "virtual void draw() = 0; — makes the class abstract"}, {"t": "Abstract class", "d": "Cannot create objects; acts as an interface"}, {"t": "Pure virtual destructor", "d": "Still needs a definition even if pure"}], "code": "#include <iostream>\nusing namespace std;\nclass Shape {\npublic:\n    virtual double area() = 0;   // pure virtual\n};\nclass Square : public Shape {\n    double side;\npublic:\n    Square(double s) : side(s) {}\n    double area() override { return side * side; }\n};\nint main() {\n    Shape *s = new Square(5);\n    cout << s->area();\n    delete s;\n}", "output": ["$ g++ abstract.cpp -o abstract && ./abstract", "25"], "badges": [], "id": "virtual-functions-abstract-classes"}, {"cat": "oop", "catLabel": "Object-Oriented Programming", "title": "this Pointer, static & friend", "definition": "The <b>this</b> pointer refers to the calling object inside a member function. <b>static</b> members belong to the class itself, not any instance. <b>friend</b> functions get special access to private members.", "points": [{"t": "this", "d": "Implicit pointer to the current object inside a method"}, {"t": "static member", "d": "Shared across all objects, one copy exists"}, {"t": "static method", "d": "Callable without an object, cannot access non-static members"}, {"t": "friend function", "d": "Non-member function granted access to private data"}], "code": "#include <iostream>\nusing namespace std;\nclass Counter {\npublic:\n    static int count;\n    Counter() { count++; }\n};\nint Counter::count = 0;\nint main() {\n    Counter a, b, c;\n    cout << \"Objects created: \" << Counter::count;\n}", "output": ["$ g++ statics.cpp -o statics && ./statics", "Objects created: 3"], "badges": [], "id": "this-pointer-static-friend"}, {"cat": "stl", "catLabel": "STL & Data Structures", "title": "vector", "definition": "<code>std::vector</code> is a dynamic array from the STL that automatically resizes, offering random access and efficient insertion at the end.", "points": [{"t": "push_back()", "d": "Adds an element to the end"}, {"t": "size()", "d": "Returns the current element count"}, {"t": "[] and .at()", "d": "Random access; .at() bounds-checks"}, {"t": "Iterators", "d": "begin()/end() allow traversal like pointers"}], "code": "#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n    vector<int> nums = {10, 20, 30};\n    nums.push_back(40);\n    for (int n : nums) cout << n << \" \";\n}", "output": ["$ g++ vec.cpp -o vec && ./vec", "10 20 30 40 "], "badges": [], "id": "vector"}, {"cat": "stl", "catLabel": "STL & Data Structures", "title": "map & set", "definition": "<code>std::map</code> stores unique key-value pairs sorted by key (implemented as a red-black tree). <code>std::set</code> stores unique sorted elements.", "points": [{"t": "map<K,V>", "d": "Key-value storage, O(log n) lookup, auto-sorted by key"}, {"t": "set<T>", "d": "Stores only unique, sorted values"}, {"t": "unordered_map/set", "d": "Hash-table based, O(1) average lookup, unsorted"}], "code": "#include <iostream>\n#include <map>\nusing namespace std;\nint main() {\n    map<string,int> ages;\n    ages[\"Sanjay\"] = 21;\n    ages[\"Ravi\"] = 25;\n    for (auto &p : ages) cout << p.first << \":\" << p.second << \" \";\n}", "output": ["$ g++ map.cpp -o map && ./map", "Ravi:25 Sanjay:21 "], "badges": [], "id": "map-set"}, {"cat": "stl", "catLabel": "STL & Data Structures", "title": "stack & queue", "definition": "<code>stack</code> follows LIFO (Last-In-First-Out); <code>queue</code> follows FIFO (First-In-First-Out) — both are STL container adapters.", "points": [{"t": "stack", "d": "push(), pop(), top() — LIFO order"}, {"t": "queue", "d": "push(), pop(), front() — FIFO order"}, {"t": "priority_queue", "d": "Always keeps the largest (or custom-ordered) element on top"}], "code": "#include <iostream>\n#include <stack>\nusing namespace std;\nint main() {\n    stack<int> s;\n    s.push(1); s.push(2); s.push(3);\n    while (!s.empty()) {\n        cout << s.top() << \" \";\n        s.pop();\n    }\n}", "output": ["$ g++ stack.cpp -o stack && ./stack", "3 2 1 "], "badges": [], "id": "stack-queue"}, {"cat": "stl", "catLabel": "STL & Data Structures", "title": "Algorithms & Iterators", "definition": "The <code>&lt;algorithm&gt;</code> header provides ready-made functions like sort, find, and reverse that operate generically on any container via iterators.", "points": [{"t": "sort()", "d": "Sorts a range in ascending order by default"}, {"t": "find()", "d": "Returns an iterator to the first match, or end()"}, {"t": "reverse()", "d": "Reverses elements in-place"}, {"t": "Iterator", "d": "An object that generalizes pointer-like traversal over containers"}], "code": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\nint main() {\n    vector<int> v = {5, 2, 8, 1};\n    sort(v.begin(), v.end());\n    for (int n : v) cout << n << \" \";\n}", "output": ["$ g++ algo.cpp -o algo && ./algo", "1 2 5 8 "], "badges": [], "id": "algorithms-iterators"}, {"cat": "exc", "catLabel": "Exception Handling", "title": "try / catch / throw", "definition": "C++ handles runtime errors gracefully using <code>try</code> blocks to detect exceptions, <code>throw</code> to raise them, and <code>catch</code> to handle them without crashing the program.", "points": [{"t": "try", "d": "Block of code that might raise an exception"}, {"t": "throw", "d": "Signals that an exceptional condition has occurred"}, {"t": "catch", "d": "Handles a specific exception type"}, {"t": "catch(...)", "d": "Catches any exception type as a fallback"}], "code": "#include <iostream>\nusing namespace std;\nint divide(int a, int b) {\n    if (b == 0) throw runtime_error(\"Division by zero!\");\n    return a / b;\n}\nint main() {\n    try {\n        cout << divide(10, 0);\n    } catch (const runtime_error &e) {\n        cout << \"Caught: \" << e.what();\n    }\n}", "output": ["$ g++ exc.cpp -o exc && ./exc", "Caught: Division by zero!"], "badges": [], "id": "try-catch-throw"}, {"cat": "exc", "catLabel": "Exception Handling", "title": "Custom Exceptions & Multiple catch", "definition": "You can define your own exception classes by inheriting from <code>std::exception</code>, and chain multiple <code>catch</code> blocks to handle different error types distinctly.", "points": [{"t": "Custom exception", "d": "class MyError : public exception { const char* what() const noexcept override; }"}, {"t": "Multiple catch", "d": "Ordered from most-specific to least-specific"}, {"t": "finally equivalent", "d": "C++ has no finally; RAII/destructors handle cleanup instead"}], "code": "#include <iostream>\n#include <exception>\nusing namespace std;\nclass NegativeAgeError : public exception {\npublic:\n    const char* what() const noexcept override {\n        return \"Age cannot be negative\";\n    }\n};\nvoid setAge(int age) {\n    if (age < 0) throw NegativeAgeError();\n    cout << \"Age set to \" << age;\n}\nint main() {\n    try { setAge(-5); }\n    catch (const NegativeAgeError &e) { cout << e.what(); }\n    catch (const exception &e) { cout << \"Other error\"; }\n}", "output": ["$ g++ custom.cpp -o custom && ./custom", "Age cannot be negative"], "badges": [], "id": "custom-exceptions-multiple-catch"}, {"cat": "file", "catLabel": "File Handling", "title": "ifstream / ofstream / fstream", "definition": "C++ file handling uses stream classes from <code>&lt;fstream&gt;</code>: <b>ofstream</b> to write, <b>ifstream</b> to read, and <b>fstream</b> for both.", "points": [{"t": "ofstream", "d": "Opens a file for writing (creates if missing)"}, {"t": "ifstream", "d": "Opens a file for reading"}, {"t": "fstream", "d": "Supports both read and write on the same file"}, {"t": "Always", "d": "Close the file with .close() when done"}], "code": "#include <iostream>\n#include <fstream>\nusing namespace std;\nint main() {\n    ofstream out(\"data.txt\");\n    out << \"Hello File!\" << endl;\n    out.close();\n\n    ifstream in(\"data.txt\");\n    string line;\n    getline(in, line);\n    cout << line;\n    in.close();\n}", "output": ["$ g++ file.cpp -o file && ./file", "data.txt written", "Hello File!"], "badges": [], "id": "ifstream-ofstream-fstream"}, {"cat": "adv", "catLabel": "Advanced Topics", "title": "Templates (Generic Programming)", "definition": "<b>Templates</b> let you write functions and classes that work with any data type, resolved at compile time — the foundation of the STL itself.", "points": [{"t": "Function template", "d": "template<typename T> T max(T a, T b)"}, {"t": "Class template", "d": "template<typename T> class Box { T value; };"}, {"t": "Benefit", "d": "Write once, use with int, double, string, custom types..."}], "code": "#include <iostream>\nusing namespace std;\ntemplate <typename T>\nT getMax(T a, T b) {\n    return (a > b) ? a : b;\n}\nint main() {\n    cout << getMax(5, 9) << endl;\n    cout << getMax(3.2, 1.5);\n}", "output": ["$ g++ tmpl.cpp -o tmpl && ./tmpl", "9", "3.2"], "badges": [], "id": "templates-generic-programming"}, {"cat": "adv", "catLabel": "Advanced Topics", "title": "Namespaces", "definition": "A <b>namespace</b> groups related identifiers to avoid naming collisions in large programs or when combining multiple libraries.", "points": [{"t": "Declaration", "d": "namespace MyLib { ... }"}, {"t": "Access", "d": "MyLib::function() or using namespace MyLib;"}, {"t": "std namespace", "d": "The entire standard library lives inside namespace std"}], "code": "#include <iostream>\nusing namespace std;\nnamespace Math {\n    int square(int x) { return x * x; }\n}\nint main() {\n    cout << Math::square(6);\n}", "output": ["$ g++ ns.cpp -o ns && ./ns", "36"], "badges": [], "id": "namespaces"}, {"cat": "adv", "catLabel": "Advanced Topics", "title": "Preprocessor Directives", "definition": "Directives beginning with <code>#</code> are processed before compilation begins — they control inclusion, macro substitution, and conditional compilation.", "points": [{"t": "#include", "d": "Inserts contents of a header file"}, {"t": "#define", "d": "Creates a macro constant or macro function"}, {"t": "#ifdef / #ifndef", "d": "Conditional compilation, used for include guards"}, {"t": "#pragma once", "d": "Modern alternative to include guards"}], "code": "#include <iostream>\n#define PI 3.14159\n#define SQUARE(x) ((x) * (x))\nusing namespace std;\nint main() {\n    cout << PI << endl;\n    cout << SQUARE(5);\n}", "output": ["$ g++ pre.cpp -o pre && ./pre", "3.14159", "25"], "badges": [], "id": "preprocessor-directives"}, {"cat": "adv", "catLabel": "Advanced Topics", "title": "Smart Pointers (Modern C++)", "definition": "Smart pointers from <code>&lt;memory&gt;</code> automatically manage heap memory lifetime, eliminating manual delete calls and preventing leaks.", "points": [{"t": "unique_ptr", "d": "Sole ownership, cannot be copied, auto-deletes when out of scope"}, {"t": "shared_ptr", "d": "Reference-counted shared ownership, deletes when count hits 0"}, {"t": "weak_ptr", "d": "Non-owning reference to a shared_ptr, avoids circular references"}], "code": "#include <iostream>\n#include <memory>\nusing namespace std;\nint main() {\n    unique_ptr<int> p1 = make_unique<int>(42);\n    cout << *p1 << endl;\n\n    shared_ptr<int> p2 = make_shared<int>(100);\n    cout << *p2 << \" (refs: \" << p2.use_count() << \")\";\n}", "output": ["$ g++ smart.cpp -o smart && ./smart", "42", "100 (refs: 1)"], "badges": [], "id": "smart-pointers-modern-c"}, {"cat": "adv", "catLabel": "Advanced Topics", "title": "Move Semantics & rvalue References", "definition": "C++11 introduced <b>move semantics</b> to transfer resources from temporary objects instead of copying them, drastically improving performance for heavy objects.", "points": [{"t": "rvalue reference", "d": "Type&& binds to temporary objects"}, {"t": "std::move()", "d": "Casts an lvalue to an rvalue, enabling a move instead of a copy"}, {"t": "Move constructor", "d": "ClassName(ClassName&& other) — steals resources instead of copying"}], "code": "#include <iostream>\n#include <vector>\n#include <utility>\nusing namespace std;\nint main() {\n    vector<int> a = {1,2,3,4,5};\n    vector<int> b = move(a);   // transfers ownership, no copy\n    cout << \"b size: \" << b.size() << endl;\n    cout << \"a size: \" << a.size();\n}", "output": ["$ g++ move.cpp -o move && ./move", "b size: 5", "a size: 0"], "badges": [], "id": "move-semantics-rvalue-references"}]
+</script>
+<script id="qa-data" type="application/json">
+[["What is the difference between C and C++?", "C is procedural only; C++ adds OOP (classes, inheritance, polymorphism), function/operator overloading, references, templates, and the STL. C++ is a 'superset' of C with these extensions."], ["What are the four pillars of OOP?", "Encapsulation (bundling data+methods), Abstraction (hiding complexity, showing essentials), Inheritance (reusing base class code), and Polymorphism (one interface, many implementations)."], ["What is the difference between struct and class in C++?", "Functionally almost identical — the only difference is default access: struct members are public by default, class members are private by default."], ["What is a constructor? Can it be overloaded?", "A constructor is a special member function automatically called when an object is created, matching the class name with no return type. Yes, constructors can be overloaded (multiple constructors with different parameter lists)."], ["What is a destructor and when is it called?", "A destructor (~ClassName()) is called automatically when an object goes out of scope or is explicitly deleted, used to release resources like memory or file handles."], ["Difference between call by value and call by reference?", "Call by value copies the argument — changes inside the function don't affect the original. Call by reference passes an alias to the original variable — changes do affect it."], ["What is a virtual function?", "A member function declared with the virtual keyword in a base class, which can be overridden in a derived class to achieve run-time polymorphism via dynamic binding (vtable)."], ["What is a pure virtual function and an abstract class?", "A pure virtual function has '= 0' and no implementation in the base class. A class containing at least one pure virtual function is abstract and cannot be instantiated directly — it acts as an interface."], ["Difference between overloading and overriding?", "Overloading: same function name, different parameters, resolved at compile time (same class). Overriding: derived class redefines a base class virtual function with the same signature, resolved at run time."], ["What is the difference between pointers and references?", "A pointer stores an address, can be reassigned, can be null, and needs dereferencing (*). A reference is an alias to a variable, must be initialized at declaration, cannot be null or reseated."], ["What is a memory leak? How is it avoided?", "A memory leak occurs when dynamically allocated memory (via new) is never freed with delete, so it stays reserved even after it's no longer needed. Avoided using delete/delete[] correctly, or by using smart pointers (unique_ptr, shared_ptr)."], ["What is the 'this' pointer?", "An implicit pointer available inside every non-static member function that points to the calling object, used to resolve naming conflicts and enable method chaining."], ["What is friend function?", "A non-member function granted explicit access to a class's private and protected members by declaring it with the 'friend' keyword inside that class."], ["What is operator overloading? Give an example.", "Redefining how an operator behaves for user-defined types, e.g. overloading '+' so two custom Point objects can be added directly with p1 + p2."], ["Explain the diamond problem in multiple inheritance.", "When a class inherits from two classes that both inherit from a common base, the derived class ends up with two copies of the base class members, causing ambiguity. Solved in C++ using virtual inheritance."], ["What is the difference between deep copy and shallow copy?", "A shallow copy copies pointer values (both objects point to the same memory) — risky for dynamic memory. A deep copy allocates new memory and copies the actual data, so each object owns independent memory."], ["What is a copy constructor?", "A special constructor, ClassName(const ClassName &obj), that initializes a new object as a copy of an existing object — automatically invoked on pass-by-value, return-by-value, or explicit copy."], ["What is the difference between stack and heap memory?", "Stack memory is used for local variables and function calls — fast, automatically managed, limited size. Heap memory is used for dynamic allocation (new) — larger, manually managed, slower to access."], ["What is the use of the const keyword?", "Declares a value as immutable after initialization — used for constants, function parameters that shouldn't be modified, and const member functions that promise not to modify the object."], ["What is a static member/function?", "A static member belongs to the class rather than any single object — shared across all instances. A static function can be called without creating an object and can only access other static members."], ["What is the difference between array and vector in C++?", "Arrays have a fixed size set at compile time and no built-in bounds checking. std::vector is a dynamic array from STL that can grow/shrink at runtime and provides helper methods like push_back() and size()."], ["What are exception handling keywords in C++?", "try (block that may throw), throw (raises an exception), and catch (handles a specific exception type). Multiple catch blocks can handle different exception types."], ["What is the difference between exit() and return in main()?", "return exits the current function and, in main(), ends the program after running destructors of local objects. exit() terminates the program immediately from anywhere, without unwinding the stack or calling local destructors."], ["What is templates in C++?", "A feature for generic programming that lets functions and classes operate on any data type, with the actual type substituted at compile time (e.g. template<typename T>)."], ["What is the Standard Template Library (STL)?", "A collection of C++ template classes providing common data structures (containers like vector, map, set) and algorithms (sort, find) along with iterators to traverse them generically."], ["What is the difference between new/delete and malloc/free?", "new/delete are C++ operators that call constructors/destructors and are type-safe. malloc/free are C library functions that only allocate raw memory with no object initialization."], ["What is function overriding? Explain with example.", "When a derived class provides its own implementation of a virtual function already defined in the base class, using the same name and signature — invoked based on the actual object type at runtime."], ["What are access specifiers in C++?", "private (accessible only within the class), protected (accessible within the class and derived classes), and public (accessible from anywhere the object is visible)."], ["What is namespace and why is it used?", "A declarative region that groups identifiers under a name to avoid naming collisions between different libraries or parts of a large program, e.g. namespace std."], ["Difference between #define and const?", "#define is a preprocessor macro — pure text substitution with no type checking, no scope. const creates a typed, scoped variable that the compiler checks and can be debugged."], ["What is RAII (Resource Acquisition Is Initialization)?", "A C++ idiom where resource management (memory, files, locks) is tied to object lifetime — resources are acquired in the constructor and released in the destructor, ensuring automatic cleanup."], ["What is a smart pointer? Name the types.", "An object that wraps a raw pointer and automatically manages its memory lifetime. Types: unique_ptr (sole ownership), shared_ptr (reference-counted shared ownership), and weak_ptr (non-owning reference)."], ["What is the difference between early binding and late binding?", "Early (static) binding resolves a function call at compile time, e.g. normal function calls. Late (dynamic) binding resolves the call at runtime using virtual functions and vtables, enabling polymorphism."], ["What is an inline function?", "A function where the compiler is requested to insert the function's code directly at each call site instead of performing a normal function call, reducing call overhead for small functions."], ["What is the difference between while and do-while loop?", "while checks the condition before executing the body (may run zero times). do-while checks the condition after executing the body, guaranteeing at least one execution."], ["Explain recursion with its advantages and disadvantages.", "Recursion is a function calling itself to break a problem into smaller subproblems until a base case is reached. Advantage: cleaner code for problems like tree traversal/factorial. Disadvantage: higher memory usage (call stack) and potential stack overflow."], ["What is the scope resolution operator (::)?", "Used to define a function outside its class, access a global variable shadowed by a local one, or access a static class member — e.g. ClassName::functionName()."], ["What is the difference between shallow and virtual inheritance?", "Virtual inheritance ensures only one shared copy of a common base class exists when using multiple inheritance, solving the diamond problem — declared with 'virtual' in the inheritance list."], ["What are the storage classes in C++?", "auto (default local scope), register (suggests CPU register storage), static (retains value between calls, single copy), and extern (declares a variable defined in another file)."], ["What is the difference between compile-time and run-time polymorphism?", "Compile-time polymorphism (function/operator overloading) is resolved by the compiler before execution. Run-time polymorphism (virtual functions) is resolved during program execution based on the actual object type."]]
+</script>
+<script>
+(function(){
+"use strict";
+
+const LESSONS = JSON.parse(document.getElementById('lesson-data').textContent);
+const CATS = [
+  ["start","Getting Started"],
+  ["fund","Fundamentals"],
+  ["flow","Control Flow"],
+  ["func","Functions"],
+  ["arr","Arrays & Strings"],
+  ["ptr","Pointers & References"],
+  ["struct","Structures & Unions"],
+  ["oop","Object-Oriented Programming"],
+  ["stl","STL & Data Structures"],
+  ["exc","Exception Handling"],
+  ["file","File Handling"],
+  ["adv","Advanced Topics"],
+];
+
+function esc(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+// ---- Very small C++ tokenizer for syntax highlighting ----
+// Single-pass scan: never re-matches text already emitted as HTML, so
+// keywords like "class" can never corrupt an already-inserted class="..." attribute.
+const KEYWORDS = new Set(["int","float","double","char","bool","void","if","else","for","while","do","switch","case","default","break","continue","return","class","struct","union","public","private","protected","virtual","override","static","const","new","delete","namespace","using","template","typename","try","catch","throw","this","nullptr","true","false","auto","inline","friend","enum","goto","sizeof"]);
+const TYPES = new Set(["string","vector","map","set","stack","queue","unique_ptr","shared_ptr","weak_ptr","cout","cin","endl","runtime_error","exception"]);
+
+// Master token regex: comment | string | char | number | identifier | anything else (single char)
+const TOKEN_RE = /(\/\/.*$)|("(?:[^"\\]|\\.)*")|('(?:[^'\\]|\\.)*')|(\b\d+\.?\d*\b)|([a-zA-Z_]\w*)/gm;
+
+function highlightLine(line){
+  let out = "";
+  let last = 0;
+  TOKEN_RE.lastIndex = 0;
+  let m;
+  while((m = TOKEN_RE.exec(line)) !== null){
+    // append any plain text before this token (escaped)
+    out += esc(line.slice(last, m.index));
+    last = TOKEN_RE.lastIndex;
+    const [full, comment, str, chr, num, ident] = m;
+    if(comment){ out += `<span class="tok-com">${esc(comment)}</span>`; }
+    else if(str){ out += `<span class="tok-str">${esc(str)}</span>`; }
+    else if(chr){ out += `<span class="tok-str">${esc(chr)}</span>`; }
+    else if(num){ out += `<span class="tok-num">${esc(num)}</span>`; }
+    else if(ident){
+      const isFn = line.slice(TOKEN_RE.lastIndex, TOKEN_RE.lastIndex+1) === "(";
+      if(KEYWORDS.has(ident)) out += `<span class="tok-kw">${esc(ident)}</span>`;
+      else if(TYPES.has(ident)) out += `<span class="tok-type">${esc(ident)}</span>`;
+      else if(isFn) out += `<span class="tok-fn">${esc(ident)}</span>`;
+      else out += esc(ident);
+    }
+  }
+  out += esc(line.slice(last));
+  return out;
+}
+
+function highlight(code){
+  const lines = code.split("\n");
+  return lines.map(line=>{
+    if(/^\s*#/.test(line)){
+      return `<span class="tok-pre">${esc(line)}</span>`;
+    }
+    return highlightLine(line);
+  }).join("\n");
+}
+
+// ---------------- ASSIGN GLOBAL INDEX ----------------
+LESSONS.forEach((l,i)=>{ l.globalIndex = String(i+1).padStart(2,'0'); });
+
+// ---------------- RENDER SIDEBAR ----------------
+const sidebar = document.getElementById('sidebar');
+let sidebarHTML = "";
+CATS.forEach(([key,label])=>{
+  const items = LESSONS.filter(l=>l.cat===key);
+  if(!items.length) return;
+  sidebarHTML += `<div class="cat"><div class="cat-title">${label}</div>`;
+  items.forEach((l,i)=>{
+    sidebarHTML += `<a href="#${l.id}" data-id="${l.id}"><span class="num">${l.globalIndex}</span>${l.title}</a>`;
+  });
+  sidebarHTML += `</div>`;
+});
+sidebarHTML += `<div class="cat"><div class="cat-title">Exam &amp; Interview Prep</div><a href="#qa-bank" data-id="qa-bank"><span class="num">Q&amp;A</span>40 Must-Know Questions</a></div>`;
+sidebar.innerHTML = sidebarHTML;
+
+// ---------------- RENDER HERO STATS ----------------
+document.getElementById('heroStats').innerHTML = `
+  <div><b>${LESSONS.length}</b><span>Topics Covered</span></div>
+  <div><b>${CATS.length}</b><span>Categories</span></div>
+  <div><b>40</b><span>Interview Questions</span></div>
+  <div><b>A → Z</b><span>Basic to Advanced</span></div>
+`;
+
+// ---------------- RENDER CONTENT ----------------
+const content = document.getElementById('content');
+let html = "";
+LESSONS.forEach(l=>{
+  const catLabel = CATS.find(c=>c[0]===l.cat)[1];
+  html += `
+  <section class="section-block" id="${l.id}">
+    <div class="topic-head">
+      <span class="topic-index">#${l.globalIndex}</span>
+      <h2>${l.title}</h2>
+    </div>
+    <div class="badge-row"><span class="badge cat">${catLabel}</span><span class="badge">Definition + Example + Output</span></div>
+    <div class="definition">${l.definition}</div>
+    <div class="points">
+      ${l.points.map(p=>`<div class="point"><b>${p.t}</b>${p.d}</div>`).join("")}
+    </div>
+    <div class="code-card">
+      <div class="code-toolbar">
+        <div class="fname"><span class="dots"><span></span><span></span><span></span></span>${l.title.replace(/&/g,'&amp;')}.cpp</div>
+        <div class="code-actions">
+          <button class="icon-btn copy" title="Copy code" data-idx="${l.__i}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          <button class="icon-btn run" title="Run / Pause" data-idx="${l.__i}">
+            <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>
+            <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+      </div>
+      <pre class="code">${highlight(l.code)}</pre>
+      <div class="output-label">Output</div>
+      <div class="output-panel" id="out-${l.id}"><span class="ph">// Click ▶ run to see simulated compiler output</span></div>
+    </div>
+  </section>`;
+});
+
+// ---------------- QA BANK ----------------
+const QA = JSON.parse(document.getElementById('qa-data').textContent);
+html += `
+<section class="section-block" id="qa-bank">
+  <div class="topic-head"><span class="topic-index">#QA</span><h2>Exam &amp; Interview Question Bank</h2></div>
+  <div class="badge-row"><span class="badge cat">Exam & Interview Prep</span><span class="badge">${QA.length} Questions</span></div>
+  <div class="definition">The questions most frequently asked in university exams, engineering viva, and technical interviews for C++ — click any question to reveal the answer.</div>
+  <div class="qa-list">
+    ${QA.map((qa,i)=>`<details class="qa"><summary>${esc(qa[0])}</summary><div class="a">${esc(qa[1])}</div></details>`).join("")}
+  </div>
+</section>`;
+
+content.innerHTML = html;
+
+// map lesson id -> data for output rendering, keyed by id
+const byId = {};
+LESSONS.forEach(l=> byId[l.id]=l);
+
+// re-bind data-idx to id via order (since __i wasn't set); simpler: query by nearest section
+document.querySelectorAll('.code-card').forEach(card=>{
+  const section = card.closest('.section-block');
+  const id = section.id;
+  const runBtn = card.querySelector('.icon-btn.run');
+  const copyBtn = card.querySelector('.icon-btn.copy');
+  const outPanel = document.getElementById('out-'+id);
+  let playing = false;
+  let timer = null;
+
+  runBtn.addEventListener('click', ()=>{
+    const lesson = byId[id];
+    if(!lesson) return;
+    if(playing){
+      // pause
+      playing = false;
+      clearTimeout(timer);
+      runBtn.querySelector('.icon-play').style.display='inline';
+      runBtn.querySelector('.icon-pause').style.display='none';
+      return;
+    }
+    playing = true;
+    runBtn.querySelector('.icon-play').style.display='none';
+    runBtn.querySelector('.icon-pause').style.display='inline';
+    outPanel.innerHTML = "";
+    let i = 0;
+    function step(){
+      if(!playing) return;
+      if(i >= lesson.output.length){
+        playing = false;
+        runBtn.querySelector('.icon-play').style.display='inline';
+        runBtn.querySelector('.icon-pause').style.display='none';
+        return;
+      }
+      const div = document.createElement('div');
+      div.className = 'line';
+      const txt = lesson.output[i];
+      div.innerHTML = txt.startsWith('$') ? `<span class="prompt">${esc(txt)}</span>` : esc(txt);
+      outPanel.appendChild(div);
+      i++;
+      timer = setTimeout(step, 340);
+    }
+    step();
+  });
+
+  copyBtn.addEventListener('click', ()=>{
+    const lesson = byId[id];
+    navigator.clipboard.writeText(lesson.code).then(()=>{
+      const original = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(()=> copyBtn.innerHTML = original, 1200);
+    }).catch(()=>{});
+  });
+});
+
+// ---------------- SCROLL SPY + PROGRESS ----------------
+const navLinks = Array.from(document.querySelectorAll('.sidebar a'));
+const sections = Array.from(document.querySelectorAll('.section-block'));
+const viewed = new Set();
+const progressBar = document.getElementById('progressBar');
+const progressText = document.getElementById('progressText');
+const totalTopics = sections.length;
+
+function updateProgress(){
+  progressBar.style.width = (viewed.size/totalTopics*100)+'%';
+  progressText.textContent = `${viewed.size} / ${totalTopics} topics viewed`;
+}
+updateProgress();
+
+const spy = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    const id = entry.target.id;
+    const link = navLinks.find(a=>a.dataset.id===id);
+    if(entry.isIntersecting){
+      navLinks.forEach(a=>a.classList.remove('active'));
+      if(link) link.classList.add('active');
+      viewed.add(id);
+      updateProgress();
+    }
+  });
+}, {rootMargin: "-40% 0px -50% 0px", threshold: 0});
+sections.forEach(s=>spy.observe(s));
+
+// ---------------- MOBILE MENU ----------------
+const menuToggle = document.getElementById('menuToggle');
+menuToggle.addEventListener('click', ()=>{
+  sidebar.classList.toggle('open');
+});
+navLinks.forEach(a=>{
+  a.addEventListener('click', ()=> sidebar.classList.remove('open'));
+});
+
+})();
+
+</script>
+</body>
+</html>

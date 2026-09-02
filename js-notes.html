@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JavaScript A–Z Interactive Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<style>
+  :root{
+    --bg:#161a1d;
+    --panel:#1e2327;
+    --panel-2:#20262b;
+    --editor:#12151a;
+    --border:#2c333a;
+    --text:#dfe6ea;
+    --muted:#8a95a1;
+    --js:#f7df1e;
+    --js-dim:#c9b61a;
+    --accent2:#5ecbb8;
+    --err:#ff6b6b;
+    --mono: 'SFMono-Regular', 'Consolas', 'Menlo', 'Cascadia Mono', monospace;
+    --sans: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  ::selection{background:var(--js); color:#161a1d;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; gap:14px;
+    padding:12px 22px;
+    background:rgba(22,26,29,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);
+  }
+  .logo{
+    display:flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-weight:700; letter-spacing:.5px;
+  }
+  .logo .chip{
+    background:var(--js); color:#1a1a1a; border-radius:6px;
+    padding:3px 8px; font-size:13px; font-weight:800;
+  }
+  .topbar-title{color:var(--muted); font-size:13px; font-family:var(--mono);}
+  .topbar-right{margin-left:auto; font-size:12px; color:var(--muted); font-family:var(--mono);}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;}
+  .dot.r{background:#ff5f56;} .dot.y{background:#ffbd2e;} .dot.g{background:#27c93f;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:64px 22px 40px;
+    max-width:1100px; margin:0 auto;
+    display:grid; grid-template-columns:1.2fr 1fr; gap:40px; align-items:center;
+  }
+  .hero h1{
+    font-family:var(--mono);
+    font-size:clamp(28px,4vw,46px);
+    margin:0 0 14px;
+    line-height:1.15;
+  }
+  .hero h1 .hl{color:var(--js);}
+  .hero p{color:var(--muted); font-size:16px; max-width:52ch;}
+  .hero .tags{display:flex; flex-wrap:wrap; gap:8px; margin-top:18px;}
+  .hero .tags span{
+    font-family:var(--mono); font-size:12px; color:var(--accent2);
+    border:1px solid var(--border); padding:4px 10px; border-radius:20px;
+  }
+  .hero-console{
+    background:var(--editor); border:1px solid var(--border); border-radius:10px;
+    padding:16px 18px; font-family:var(--mono); font-size:13.5px;
+    box-shadow:0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+  .hero-console .win{display:flex; gap:6px; margin-bottom:12px;}
+  .hero-console pre{margin:0; white-space:pre-wrap;}
+  .k{color:#c586c0;} .s{color:#ce9178;} .fn{color:#dcdcaa;} .cm{color:#6a9955;} .num{color:#b5cea8;}
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display:grid; grid-template-columns:250px 1fr; gap:0;
+    max-width:1300px; margin:0 auto; padding:0 22px 80px;
+  }
+  nav.toc{
+    position:sticky; top:56px; align-self:start;
+    max-height:calc(100vh - 76px); overflow-y:auto;
+    padding:20px 14px 40px 0;
+    font-family:var(--mono); font-size:13px;
+  }
+  nav.toc .toc-title{color:var(--muted); text-transform:uppercase; font-size:11px; letter-spacing:1px; margin-bottom:10px;}
+  nav.toc a{
+    display:block; color:var(--text); text-decoration:none;
+    padding:6px 10px; border-radius:6px; margin-bottom:2px; opacity:.75;
+    border-left:2px solid transparent;
+  }
+  nav.toc a:hover{background:var(--panel-2); opacity:1; border-left-color:var(--js);}
+  nav.toc a .n{color:var(--js); margin-right:6px;}
+
+  main{padding:20px 0 0 30px; min-width:0;}
+
+  section.lesson{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:26px 28px;
+    margin-bottom:26px;
+    scroll-margin-top:70px;
+  }
+  section.lesson .eyebrow{
+    font-family:var(--mono); color:var(--js); font-size:12px; letter-spacing:1px; text-transform:uppercase;
+  }
+  section.lesson h2{margin:6px 0 10px; font-size:22px;}
+  section.lesson .desc{color:var(--muted); font-size:15px; margin-bottom:14px;}
+  section.lesson .desc code, .desc code{
+    background:var(--editor); color:var(--accent2); padding:1px 6px; border-radius:4px; font-family:var(--mono); font-size:.9em;
+  }
+  section.lesson ul{color:var(--muted); font-size:14.5px; padding-left:20px; margin:8px 0 16px;}
+  section.lesson ul li{margin-bottom:4px;}
+  section.lesson ul li b{color:var(--text);}
+
+  .editor-wrap{
+    border:1px solid var(--border); border-radius:10px; overflow:hidden; background:var(--editor);
+  }
+  .editor-head{
+    display:flex; align-items:center; gap:8px;
+    background:var(--panel-2); padding:8px 12px; border-bottom:1px solid var(--border);
+  }
+  .editor-head .fname{font-family:var(--mono); font-size:12px; color:var(--muted);}
+  .run-btn{
+    margin-left:auto;
+    display:flex; align-items:center; gap:6px;
+    background:var(--js); color:#161a1d; border:none;
+    font-family:var(--mono); font-weight:700; font-size:12.5px;
+    padding:6px 14px; border-radius:6px; cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .run-btn:hover{transform:translateY(-1px); box-shadow:0 6px 16px -6px rgba(247,223,30,0.6);}
+  .run-btn:active{transform:translateY(0);}
+  .run-btn .tri{
+    width:0; height:0;
+    border-top:5px solid transparent; border-bottom:5px solid transparent;
+    border-left:8px solid #161a1d;
+  }
+  .reset-btn{
+    background:transparent; color:var(--muted); border:1px solid var(--border);
+    font-family:var(--mono); font-size:11.5px; padding:6px 10px; border-radius:6px; cursor:pointer;
+  }
+  .reset-btn:hover{color:var(--text); border-color:var(--muted);}
+
+  textarea.code-input{
+    width:100%; min-height:110px; resize:vertical;
+    background:var(--editor); color:#e8e8e8; border:none; outline:none;
+    font-family:var(--mono); font-size:13.5px; padding:14px 16px;
+    tab-size:2;
+  }
+  .output{
+    border-top:1px dashed var(--border);
+    background:#0e1114; color:#c8f7c5;
+    font-family:var(--mono); font-size:13px;
+    padding:12px 16px; white-space:pre-wrap; word-break:break-word;
+    min-height:22px;
+  }
+  .output:empty::before{content:'▷ output appears here after you hit Run'; color:var(--muted);}
+  .output .err{color:var(--err);}
+  .sandbox{
+    border-top:1px dashed var(--border);
+    padding:14px 16px; background:var(--panel-2); font-size:14px;
+  }
+  .sandbox:empty{display:none;}
+
+  footer{
+    text-align:center; color:var(--muted); font-family:var(--mono); font-size:12px;
+    padding:40px 20px 60px;
+  }
+  footer .chip{background:var(--js); color:#1a1a1a; border-radius:6px; padding:2px 7px; font-weight:800;}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;}
+    .layout{grid-template-columns:1fr;}
+    nav.toc{position:static; max-height:none; padding:20px 0;}
+    main{padding-left:0;}
+  }
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('javascript')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('javascript'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+
+<div class="topbar">
+  <div class="logo"><span class="chip">JS</span> A–Z Notes</div>
+  <div class="topbar-title">// interactive · run-in-browser · zero setup</div>
+  <div class="topbar-right"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> script.js — every block is live</div>
+</div>
+
+<div class="hero">
+  <div>
+    <h1>JavaScript, <span class="hl">A to Z</span>.<br>Read it. Edit it. Run it.</h1>
+    <p>A complete set of notes on JavaScript — syntax, variables, conditionals, loops, functions, arrays, objects, DOM, ES6+, closures, classes, async/await and error handling. Every example has an editable code box and a <b style="color:#dfe6ea">▶ Run</b> button so you can see the real output instantly, right on this page.</p>
+    <div class="tags">
+      <span>Beginner → Advanced</span><span>Editable code</span><span>Instant output</span><span>No install needed</span>
+    </div>
+  </div>
+  <div class="hero-console">
+    <div class="win"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+    <pre><span class="cm">// this whole page runs on this idea:</span>
+<span class="k">function</span> <span class="fn">runCode</span>() {
+  <span class="k">const</span> code = editor.value;
+  <span class="k">try</span> {
+    <span class="k">const</span> result = <span class="k">new</span> <span class="fn">Function</span>(code)();
+    <span class="fn">show</span>(output);
+  } <span class="k">catch</span>(e) { <span class="fn">show</span>(e.message); }
+}
+<span class="cm">// click ▶ on any card below to try it</span></pre>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="toc" id="toc">
+    <div class="toc-title">Contents</div>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<footer>
+  Built with plain <span class="chip">HTML</span> <span class="chip">CSS</span> <span class="chip">JS</span> — the same language it teaches. Edit any code box above and hit ▶ Run again any time.
+</footer>
+
+<script>
+/* ============================================================
+   LESSON DATA — the entire "A to Z" curriculum lives here.
+   Each lesson renders as a card with: description, an editable
+   code box, a Run button, an output console, and (optionally)
+   a live DOM "sandbox" div that example code can write into.
+   ============================================================ */
+const lessons = [
+
+{
+  id: "intro-syntax",
+  title: "1. What is JavaScript & Basic Syntax",
+  desc: `JavaScript is a lightweight, interpreted programming language used to make web pages interactive.
+  It runs inside the browser (and on servers via Node.js). A JS program is a sequence of <code>statements</code>,
+  each usually ending with a semicolon <code>;</code>. Code is written inside <code>&lt;script&gt;</code> tags in HTML,
+  or in a separate <code>.js</code> file linked with <code>&lt;script src="file.js"&gt;&lt;/script&gt;</code>.`,
+  points: [
+    "<b>Case-sensitive:</b> <code>myVar</code> and <code>MyVar</code> are different.",
+    "<b>Statements</b> end with a semicolon <code>;</code> (optional but recommended).",
+    "<b>Comments:</b> <code>// single line</code> and <code>/* multi line */</code>.",
+    "<b>console.log()</b> prints output — this is what the output box below shows.",
+    "Whitespace and indentation don't matter to the engine, but keep it clean for readability."
+  ],
+  code:
+`// This is a single line comment
+/* This is a
+   multi-line comment */
+
+console.log("Hello, World!");   // prints text
+console.log(10 + 5);            // prints a number
+console.log(typeof "hello");    // prints the data type`
+},
+
+{
+  id: "variables",
+  title: "2. Variables — var, let, const",
+  desc: `Variables store data. JavaScript has three ways to declare them: <code>var</code> (old, function-scoped),
+  <code>let</code> (modern, block-scoped, can be reassigned), and <code>const</code> (block-scoped, cannot be reassigned).`,
+  points: [
+    "<b>var:</b> function-scoped, can be redeclared — mostly avoided in modern code.",
+    "<b>let:</b> block-scoped, can change value later.",
+    "<b>const:</b> block-scoped, value cannot be reassigned (but objects/arrays inside it can still be mutated).",
+    "Naming rules: start with a letter, <code>_</code> or <code>$</code>; no spaces; case-sensitive."
+  ],
+  code:
+`var oldWay = "I am function scoped";
+let age = 25;
+const PI = 3.14159;
+
+age = 26; // OK, let can change
+// PI = 3.14; // ERROR if uncommented, const can't be reassigned
+
+console.log(oldWay);
+console.log("age:", age);
+console.log("PI:", PI);`
+},
+
+{
+  id: "datatypes",
+  title: "3. Data Types",
+  desc: `JavaScript has primitive types and one reference type (object). Use <code>typeof</code> to check a value's type.`,
+  points: [
+    "<b>Number:</b> 10, 3.14, -5 (no separate int/float type)",
+    "<b>String:</b> \"text\", 'text', `template text`",
+    "<b>Boolean:</b> true / false",
+    "<b>Undefined:</b> a declared variable with no value",
+    "<b>Null:</b> intentional 'no value'",
+    "<b>Object:</b> collections of key-value pairs (includes arrays, functions)",
+    "<b>Symbol / BigInt:</b> newer, special-purpose types"
+  ],
+  code:
+`let num = 42;
+let str = "hello";
+let bool = true;
+let notAssigned;
+let empty = null;
+let obj = { name: "Ravi", age: 21 };
+let arr = [1, 2, 3];
+
+console.log(typeof num, typeof str, typeof bool);
+console.log(typeof notAssigned, typeof empty, typeof obj);
+console.log(Array.isArray(arr)); // true, arrays are a special object`
+},
+
+{
+  id: "operators",
+  title: "4. Operators",
+  desc: `Operators perform actions on values: arithmetic, assignment, comparison, and logical operations.`,
+  points: [
+    "<b>Arithmetic:</b> + - * / % ** (exponent)",
+    "<b>Assignment:</b> = += -= *= /=",
+    "<b>Comparison:</b> == (loose) vs === (strict, checks type too), != !==, &gt; &lt; &gt;= &lt;=",
+    "<b>Logical:</b> && (AND) || (OR) ! (NOT)",
+    "<b>Ternary:</b> condition ? valueIfTrue : valueIfFalse"
+  ],
+  code:
+`console.log(10 + 5, 10 % 3, 2 ** 3);   // arithmetic
+console.log(5 == "5", 5 === "5");       // loose vs strict equality
+console.log(true && false, true || false, !true);
+
+let marks = 78;
+let result = marks >= 40 ? "Pass" : "Fail";
+console.log("Result:", result);`
+},
+
+{
+  id: "conditionals",
+  title: "5. Conditional Statements",
+  desc: `Conditionals let your program make decisions using <code>if</code>, <code>else if</code>, <code>else</code>, and <code>switch</code>.`,
+  points: [
+    "<b>if / else if / else:</b> runs a block only when its condition is true.",
+    "<b>switch:</b> compares one value against multiple cases — good for many discrete options.",
+    "Always include <code>break;</code> in switch cases, or execution 'falls through'.",
+    "<b>default:</b> runs when no case matches."
+  ],
+  code:
+`let marks = 65;
+
+if (marks >= 90) {
+  console.log("Grade: A");
+} else if (marks >= 60) {
+  console.log("Grade: B");
+} else {
+  console.log("Grade: C");
+}
+
+let day = 3;
+switch (day) {
+  case 1: console.log("Monday"); break;
+  case 2: console.log("Tuesday"); break;
+  case 3: console.log("Wednesday"); break;
+  default: console.log("Some other day");
+}`
+},
+
+{
+  id: "loops",
+  title: "6. Loops — for, while, do-while, for...of, for...in",
+  desc: `Loops repeat a block of code. Choose based on what you're iterating over.`,
+  points: [
+    "<b>for:</b> best when you know how many times to loop.",
+    "<b>while:</b> loops while a condition stays true.",
+    "<b>do...while:</b> runs the body at least once, then checks condition.",
+    "<b>for...of:</b> iterates over values of an array/string.",
+    "<b>for...in:</b> iterates over keys/properties of an object.",
+    "<b>break</b> exits a loop early, <b>continue</b> skips to the next iteration."
+  ],
+  code:
+`for (let i = 1; i <= 5; i++) {
+  console.log("for loop i =", i);
+}
+
+let n = 0;
+while (n < 3) {
+  console.log("while n =", n);
+  n++;
+}
+
+let x = 0;
+do {
+  console.log("do-while x =", x);
+  x++;
+} while (x < 2);
+
+for (let val of [10, 20, 30]) {
+  console.log("for-of value:", val);
+}
+
+const person = { name: "Asha", city: "Shivamogga" };
+for (let key in person) {
+  console.log("for-in key:", key, "=", person[key]);
+}`
+},
+
+{
+  id: "functions",
+  title: "7. Functions",
+  desc: `Functions are reusable blocks of code. JavaScript supports several styles of writing them.`,
+  points: [
+    "<b>Function declaration:</b> <code>function name() {}</code> — hoisted, can be called before it's defined.",
+    "<b>Function expression:</b> stored in a variable.",
+    "<b>Arrow function:</b> shorter syntax, doesn't have its own <code>this</code>.",
+    "<b>Default parameters</b> give a fallback value if none is passed.",
+    "<b>Rest parameters (...)</b> collect extra arguments into an array."
+  ],
+  code:
+`function greet(name) {
+  return "Hello, " + name + "!";
+}
+
+const add = function(a, b) {
+  return a + b;
+};
+
+const multiply = (a, b) => a * b;
+
+function greetDefault(name = "Guest") {
+  return "Welcome, " + name;
+}
+
+function sumAll(...nums) {
+  return nums.reduce((total, n) => total + n, 0);
+}
+
+console.log(greet("Ravi"));
+console.log(add(4, 5));
+console.log(multiply(3, 6));
+console.log(greetDefault());
+console.log(sumAll(1, 2, 3, 4, 5));`
+},
+
+{
+  id: "arrays",
+  title: "8. Arrays & Array Methods",
+  desc: `Arrays store ordered lists of values. JavaScript arrays come with many built-in methods to add, remove, search, and transform data.`,
+  points: [
+    "<b>push/pop:</b> add/remove from the end.",
+    "<b>shift/unshift:</b> remove/add from the beginning.",
+    "<b>map():</b> transforms every element into a new array.",
+    "<b>filter():</b> keeps elements that pass a test.",
+    "<b>reduce():</b> collapses an array into a single value.",
+    "<b>find(), includes(), indexOf(), sort(), slice(), join()</b> are also very common."
+  ],
+  code:
+`let fruits = ["apple", "banana", "mango"];
+fruits.push("grape");
+console.log("after push:", fruits);
+
+let numbers = [1, 2, 3, 4, 5];
+let doubled = numbers.map(n => n * 2);
+let evens = numbers.filter(n => n % 2 === 0);
+let total = numbers.reduce((sum, n) => sum + n, 0);
+
+console.log("doubled:", doubled);
+console.log("evens:", evens);
+console.log("total:", total);
+console.log("sorted:", [5,3,1,4,2].sort());
+console.log("joined:", fruits.join(" | "));`
+},
+
+{
+  id: "strings",
+  title: "9. Strings & String Methods",
+  desc: `Strings represent text. They are immutable (methods return a new string, they don't change the original).`,
+  points: [
+    "<b>Template literals:</b> use backticks and <code>${'{'}expr{'}'}</code> for easy interpolation.",
+    "<b>length, toUpperCase, toLowerCase, trim</b> — basic utilities.",
+    "<b>slice/substring:</b> extract part of a string.",
+    "<b>split():</b> turn a string into an array.",
+    "<b>includes/replace:</b> search and edit text."
+  ],
+  code:
+`let name = "Shivamogga";
+let greeting = \`Hello from \${name}, population growing!\`;
+
+console.log(greeting);
+console.log(name.length, name.toUpperCase(), name.toLowerCase());
+console.log(name.slice(0, 5));
+console.log("a,b,c".split(","));
+console.log(name.includes("mog"));
+console.log(name.replace("Shiva", "Shree"));`
+},
+
+{
+  id: "objects",
+  title: "10. Objects",
+  desc: `Objects store data as key-value pairs and can also hold functions (called methods).`,
+  points: [
+    "Access properties with dot notation <code>obj.key</code> or bracket notation <code>obj['key']</code>.",
+    "Objects can contain methods — functions attached to the object.",
+    "<b>this</b> inside a method refers to the object it belongs to.",
+    "<b>Object.keys() / Object.values() / Object.entries()</b> help inspect objects."
+  ],
+  code:
+`const student = {
+  name: "Meera",
+  age: 20,
+  marks: [88, 92, 79],
+  greet() {
+    return "Hi, I'm " + this.name;
+  }
+};
+
+console.log(student.name, student["age"]);
+console.log(student.greet());
+console.log(Object.keys(student));
+console.log(Object.values(student.marks));`
+},
+
+{
+  id: "es6",
+  title: "11. Modern JS (ES6+) — Destructuring, Spread/Rest, Template Literals",
+  desc: `ES6 (2015) and later versions added powerful shorthand syntax that makes JavaScript much easier to write and read.`,
+  points: [
+    "<b>Destructuring:</b> unpack array/object values into variables in one line.",
+    "<b>Spread (...)</b> expands an array/object into individual elements.",
+    "<b>Rest (...)</b> gathers remaining items into one variable (used in function params too).",
+    "<b>Template literals:</b> multi-line strings and embedded expressions with backticks."
+  ],
+  code:
+`const [first, second] = ["Ravi", "Meera"];
+const { name, age } = { name: "Asha", age: 21 };
+
+console.log(first, second, name, age);
+
+const arr1 = [1, 2, 3];
+const arr2 = [...arr1, 4, 5];
+console.log("spread array:", arr2);
+
+const base = { a: 1, b: 2 };
+const extended = { ...base, c: 3 };
+console.log("spread object:", extended);
+
+function showAll(...items) {
+  console.log("rest params:", items);
+}
+showAll(1, 2, 3, 4);`
+},
+
+{
+  id: "dom",
+  title: "12. DOM Manipulation",
+  desc: `The DOM (Document Object Model) is how JavaScript reads and changes HTML on a page. This example writes directly
+  into the little preview box below your code — a real live DOM update.`,
+  points: [
+    "<b>document.getElementById() / querySelector():</b> find elements.",
+    "<b>element.textContent / innerHTML:</b> read or change content.",
+    "<b>element.style:</b> change CSS from JS.",
+    "<b>createElement() + appendChild():</b> build new elements dynamically."
+  ],
+  hasSandbox: true,
+  code:
+`sandbox.innerHTML = ""; // clear previous run
+
+const heading = document.createElement("h3");
+heading.textContent = "Built with JavaScript!";
+heading.style.color = "#5ecbb8";
+
+const para = document.createElement("p");
+para.textContent = "This paragraph was created and inserted using DOM methods.";
+
+sandbox.appendChild(heading);
+sandbox.appendChild(para);
+
+console.log("DOM updated — check the box below the console.");`
+},
+
+{
+  id: "events",
+  title: "13. Events",
+  desc: `Events let JavaScript respond to user actions like clicks, typing, or page loads. Try clicking the button that
+  this code creates in the sandbox below.`,
+  points: [
+    "<b>addEventListener('click', fn):</b> the standard modern way to listen for events.",
+    "Common events: <code>click</code>, <code>input</code>, <code>keydown</code>, <code>submit</code>, <code>mouseover</code>.",
+    "The event handler function runs whenever that event fires."
+  ],
+  hasSandbox: true,
+  code:
+`sandbox.innerHTML = "";
+
+const btn = document.createElement("button");
+btn.textContent = "Click me";
+btn.style.cssText = "padding:8px 14px;border-radius:6px;border:1px solid #2c333a;background:#f7df1e;cursor:pointer;font-weight:700;";
+
+let clicks = 0;
+btn.addEventListener("click", () => {
+  clicks++;
+  status.textContent = "Button clicked " + clicks + " time(s)";
+});
+
+const status = document.createElement("p");
+status.textContent = "Button clicked 0 time(s)";
+status.style.color = "#8a95a1";
+
+sandbox.appendChild(btn);
+sandbox.appendChild(status);`
+},
+
+{
+  id: "closures",
+  title: "14. Closures & Higher-Order Functions",
+  desc: `A closure is a function that "remembers" variables from the scope it was created in, even after that outer
+  function has finished running. A higher-order function takes or returns another function.`,
+  points: [
+    "Closures are commonly used to create private state (like counters).",
+    "Higher-order functions: <code>map</code>, <code>filter</code>, <code>reduce</code> are all higher-order functions.",
+    "Useful for things like counters, memoization, and event handler factories."
+  ],
+  code:
+`function createCounter() {
+  let count = 0; // private variable, kept alive by the closure
+  return function () {
+    count++;
+    return count;
+  };
+}
+
+const counter = createCounter();
+console.log(counter()); // 1
+console.log(counter()); // 2
+console.log(counter()); // 3
+
+function multiplyBy(factor) {   // higher-order function
+  return (num) => num * factor;
+}
+const double = multiplyBy(2);
+console.log("double(9) =", double(9));`
+},
+
+{
+  id: "classes",
+  title: "15. Classes & OOP",
+  desc: `Classes are templates for creating objects, supporting properties, methods, and inheritance — JavaScript's
+  way of doing Object-Oriented Programming.`,
+  points: [
+    "<b>constructor():</b> runs when a new object is created with <code>new</code>.",
+    "<b>this:</b> refers to the specific object instance.",
+    "<b>extends / super():</b> let one class inherit from another.",
+    "Methods defined in a class are shared across all instances."
+  ],
+  code:
+`class Animal {
+  constructor(name) {
+    this.name = name;
+  }
+  speak() {
+    return this.name + " makes a sound.";
+  }
+}
+
+class Dog extends Animal {
+  speak() {
+    return this.name + " barks.";
+  }
+}
+
+const generic = new Animal("Some creature");
+const dog = new Dog("Rex");
+
+console.log(generic.speak());
+console.log(dog.speak());
+console.log(dog instanceof Animal);`
+},
+
+{
+  id: "errors",
+  title: "16. Error Handling — try, catch, finally",
+  desc: `Use <code>try/catch</code> to handle runtime errors gracefully instead of crashing the whole script.`,
+  points: [
+    "<b>try:</b> code that might throw an error.",
+    "<b>catch(error):</b> runs if an error occurs, receives the error object.",
+    "<b>finally:</b> always runs, whether there was an error or not.",
+    "<b>throw:</b> manually create your own errors."
+  ],
+  code:
+`function divide(a, b) {
+  if (b === 0) {
+    throw new Error("Cannot divide by zero!");
+  }
+  return a / b;
+}
+
+try {
+  console.log(divide(10, 2));
+  console.log(divide(5, 0));
+} catch (error) {
+  console.log("Caught an error:", error.message);
+} finally {
+  console.log("This always runs, error or not.");
+}`
+},
+
+{
+  id: "async",
+  title: "17. Promises & Async/Await",
+  desc: `Modern JavaScript handles time-consuming tasks (like network requests) asynchronously using Promises and
+  the <code>async/await</code> syntax, so the rest of the page doesn't freeze while waiting.`,
+  points: [
+    "A <b>Promise</b> represents a value that will be available now, later, or never (error).",
+    "<b>.then() / .catch()</b> handle success and failure of a Promise.",
+    "<b>async function</b> lets you use <code>await</code> to pause until a Promise settles — reads like normal sync code.",
+    "This example uses <code>setTimeout</code> to simulate a delayed task."
+  ],
+  code:
+`function delayedGreeting() {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve("Data loaded after 1 second!"), 1000);
+  });
+}
+
+async function run() {
+  console.log("Fetching...");
+  const message = await delayedGreeting();
+  console.log(message);
+}
+
+run();`
+},
+
+{
+  id: "json",
+  title: "18. JSON",
+  desc: `JSON (JavaScript Object Notation) is a text format for exchanging data — commonly used with APIs. JavaScript
+  has built-in methods to convert between JS objects and JSON text.`,
+  points: [
+    "<b>JSON.stringify(obj):</b> converts a JS object into a JSON string.",
+    "<b>JSON.parse(str):</b> converts a JSON string back into a JS object.",
+    "Used constantly when sending/receiving data from web APIs."
+  ],
+  code:
+`const user = { name: "Kiran", age: 22, skills: ["HTML", "CSS", "JS"] };
+
+const jsonString = JSON.stringify(user);
+console.log("As JSON text:", jsonString);
+
+const backToObject = JSON.parse(jsonString);
+console.log("Back to object:", backToObject);
+console.log("Skill #1:", backToObject.skills[0]);`
+}
+
+];
+
+/* ============================================================
+   RENDERING — build the TOC + lesson cards from the data above
+   ============================================================ */
+const mainEl = document.getElementById("main");
+const tocEl = document.getElementById("toc");
+
+lessons.forEach((lesson, idx) => {
+  // TOC entry
+  const a = document.createElement("a");
+  a.href = "#" + lesson.id;
+  a.innerHTML = `<span class="n">${String(idx+1).padStart(2,'0')}</span>${lesson.title.replace(/^\d+\.\s*/, "")}`;
+  tocEl.appendChild(a);
+
+  // Lesson card
+  const section = document.createElement("section");
+  section.className = "lesson";
+  section.id = lesson.id;
+
+  const pointsHtml = (lesson.points || []).map(p => `<li>${p}</li>`).join("");
+
+  section.innerHTML = `
+    <div class="eyebrow">Lesson ${idx+1}</div>
+    <h2>${lesson.title}</h2>
+    <div class="desc">${lesson.desc}</div>
+    ${pointsHtml ? `<ul>${pointsHtml}</ul>` : ""}
+    <div class="editor-wrap">
+      <div class="editor-head">
+        <span class="fname">📄 example-${idx+1}.js</span>
+        <button class="reset-btn" data-reset="${idx}">↺ Reset</button>
+        <button class="run-btn" data-run="${idx}"><span class="tri"></span> Run</button>
+      </div>
+      <textarea class="code-input" id="code-${idx}" spellcheck="false">${escapeHtml(lesson.code)}</textarea>
+      ${lesson.hasSandbox ? `<div class="sandbox" id="sandbox-${idx}"></div>` : ""}
+      <div class="output" id="output-${idx}"></div>
+    </div>
+  `;
+  mainEl.appendChild(section);
+});
+
+function escapeHtml(str){
+  return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+/* ============================================================
+   THE RUNNER — executes the code in each box and shows output
+   ============================================================ */
+function runLesson(idx){
+  const codeEl = document.getElementById("code-" + idx);
+  const outputEl = document.getElementById("output-" + idx);
+  const sandboxEl = document.getElementById("sandbox-" + idx);
+  const code = codeEl.value;
+
+  const logs = [];
+  const originalLog = console.log;
+  console.log = (...args) => {
+    logs.push(args.map(a => {
+      if (typeof a === "object") { try { return JSON.stringify(a); } catch(e){ return String(a); } }
+      return String(a);
+    }).join(" "));
+  };
+
+  outputEl.classList.remove("err");
+  try {
+    // Give the code access to "sandbox" (a real DOM element) when the lesson has one
+    const fn = new Function("sandbox", code);
+    fn(sandboxEl || null);
+    outputEl.innerHTML = logs.length
+      ? logs.map(escapeHtml).join("\n")
+      : `<span style="color:#8a95a1">(no console output — try adding console.log())</span>`;
+  } catch (err) {
+    logs.push("⚠ " + err.message);
+    outputEl.innerHTML = `<span class="err">${escapeHtml(logs.join("\n"))}</span>`;
+  } finally {
+    console.log = originalLog;
+  }
+}
+
+// Event delegation for all Run / Reset buttons
+document.addEventListener("click", (e) => {
+  const runBtn = e.target.closest("[data-run]");
+  if (runBtn) { runLesson(Number(runBtn.dataset.run)); return; }
+  const resetBtn = e.target.closest("[data-reset]");
+  if (resetBtn) {
+    const idx = Number(resetBtn.dataset.reset);
+    document.getElementById("code-" + idx).value = lessons[idx].code;
+    document.getElementById("output-" + idx).innerHTML = "";
+    const sb = document.getElementById("sandbox-" + idx);
+    if (sb) sb.innerHTML = "";
+  }
+});
+
+// Auto-run the very first "Hello World" example on page load,
+// so visitors immediately see output without clicking anything.
+window.addEventListener("DOMContentLoaded", () => {
+  runLesson(0);
+});
+</script>
+</body>
+</html>

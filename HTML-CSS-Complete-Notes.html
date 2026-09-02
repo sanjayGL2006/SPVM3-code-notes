@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML & CSS Complete Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F6F2;
+  --paper:#FFFFFF;
+  --ink:#1A211D;
+  --ink-soft:#4B5750;
+  --sidebar:#122019;
+  --sidebar-text:#C9D6CD;
+  --primary:#2F7A5C;
+  --primary-dark:#1E5A42;
+  --amber:#C9962B;
+  --line:#DCE2DA;
+  --code-bg:#0E1712;
+  --code-text:#B9E6C9;
+  --code-key:#E8B75C;
+  --danger:#B4452F;
+  --radius:10px;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+  --display: 'Space Grotesk', sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.65;
+}
+a{color:var(--primary-dark);}
+.layout{display:flex; min-height:100vh;}
+
+/* Sidebar */
+.sidebar{
+  width:290px; flex-shrink:0;
+  background:var(--sidebar);
+  color:var(--sidebar-text);
+  padding:28px 20px 60px;
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+.sidebar .brand{
+  font-family:var(--display); font-weight:700; font-size:1.15rem;
+  color:#fff; margin-bottom:4px; letter-spacing:.02em;
+}
+.sidebar .brand span{color:var(--amber);}
+.sidebar .sub{font-size:.78rem; color:#8AA398; margin-bottom:26px;}
+.sidebar nav h4{
+  font-family:var(--mono); font-size:.68rem; text-transform:uppercase;
+  letter-spacing:.12em; color:#6E8B7C; margin:22px 0 8px;
+}
+.sidebar nav a{
+  display:block; color:var(--sidebar-text); text-decoration:none;
+  font-size:.86rem; padding:5px 8px; border-radius:6px; margin-bottom:1px;
+}
+.sidebar nav a:hover{background:rgba(255,255,255,.06); color:#fff;}
+
+/* Main content */
+main{flex:1; min-width:0; padding:48px 56px 120px; max-width:980px;}
+.hero{margin-bottom:56px;}
+.hero .eyebrow{
+  font-family:var(--mono); font-size:.78rem; color:var(--primary-dark);
+  text-transform:uppercase; letter-spacing:.14em; margin-bottom:10px;
+}
+.hero h1{
+  font-family:var(--display); font-size:2.6rem; line-height:1.08; margin:0 0 16px;
+  color:var(--ink);
+}
+.hero h1 em{font-style:normal; color:var(--primary);}
+.hero p{font-size:1.05rem; color:var(--ink-soft); max-width:640px;}
+
+.chapter{margin:64px 0; scroll-margin-top:24px;}
+.chapter-num{
+  font-family:var(--mono); color:var(--amber); font-size:.85rem; letter-spacing:.08em;
+}
+.chapter h2{
+  font-family:var(--display); font-size:1.9rem; margin:4px 0 18px; color:var(--ink);
+  border-bottom:3px solid var(--ink); padding-bottom:10px; display:inline-block;
+}
+.topic{margin:34px 0; scroll-margin-top:24px;}
+.topic h3{
+  font-family:var(--display); font-size:1.25rem; margin:0 0 10px; color:var(--primary-dark);
+}
+.topic h4{font-family:var(--sans); font-size:1rem; margin:18px 0 6px; color:var(--ink);}
+.topic p{margin:8px 0; color:var(--ink-soft);}
+.topic ul, .topic ol{color:var(--ink-soft); padding-left:22px;}
+.topic li{margin:4px 0;}
+.note{
+  background:#EFF6F0; border-left:3px solid var(--primary); padding:10px 14px;
+  border-radius:6px; font-size:.92rem; margin:14px 0; color:var(--ink);
+}
+.warn{
+  background:#FBEFE9; border-left:3px solid var(--danger); padding:10px 14px;
+  border-radius:6px; font-size:.92rem; margin:14px 0; color:var(--ink);
+}
+code.inline{
+  font-family:var(--mono); background:#EAEFE8; color:var(--primary-dark);
+  padding:2px 6px; border-radius:4px; font-size:.88em;
+}
+table.ref{width:100%; border-collapse:collapse; margin:14px 0; font-size:.88rem;}
+table.ref th, table.ref td{border:1px solid var(--line); padding:8px 10px; text-align:left;}
+table.ref th{background:#EEF2EC; font-family:var(--mono); font-size:.78rem; text-transform:uppercase; letter-spacing:.05em;}
+table.ref td code{font-family:var(--mono); color:var(--primary-dark);}
+
+/* Demo / code runner component */
+.demo{
+  border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
+  margin:16px 0 22px; background:var(--paper); box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.demo-head{
+  display:flex; align-items:center; justify-content:space-between;
+  background:#F0F3EE; padding:8px 12px; border-bottom:1px solid var(--line);
+}
+.demo-title{font-family:var(--mono); font-size:.78rem; color:var(--ink-soft);}
+.demo-actions{display:flex; gap:6px;}
+.icon-btn{
+  border:1px solid var(--line); background:#fff; border-radius:6px; cursor:pointer;
+  width:30px; height:28px; display:flex; align-items:center; justify-content:center;
+  font-size:.85rem; color:var(--ink); transition:background .15s, transform .1s;
+}
+.icon-btn:hover{background:#E7EEE9;}
+.icon-btn:active{transform:scale(.94);}
+.icon-btn.run{color:var(--primary-dark); border-color:var(--primary);}
+.icon-btn.copy.copied{color:var(--primary-dark); border-color:var(--primary);}
+pre.code-block{
+  margin:0; padding:14px 16px; background:var(--code-bg); color:var(--code-text);
+  overflow-x:auto; font-family:var(--mono); font-size:.83rem; line-height:1.55;
+  max-height:420px;
+}
+.output-wrap{border-top:1px solid var(--line);}
+.output-wrap .output-label{
+  font-family:var(--mono); font-size:.7rem; color:var(--ink-soft);
+  padding:6px 12px; background:#F7F9F6; text-transform:uppercase; letter-spacing:.08em;
+}
+iframe.output-frame{width:100%; height:220px; border:none; background:#fff; display:block;}
+
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+@media (max-width:800px){.grid-2{grid-template-columns:1fr;}}
+
+.cheat-table{width:100%; border-collapse:collapse; font-size:.85rem;}
+.cheat-table th{background:var(--sidebar); color:#fff; padding:8px 10px; font-family:var(--mono); text-align:left;}
+.cheat-table td{padding:7px 10px; border-bottom:1px solid var(--line);}
+.cheat-table tr:nth-child(even){background:#F4F7F3;}
+
+footer{padding:40px 56px; color:var(--ink-soft); font-size:.85rem; border-top:1px solid var(--line);}
+
+::-webkit-scrollbar{width:9px; height:9px;}
+::-webkit-scrollbar-thumb{background:#C7D2C9; border-radius:6px;}
+
+@media (max-width:900px){
+  .sidebar{display:none;}
+  main{padding:32px 20px 100px;}
+}
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('html-css')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('html-css'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">HTML<span>&</span>CSS Notes</div>
+  <div class="sub">A to Z field notes — read, run, remember.</div>
+  <nav>
+    <h4>HTML</h4>
+    <a href="#h-intro">1. What is HTML</a>
+    <a href="#h-structure">2. Document structure</a>
+    <a href="#h-elements">3. Elements & attributes</a>
+    <a href="#h-text">4. Text & formatting</a>
+    <a href="#h-links-media">5. Links, images, media</a>
+    <a href="#h-lists-tables">6. Lists & tables</a>
+    <a href="#h-forms">7. Forms</a>
+    <a href="#h-semantic">8. Semantic layout tags</a>
+    <a href="#h-graphics">9. Canvas & SVG</a>
+    <a href="#h-entities">10. Entities & special chars</a>
+    <h4>CSS</h4>
+    <a href="#c-intro">11. What is CSS & syntax</a>
+    <a href="#c-selectors">12. Selectors</a>
+    <a href="#c-box">13. Box model & units</a>
+    <a href="#c-colors">14. Colors</a>
+    <a href="#c-type-bg">15. Typography & background</a>
+    <a href="#c-display-pos">16. Display & position</a>
+    <a href="#c-flex">17. Flexbox</a>
+    <a href="#c-grid">18. Grid</a>
+    <a href="#c-responsive">19. Responsive design</a>
+    <a href="#c-motion">20. Transitions & animation</a>
+    <a href="#c-vars">21. Variables & functions</a>
+    <a href="#c-libs">22. Libraries & tools</a>
+    <h4>Practice</h4>
+    <a href="#full-example">23. Full worked example</a>
+    <a href="#cheatsheet">24. Cheat sheet</a>
+  </nav>
+</aside>
+
+<main>
+  <div class="hero">
+    <div class="eyebrow">Complete reference · no page limit</div>
+    <h1>HTML &amp; CSS, <em>start to finish.</em></h1>
+    <p>Every core concept, the exact syntax, a plain-English explanation, and a runnable example you can execute right on this page. Press <strong>▶ Run</strong> on any code block to see the live output in an embedded frame, or <strong>⧉ Copy</strong> to grab the code.</p>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- HTML SECTION -->
+  <!-- ============================================================ -->
+
+  <section class="chapter" id="html">
+    <div class="chapter-num">Part One</div>
+    <h2>HTML — HyperText Markup Language</h2>
+
+    <div class="topic" id="h-intro">
+      <h3>1. What is HTML?</h3>
+      <p>HTML (HyperText Markup Language) is not a programming language — it is a <strong>markup language</strong>. It describes the structure and meaning of content in a web page using <strong>elements</strong>, written as <strong>tags</strong>. A browser reads an HTML file and renders it as a visible page. HTML gives content its skeleton; CSS gives it appearance; JavaScript gives it behaviour.</p>
+      <ul>
+        <li><strong>Hyper</strong>Text — text containing links to other text (hyperlinks).</li>
+        <li><strong>Markup</strong> — tags that "mark up" plain text to describe what it is (a heading, a paragraph, a link…).</li>
+        <li>Current version: <strong>HTML5</strong>, which added semantic tags, audio/video, canvas, and form improvements.</li>
+      </ul>
+    </div>
+
+    <div class="topic" id="h-structure">
+      <h3>2. Basic document structure</h3>
+      <p>Every HTML file follows the same skeleton. Run the example below to see a full minimal page rendered live.</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — structure.html</span>
+          <div class="demo-actions">
+            <button class="icon-btn run" title="Run">▶</button>
+            <button class="icon-btn copy" title="Copy code">⧉</button>
+          </div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML & CSS Complete Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+  <p>This is a basic HTML page.</p>
+</body>
+</html>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden>
+          <div class="output-label">Output</div>
+          <iframe class="output-frame"></iframe>
+        </div>
+      </div>
+      <table class="ref">
+        <tr><th>Line</th><th>Meaning</th></tr>
+        <tr><td><code>&lt;!DOCTYPE html&gt;</code></td><td>Tells the browser this is an HTML5 document. Must be the very first line.</td></tr>
+        <tr><td><code>&lt;html&gt;</code></td><td>The root element that wraps the entire page.</td></tr>
+        <tr><td><code>&lt;head&gt;</code></td><td>Metadata: title, character set, linked CSS/JS, viewport settings. Not shown on the page itself.</td></tr>
+        <tr><td><code>&lt;meta charset="UTF-8"&gt;</code></td><td>Character encoding so text and symbols render correctly.</td></tr>
+        <tr><td><code>&lt;meta name="viewport"...&gt;</code></td><td>Makes the page scale correctly on mobile devices.</td></tr>
+        <tr><td><code>&lt;title&gt;</code></td><td>Text shown in the browser tab.</td></tr>
+        <tr><td><code>&lt;body&gt;</code></td><td>Everything visible to the user goes here.</td></tr>
+      </table>
+    </div>
+
+    <div class="topic" id="h-elements">
+      <h3>3. Elements, tags, and attributes</h3>
+      <p>An <strong>element</strong> is a piece of content plus its markup. A <strong>tag</strong> is the markup itself. Most elements have an opening tag and a closing tag, wrapping content: <code class="inline">&lt;p&gt;content&lt;/p&gt;</code>. Some elements are <strong>void</strong> (self-closing, no content and no closing tag): <code class="inline">&lt;br&gt;</code>, <code class="inline">&lt;img&gt;</code>, <code class="inline">&lt;input&gt;</code>, <code class="inline">&lt;hr&gt;</code>, <code class="inline">&lt;meta&gt;</code>, <code class="inline">&lt;link&gt;</code>.</p>
+      <p><strong>Attributes</strong> live inside the opening tag and give extra information: <code class="inline">&lt;a href="https://example.com" target="_blank"&gt;link&lt;/a&gt;</code>. Format is always <code class="inline">name="value"</code>.</p>
+      <table class="ref">
+        <tr><th>Global attribute</th><th>Purpose</th></tr>
+        <tr><td><code>id</code></td><td>Unique identifier for one element (used by CSS <code>#id</code> and JS).</td></tr>
+        <tr><td><code>class</code></td><td>Reusable label shared by many elements (used by CSS <code>.class</code>).</td></tr>
+        <tr><td><code>style</code></td><td>Inline CSS applied only to that element.</td></tr>
+        <tr><td><code>title</code></td><td>Tooltip text shown on hover.</td></tr>
+        <tr><td><code>data-*</code></td><td>Custom data attribute for storing extra info, e.g. <code>data-user-id="42"</code>.</td></tr>
+        <tr><td><code>hidden</code></td><td>Hides the element from the page.</td></tr>
+      </table>
+      <div class="note">HTML tags are case-insensitive, but the universal convention is <strong>lowercase</strong>. Attribute values should always be quoted.</div>
+      <h4>HTML comments</h4>
+      <p>Comments are ignored by the browser and used to leave notes in the code:</p>
+      <pre class="code-block" style="max-height:none"><code>&lt;!-- this is a comment and will not be shown on the page --&gt;</code></pre>
+    </div>
+    <div class="topic" id="h-text">
+      <h3>4. Text & formatting tags</h3>
+      <p>Headings range from <code class="inline">&lt;h1&gt;</code> (most important, one per page ideally) to <code class="inline">&lt;h6&gt;</code> (least important). Paragraphs use <code class="inline">&lt;p&gt;</code>. Inline formatting tags change meaning or emphasis without breaking the flow of text.</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — text-formatting.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<h1>Heading Level 1</h1>
+<h2>Heading Level 2</h2>
+<p>A normal paragraph of text.</p>
+
+<p><strong>Bold / strong importance</strong></p>
+<p><em>Italic / emphasis</em></p>
+<p><mark>Highlighted text</mark></p>
+<p><small>Fine print / small text</small></p>
+<p>Water is H<sub>2</sub>O and 2<sup>3</sup> = 8</p>
+<p><del>Deleted text</del> and <ins>inserted text</ins></p>
+<p>Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to copy.</p>
+<blockquote>"Simplicity is the ultimate sophistication."</blockquote>
+<p>Line one<br>Line two after a line break</p>
+<hr>
+<p>Text after a horizontal rule.</p>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Tag</th><th>Meaning</th></tr>
+        <tr><td><code>&lt;strong&gt;</code></td><td>Strong importance (renders bold)</td></tr>
+        <tr><td><code>&lt;em&gt;</code></td><td>Emphasis (renders italic)</td></tr>
+        <tr><td><code>&lt;mark&gt;</code></td><td>Highlighted / relevant text</td></tr>
+        <tr><td><code>&lt;small&gt;</code></td><td>Side comments, fine print</td></tr>
+        <tr><td><code>&lt;sub&gt; / &lt;sup&gt;</code></td><td>Subscript / superscript</td></tr>
+        <tr><td><code>&lt;del&gt; / &lt;ins&gt;</code></td><td>Deleted / inserted text</td></tr>
+        <tr><td><code>&lt;blockquote&gt;</code></td><td>Long quotation, indented block</td></tr>
+        <tr><td><code>&lt;br&gt;</code></td><td>Line break (void element)</td></tr>
+        <tr><td><code>&lt;hr&gt;</code></td><td>Thematic break (horizontal rule)</td></tr>
+      </table>
+    </div>
+
+    <div class="topic" id="h-links-media">
+      <h3>5. Links, images & media</h3>
+      <p>The anchor tag <code class="inline">&lt;a&gt;</code> creates hyperlinks. Images use the void <code class="inline">&lt;img&gt;</code> tag. HTML5 added native audio and video without plugins.</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — links-media.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<a href="https://www.example.com" target="_blank" rel="noopener">Visit Example.com</a>
+<br><br>
+<a href="#section2">Jump to section on this page</a>
+<br><br>
+
+<img src="https://picsum.photos/200/120" alt="A random placeholder image" width="200">
+
+<p>Video (won't play in this sandbox without a real file, but syntax is shown):</p>
+<video controls width="250" poster="https://picsum.photos/250/140">
+  <source src="movie.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<p>Audio:</p>
+<audio controls>
+  <source src="audio.mp3" type="audio/mpeg">
+  Your browser does not support the audio tag.
+</audio>
+
+<h3 id="section2">Section Two</h3>
+<p>You arrive here after clicking the anchor link above.</p>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Attribute</th><th>Used on</th><th>Purpose</th></tr>
+        <tr><td><code>href</code></td><td><code>&lt;a&gt;</code></td><td>Destination URL or <code>#id</code> for same-page anchors</td></tr>
+        <tr><td><code>target="_blank"</code></td><td><code>&lt;a&gt;</code></td><td>Opens the link in a new tab</td></tr>
+        <tr><td><code>src</code></td><td><code>&lt;img&gt;/&lt;video&gt;/&lt;audio&gt;</code></td><td>Path or URL of the file</td></tr>
+        <tr><td><code>alt</code></td><td><code>&lt;img&gt;</code></td><td>Alternate text — accessibility & shown if image fails to load</td></tr>
+        <tr><td><code>controls</code></td><td><code>&lt;video&gt;/&lt;audio&gt;</code></td><td>Shows play/pause/volume UI</td></tr>
+        <tr><td><code>width / height</code></td><td>media tags</td><td>Sets rendered dimensions</td></tr>
+      </table>
+      <div class="note">An <code class="inline">&lt;iframe&gt;</code> embeds another web page inside the current one: <code class="inline">&lt;iframe src="https://example.com"&gt;&lt;/iframe&gt;</code>. This entire notes page's "Run" feature works by writing your code into a hidden iframe.</div>
+    </div>
+    <div class="topic" id="h-lists-tables">
+      <h3>6. Lists & tables</h3>
+      <p>Three list types: unordered (<code class="inline">&lt;ul&gt;</code>, bullets), ordered (<code class="inline">&lt;ol&gt;</code>, numbers), and description lists (<code class="inline">&lt;dl&gt;</code>, term/definition pairs). Tables use a grid of rows (<code class="inline">&lt;tr&gt;</code>) and cells (<code class="inline">&lt;td&gt;</code>/<code class="inline">&lt;th&gt;</code>).</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — lists-tables.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<h3>Unordered list</h3>
+<ul>
+  <li>HTML</li>
+  <li>CSS</li>
+  <li>JavaScript</li>
+</ul>
+
+<h3>Ordered list</h3>
+<ol>
+  <li>Plan</li>
+  <li>Build</li>
+  <li>Ship</li>
+</ol>
+
+<h3>Description list</h3>
+<dl>
+  <dt>HTML</dt>
+  <dd>Structure of a web page</dd>
+  <dt>CSS</dt>
+  <dd>Style of a web page</dd>
+</dl>
+
+<h3>Table</h3>
+<table border="1" cellpadding="6">
+  <thead>
+    <tr><th>Name</th><th>Role</th><th>Experience</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Asha</td><td>Frontend Dev</td><td>2 yrs</td></tr>
+    <tr><td>Ravi</td><td>Backend Dev</td><td>3 yrs</td></tr>
+  </tbody>
+</table>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Tag</th><th>Purpose</th></tr>
+        <tr><td><code>&lt;table&gt;</code></td><td>The table container</td></tr>
+        <tr><td><code>&lt;thead&gt; / &lt;tbody&gt; / &lt;tfoot&gt;</code></td><td>Groups header, body, footer rows</td></tr>
+        <tr><td><code>&lt;tr&gt;</code></td><td>Table row</td></tr>
+        <tr><td><code>&lt;th&gt;</code></td><td>Header cell (bold, centered by default)</td></tr>
+        <tr><td><code>&lt;td&gt;</code></td><td>Regular data cell</td></tr>
+        <tr><td><code>colspan / rowspan</code></td><td>Merge cells across columns/rows</td></tr>
+      </table>
+    </div>
+
+    <div class="topic" id="h-forms">
+      <h3>7. Forms & inputs</h3>
+      <p>Forms collect user input and send it to a server. The <code class="inline">&lt;form&gt;</code> wraps controls; <code class="inline">action</code> is where data is sent, <code class="inline">method</code> is <code class="inline">GET</code> (visible in URL) or <code class="inline">POST</code> (hidden body).</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — forms.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <script type="text/plain" class="raw-code">
+<form onsubmit="alert('Form submitted (demo only)'); return false;">
+  <label for="name">Name:</label><br>
+  <input type="text" id="name" name="name" placeholder="Your name" required><br><br>
+
+  <label for="email">Email:</label><br>
+  <input type="email" id="email" name="email" required><br><br>
+
+  <label for="pwd">Password:</label><br>
+  <input type="password" id="pwd" name="pwd" minlength="6"><br><br>
+
+  <label for="age">Age:</label><br>
+  <input type="number" id="age" name="age" min="1" max="100"><br><br>
+
+  <label for="dob">Date of birth:</label><br>
+  <input type="date" id="dob" name="dob"><br><br>
+
+  <label>Gender:</label><br>
+  <input type="radio" id="male" name="gender" value="male"><label for="male">Male</label>
+  <input type="radio" id="female" name="gender" value="female"><label for="female">Female</label><br><br>
+
+  <input type="checkbox" id="subscribe" name="subscribe">
+  <label for="subscribe">Subscribe to newsletter</label><br><br>
+
+  <label for="country">Country:</label><br>
+  <select id="country" name="country">
+    <option value="in">India</option>
+    <option value="us">USA</option>
+    <option value="uk">UK</option>
+  </select><br><br>
+
+  <label for="bio">Bio:</label><br>
+  <textarea id="bio" name="bio" rows="3" cols="30" placeholder="Tell us about yourself"></textarea><br><br>
+
+  <input type="range" id="vol" name="vol" min="0" max="100"><br><br>
+  <input type="file" name="upload"><br><br>
+
+  <button type="submit">Submit</button>
+  <button type="reset">Reset</button>
+</form>
+        </script>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Input type</th><th>Use</th></tr>
+        <tr><td><code>text</code></td><td>Single-line free text</td></tr>
+        <tr><td><code>email</code></td><td>Validates email format</td></tr>
+        <tr><td><code>password</code></td><td>Masks characters as dots</td></tr>
+        <tr><td><code>number</code></td><td>Numeric input with min/max/step</td></tr>
+        <tr><td><code>date</code></td><td>Native date picker</td></tr>
+        <tr><td><code>radio</code></td><td>Choose one from a group (same <code>name</code>)</td></tr>
+        <tr><td><code>checkbox</code></td><td>Toggle on/off, multiple can be checked</td></tr>
+        <tr><td><code>range</code></td><td>Slider between min and max</td></tr>
+        <tr><td><code>file</code></td><td>Upload a file</td></tr>
+        <tr><td><code>submit / reset</code></td><td>Submits or clears the form</td></tr>
+      </table>
+      <p><strong>Validation attributes:</strong> <code class="inline">required</code>, <code class="inline">minlength</code>/<code class="inline">maxlength</code>, <code class="inline">min</code>/<code class="inline">max</code>, <code class="inline">pattern</code> (regex), <code class="inline">placeholder</code> (hint text, not a value).</p>
+      <div class="note">Always pair an <code class="inline">&lt;input&gt;</code> with a <code class="inline">&lt;label&gt;</code> using matching <code class="inline">for</code>/<code class="inline">id</code> — it's essential for accessibility and lets a click on the label focus the input.</div>
+    </div>
+    <div class="topic" id="h-semantic">
+      <h3>8. Semantic layout tags, div & span</h3>
+      <p><code class="inline">&lt;div&gt;</code> is a generic block-level container with no meaning of its own — used purely for grouping/styling. <code class="inline">&lt;span&gt;</code> is the same idea but inline. HTML5 added <strong>semantic</strong> tags that describe the role of a section, which improves accessibility and SEO because screen readers and search engines understand the page's structure.</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — semantic-layout.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  header, nav, main, section, article, aside, footer { border: 1px dashed #999; padding: 8px; margin: 6px 0; font-family: sans-serif; }
+  nav a { margin-right: 10px; }
+</style>
+
+<header>
+  <h2>Site Title</h2>
+  <nav>
+    <a href="#">Home</a><a href="#">About</a><a href="#">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section>
+    <h3>Blog Section</h3>
+    <article>
+      <h4>Article One</h4>
+      <p>Main content of the article goes here.</p>
+    </article>
+  </section>
+
+  <aside>
+    <p>Sidebar: related links or ads.</p>
+  </aside>
+</main>
+
+<footer>
+  <p>&copy; 2026 My Website. All rights reserved.</p>
+</footer>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Tag</th><th>Meaning</th></tr>
+        <tr><td><code>&lt;header&gt;</code></td><td>Introductory content / branding, usually top of page or a section</td></tr>
+        <tr><td><code>&lt;nav&gt;</code></td><td>Group of navigation links</td></tr>
+        <tr><td><code>&lt;main&gt;</code></td><td>The single main content of the page (one per page)</td></tr>
+        <tr><td><code>&lt;section&gt;</code></td><td>A thematic grouping of content, usually with a heading</td></tr>
+        <tr><td><code>&lt;article&gt;</code></td><td>Self-contained content that could stand alone (a post, a card)</td></tr>
+        <tr><td><code>&lt;aside&gt;</code></td><td>Content tangentially related — sidebars, pull-quotes</td></tr>
+        <tr><td><code>&lt;footer&gt;</code></td><td>Closing content — copyright, links, contact info</td></tr>
+        <tr><td><code>&lt;div&gt;</code></td><td>Generic block container, no semantic meaning</td></tr>
+        <tr><td><code>&lt;span&gt;</code></td><td>Generic inline container, no semantic meaning</td></tr>
+      </table>
+    </div>
+
+    <div class="topic" id="h-graphics">
+      <h3>9. Canvas & SVG</h3>
+      <p><strong>Canvas</strong> is a pixel-based drawing surface controlled with JavaScript — good for games, charts, dynamic graphics. <strong>SVG</strong> (Scalable Vector Graphics) is XML-based, resolution-independent, and can be styled with CSS — good for icons, logos, illustrations.</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — canvas-svg.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<h4>Canvas (drawn with JS)</h4>
+<canvas id="myCanvas" width="200" height="100" style="border:1px solid #999;"></canvas>
+<script>
+  const ctx = document.getElementById('myCanvas').getContext('2d');
+  ctx.fillStyle = '#2F7A5C';
+  ctx.fillRect(10, 10, 100, 60);
+  ctx.beginPath();
+  ctx.arc(160, 50, 30, 0, Math.PI * 2);
+  ctx.fillStyle = '#C9962B';
+  ctx.fill();
+</script>
+
+<h4>SVG (drawn declaratively in markup)</h4>
+<svg width="200" height="100">
+  <rect x="10" y="10" width="80" height="60" fill="#2F7A5C" />
+  <circle cx="160" cy="50" r="30" fill="#C9962B" />
+  <text x="10" y="90" font-size="14">SVG shapes</text>
+</svg>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+    </div>
+
+    <div class="topic" id="h-entities">
+      <h3>10. HTML entities & special characters</h3>
+      <p>Some characters are reserved by HTML syntax (like <code class="inline">&lt;</code> and <code class="inline">&gt;</code>) and must be written as <strong>entities</strong> — a code starting with <code class="inline">&amp;</code> and ending with <code class="inline">;</code> — if you want them to appear as literal text.</p>
+      <table class="ref">
+        <tr><th>Entity</th><th>Renders as</th><th>Character</th></tr>
+        <tr><td><code>&amp;lt;</code></td><td>&lt;</td><td>less-than</td></tr>
+        <tr><td><code>&amp;gt;</code></td><td>&gt;</td><td>greater-than</td></tr>
+        <tr><td><code>&amp;amp;</code></td><td>&amp;</td><td>ampersand</td></tr>
+        <tr><td><code>&amp;quot;</code></td><td>"</td><td>double quote</td></tr>
+        <tr><td><code>&amp;copy;</code></td><td>©</td><td>copyright</td></tr>
+        <tr><td><code>&amp;nbsp;</code></td><td>(space)</td><td>non-breaking space</td></tr>
+        <tr><td><code>&amp;hearts;</code></td><td>♥</td><td>heart</td></tr>
+        <tr><td><code>&amp;#8377;</code></td><td>₹</td><td>Indian Rupee (numeric code)</td></tr>
+      </table>
+    </div>
+  </section>
+  <!-- ============================================================ -->
+  <!-- CSS SECTION -->
+  <!-- ============================================================ -->
+
+  <section class="chapter" id="css">
+    <div class="chapter-num">Part Two</div>
+    <h2>CSS — Cascading Style Sheets</h2>
+
+    <div class="topic" id="c-intro">
+      <h3>11. What is CSS & basic syntax</h3>
+      <p>CSS describes <em>how</em> HTML elements should look — color, spacing, layout, fonts, animation. A CSS rule has a <strong>selector</strong> (what to style) and a <strong>declaration block</strong> of <code class="inline">property: value;</code> pairs.</p>
+      <pre class="code-block" style="max-height:none"><code>selector {
+  property: value;
+  property: value;
+}
+
+/* example */
+p {
+  color: navy;
+  font-size: 16px;
+}</code></pre>
+      <h4>Three ways to add CSS</h4>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — three-ways-to-add-css.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<!-- 1. Inline CSS: style attribute on one element -->
+<p style="color: crimson; font-weight: bold;">Inline styled text</p>
+
+<!-- 2. Internal CSS: inside a <style> tag in <head> or <body> -->
+<style>
+  .internal { color: teal; font-style: italic; }
+</style>
+<p class="internal">Internal styled text</p>
+
+<!-- 3. External CSS: linked file (shown here as a comment,
+     in real projects this is: <link rel="stylesheet" href="styles.css"> ) -->
+<p id="external-demo">This would be styled by an external .css file</p>
+<style> #external-demo { color: darkorange; } </style>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Method</th><th>Where</th><th>When to use</th></tr>
+        <tr><td>Inline</td><td><code>style="..."</code> on the element</td><td>Quick one-off tweaks, rarely recommended</td></tr>
+        <tr><td>Internal</td><td><code>&lt;style&gt;</code> in the document</td><td>Single-page demos, emails</td></tr>
+        <tr><td>External</td><td>Separate <code>.css</code> file linked with <code>&lt;link&gt;</code></td><td>Real projects — reusable, cacheable, cleanest</td></tr>
+      </table>
+    </div>
+
+    <div class="topic" id="c-selectors">
+      <h3>12. Selectors, combinators & pseudo-classes</h3>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — selectors.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  * { box-sizing: border-box; }               /* universal selector */
+  p { font-family: sans-serif; }               /* type/tag selector */
+  .highlight { background: khaki; }            /* class selector */
+  #main-title { color: darkgreen; }             /* id selector */
+  a[target="_blank"] { color: purple; }         /* attribute selector */
+  .card p { margin: 4px 0; }                    /* descendant combinator */
+  .card > h4 { margin: 0; }                     /* direct child combinator */
+  h4 + p { color: gray; }                       /* adjacent sibling */
+  li:first-child { font-weight: bold; }         /* pseudo-class */
+  li:hover { color: crimson; cursor: pointer; } /* pseudo-class */
+  p::first-letter { font-size: 1.6em; }         /* pseudo-element */
+</style>
+
+<h2 id="main-title">Selectors Demo</h2>
+<p class="highlight">This paragraph has a highlighted background.</p>
+<a href="#" target="_blank">External link (purple)</a>
+
+<div class="card">
+  <h4>Card title</h4>
+  <p>Card description text.</p>
+</div>
+
+<ul>
+  <li>First item (bold)</li>
+  <li>Second item — hover me</li>
+  <li>Third item — hover me</li>
+</ul>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Selector</th><th>Matches</th></tr>
+        <tr><td><code>*</code></td><td>Every element</td></tr>
+        <tr><td><code>tag</code></td><td>All elements of that tag, e.g. <code>p</code></td></tr>
+        <tr><td><code>.class</code></td><td>Elements with that class</td></tr>
+        <tr><td><code>#id</code></td><td>The one element with that id</td></tr>
+        <tr><td><code>[attr=value]</code></td><td>Elements with a matching attribute</td></tr>
+        <tr><td><code>A B</code></td><td>Descendant — any B inside A</td></tr>
+        <tr><td><code>A &gt; B</code></td><td>Direct child B of A</td></tr>
+        <tr><td><code>A + B</code></td><td>B immediately after A (siblings)</td></tr>
+        <tr><td><code>A ~ B</code></td><td>Any B after A (siblings)</td></tr>
+        <tr><td><code>:hover / :focus / :active</code></td><td>Interaction states</td></tr>
+        <tr><td><code>:first-child / :last-child / :nth-child(n)</code></td><td>Position among siblings</td></tr>
+        <tr><td><code>::before / ::after</code></td><td>Inserted pseudo-content</td></tr>
+      </table>
+    </div>
+    <div class="topic" id="c-box">
+      <h3>13. The box model & units</h3>
+      <p>Every element is a rectangular box made of four layers, from inside out: <strong>content → padding → border → margin</strong>.</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — box-model.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  .box {
+    width: 200px;
+    padding: 20px;        /* space inside the border */
+    border: 5px solid #2F7A5C;
+    margin: 15px;          /* space outside the border */
+    background: #EFF6F0;
+    box-sizing: border-box; /* width includes padding+border */
+  }
+  .units p { margin: 4px 0; }
+</style>
+
+<div class="box">This box has padding, a border, and a margin.</div>
+
+<div class="units">
+  <p style="font-size: 24px;">24px — fixed pixel size</p>
+  <p style="font-size: 1.5em;">1.5em — relative to parent font-size</p>
+  <p style="font-size: 1.5rem;">1.5rem — relative to root font-size</p>
+  <p style="width: 50%; background:#eee;">50% — relative to parent width</p>
+  <p style="width: 50vw; background:#eee;">50vw — 50% of viewport width</p>
+</div>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Property</th><th>Controls</th></tr>
+        <tr><td><code>width / height</code></td><td>Content box size</td></tr>
+        <tr><td><code>padding</code></td><td>Space between content and border</td></tr>
+        <tr><td><code>border</code></td><td>Line around the padding: <code>width style color</code></td></tr>
+        <tr><td><code>margin</code></td><td>Space outside the border, between elements</td></tr>
+        <tr><td><code>box-sizing: border-box</code></td><td>Makes width/height include padding & border (recommended default)</td></tr>
+      </table>
+      <table class="ref">
+        <tr><th>Unit</th><th>Type</th><th>Relative to</th></tr>
+        <tr><td><code>px</code></td><td>Absolute</td><td>Fixed pixels</td></tr>
+        <tr><td><code>%</code></td><td>Relative</td><td>Parent element</td></tr>
+        <tr><td><code>em</code></td><td>Relative</td><td>Parent's font-size</td></tr>
+        <tr><td><code>rem</code></td><td>Relative</td><td>Root (&lt;html&gt;) font-size</td></tr>
+        <tr><td><code>vw / vh</code></td><td>Relative</td><td>1% of viewport width / height</td></tr>
+      </table>
+    </div>
+
+    <div class="topic" id="c-colors">
+      <h3>14. Colors</h3>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — colors.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  div { padding: 10px; margin: 4px 0; color: white; font-family: sans-serif; }
+</style>
+<div style="background: red;">Named color: red</div>
+<div style="background: #2F7A5C;">Hex: #2F7A5C</div>
+<div style="background: rgb(41, 90, 232);">rgb(41, 90, 232)</div>
+<div style="background: rgba(41, 90, 232, 0.5); color:#222;">rgba with 50% opacity</div>
+<div style="background: hsl(160, 45%, 35%);">hsl(160, 45%, 35%)</div>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <p>Formats: <strong>named</strong> (<code class="inline">red</code>), <strong>hex</strong> (<code class="inline">#RRGGBB</code>), <strong>rgb()</strong>/<strong>rgba()</strong> (red, green, blue, alpha 0–1), <strong>hsl()</strong> (hue 0–360, saturation %, lightness %).</p>
+    </div>
+    <div class="topic" id="c-type-bg">
+      <h3>15. Typography & backgrounds</h3>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — typography-background.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  body { font-family: Georgia, serif; }
+  h2 {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  p.styled {
+    font-size: 15px;
+    line-height: 1.8;
+    text-align: justify;
+    text-decoration: underline;
+    color: #333;
+  }
+  .bg-box {
+    height: 100px;
+    background-color: #2F7A5C;
+    background-image: linear-gradient(135deg, #2F7A5C, #C9962B);
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+  }
+</style>
+
+<h2>Typography Demo</h2>
+<p class="styled">This paragraph demonstrates font-size, line-height, text-align,
+text-decoration and color all applied together, so you can see how they combine
+in a real paragraph of text.</p>
+
+<div class="bg-box">Gradient background box</div>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Property</th><th>Purpose</th></tr>
+        <tr><td><code>font-family</code></td><td>Typeface, with fallbacks: <code>'Poppins', sans-serif</code></td></tr>
+        <tr><td><code>font-size / font-weight</code></td><td>Size and boldness</td></tr>
+        <tr><td><code>line-height</code></td><td>Vertical spacing between lines</td></tr>
+        <tr><td><code>letter-spacing</code></td><td>Space between characters</td></tr>
+        <tr><td><code>text-align</code></td><td>left / right / center / justify</td></tr>
+        <tr><td><code>text-transform</code></td><td>uppercase / lowercase / capitalize</td></tr>
+        <tr><td><code>text-decoration</code></td><td>underline / line-through / none</td></tr>
+        <tr><td><code>background-color</code></td><td>Solid fill color</td></tr>
+        <tr><td><code>background-image</code></td><td>Image or gradient fill</td></tr>
+        <tr><td><code>background-size / -position / -repeat</code></td><td>Controls how a background image fits</td></tr>
+      </table>
+      <div class="note">To use a Google Font, link it in <code class="inline">&lt;head&gt;</code>: <code class="inline">&lt;link href="https://fonts.googleapis.com/css2?family=Poppins" rel="stylesheet"&gt;</code>, then reference it in <code class="inline">font-family</code>.</div>
+    </div>
+    <div class="topic" id="c-display-pos">
+      <h3>16. Display & positioning</h3>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — display-position.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  span.inline-demo { display: inline; background: #EFF6F0; }
+  div.block-demo { display: block; background: #EFF6F0; margin-bottom: 4px; }
+  div.inline-block-demo { display: inline-block; width: 90px; background: #DDEBE0; margin: 2px; text-align:center; }
+
+  .pos-wrap { position: relative; height: 120px; border: 1px dashed #999; margin-top:10px; }
+  .pos-relative { position: relative; top: 10px; left: 10px; background: #C9962B; color:#fff; display:inline-block; padding:4px 8px; }
+  .pos-absolute { position: absolute; bottom: 8px; right: 8px; background: #2F7A5C; color:#fff; padding:4px 8px; }
+</style>
+
+<p>Inline elements sit in the text flow: <span class="inline-demo">span one</span> <span class="inline-demo">span two</span></p>
+
+<div class="block-demo">Block element one (own line)</div>
+<div class="block-demo">Block element two (own line)</div>
+
+<div class="inline-block-demo">inline-block A</div><div class="inline-block-demo">inline-block B</div>
+
+<div class="pos-wrap">
+  <div class="pos-relative">position: relative (shifted from normal spot)</div>
+  <div class="pos-absolute">position: absolute (relative to .pos-wrap)</div>
+</div>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>display</th><th>Behaviour</th></tr>
+        <tr><td><code>block</code></td><td>Takes full width, starts on a new line (div, p, h1…)</td></tr>
+        <tr><td><code>inline</code></td><td>Flows with text, ignores width/height (span, a…)</td></tr>
+        <tr><td><code>inline-block</code></td><td>Flows inline but accepts width/height/margin</td></tr>
+        <tr><td><code>none</code></td><td>Removed from the page entirely</td></tr>
+        <tr><td><code>flex / grid</code></td><td>Turns element into a flex/grid container — see below</td></tr>
+      </table>
+      <table class="ref">
+        <tr><th>position</th><th>Behaviour</th></tr>
+        <tr><td><code>static</code></td><td>Default — normal document flow, offsets ignored</td></tr>
+        <tr><td><code>relative</code></td><td>Offset from its own normal position, space is preserved</td></tr>
+        <tr><td><code>absolute</code></td><td>Removed from flow, positioned relative to nearest positioned ancestor</td></tr>
+        <tr><td><code>fixed</code></td><td>Positioned relative to the viewport, stays put when scrolling</td></tr>
+        <tr><td><code>sticky</code></td><td>Behaves relative until a scroll threshold, then sticks like fixed</td></tr>
+      </table>
+      <p>Related: <code class="inline">float</code>/<code class="inline">clear</code> (older layout technique for wrapping text around elements), <code class="inline">overflow: hidden/scroll/auto</code> (controls content that exceeds a box), <code class="inline">z-index</code> (stacking order for overlapping positioned elements — higher wins).</p>
+    </div>
+    <div class="topic" id="c-flex">
+      <h3>17. Flexbox</h3>
+      <p>Flexbox arranges items along one axis (row or column), and is the go-to for navbars, toolbars, and centering.</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — flexbox.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  .flex-container {
+    display: flex;
+    flex-direction: row;       /* row | column */
+    justify-content: space-between; /* main-axis alignment */
+    align-items: center;       /* cross-axis alignment */
+    gap: 10px;
+    background: #F0F3EE;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .flex-item {
+    background: #2F7A5C;
+    color: white;
+    padding: 14px;
+    border-radius: 6px;
+    text-align: center;
+  }
+  .flex-item.grow { flex: 1; } /* grow to fill remaining space */
+</style>
+
+<div class="flex-container">
+  <div class="flex-item">1</div>
+  <div class="flex-item grow">2 (flex: 1, grows)</div>
+  <div class="flex-item">3</div>
+</div>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Container property</th><th>Purpose</th></tr>
+        <tr><td><code>display: flex</code></td><td>Activates flexbox on the container</td></tr>
+        <tr><td><code>flex-direction</code></td><td>row / row-reverse / column / column-reverse</td></tr>
+        <tr><td><code>justify-content</code></td><td>Alignment along main axis: flex-start, center, space-between, space-around</td></tr>
+        <tr><td><code>align-items</code></td><td>Alignment along cross axis: stretch, center, flex-start, flex-end</td></tr>
+        <tr><td><code>flex-wrap</code></td><td>nowrap (default) or wrap onto multiple lines</td></tr>
+        <tr><td><code>gap</code></td><td>Space between items</td></tr>
+      </table>
+      <table class="ref">
+        <tr><th>Item property</th><th>Purpose</th></tr>
+        <tr><td><code>flex-grow</code></td><td>How much an item grows relative to siblings</td></tr>
+        <tr><td><code>flex-shrink</code></td><td>How much an item shrinks when space is tight</td></tr>
+        <tr><td><code>flex-basis</code></td><td>Starting size before growing/shrinking</td></tr>
+        <tr><td><code>flex</code></td><td>Shorthand for grow/shrink/basis, e.g. <code>flex: 1</code></td></tr>
+        <tr><td><code>align-self</code></td><td>Overrides align-items for one item</td></tr>
+      </table>
+    </div>
+
+    <div class="topic" id="c-grid">
+      <h3>18. CSS Grid</h3>
+      <p>Grid arranges items in two dimensions — rows <em>and</em> columns at once — best for full page layouts and card galleries.</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — grid.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    grid-template-rows: auto auto;
+    gap: 10px;
+  }
+  .grid-item {
+    background: #C9962B;
+    color: white;
+    padding: 16px;
+    border-radius: 6px;
+    text-align: center;
+  }
+  .grid-item.wide {
+    grid-column: span 2; /* spans two columns */
+    background: #2F7A5C;
+  }
+</style>
+
+<div class="grid-container">
+  <div class="grid-item wide">Spans 2 columns</div>
+  <div class="grid-item">3</div>
+  <div class="grid-item">4</div>
+  <div class="grid-item">5</div>
+  <div class="grid-item">6</div>
+</div>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Property</th><th>Purpose</th></tr>
+        <tr><td><code>display: grid</code></td><td>Activates grid on the container</td></tr>
+        <tr><td><code>grid-template-columns</code></td><td>Defines column count/sizes, e.g. <code>1fr 1fr 1fr</code> or <code>repeat(3, 1fr)</code></td></tr>
+        <tr><td><code>grid-template-rows</code></td><td>Defines row sizes</td></tr>
+        <tr><td><code>gap</code></td><td>Space between rows and columns</td></tr>
+        <tr><td><code>grid-column / grid-row</code></td><td>Makes one item span multiple tracks</td></tr>
+        <tr><td><code>fr</code> unit</td><td>A "fraction" of the remaining free space</td></tr>
+      </table>
+    </div>
+    <div class="topic" id="c-responsive">
+      <h3>19. Responsive design & media queries</h3>
+      <p>Media queries apply CSS conditionally based on screen size, so one page adapts to phones, tablets, and desktops. Resize your browser (or view on mobile) to see this in action — inside this sandboxed iframe, try shrinking the output panel by resizing your browser window.</p>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — responsive.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  .responsive-box {
+    background: #2F7A5C;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-family: sans-serif;
+  }
+  .responsive-box::after { content: "Wide screen layout"; }
+
+  /* Below 500px wide, this rule overrides the one above */
+  @media (max-width: 500px) {
+    .responsive-box { background: #C9962B; }
+    .responsive-box::after { content: "Narrow screen layout"; }
+  }
+</style>
+
+<div class="responsive-box"></div>
+<p style="font-family:sans-serif; font-size:13px; color:#555;">
+  Resize the browser window narrower than 500px to see the color and text change.
+</p>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Concept</th><th>Notes</th></tr>
+        <tr><td><code>@media (max-width: 768px) { ... }</code></td><td>Applies rules when viewport is 768px or narrower</td></tr>
+        <tr><td><code>@media (min-width: 768px) { ... }</code></td><td>Applies rules when viewport is 768px or wider</td></tr>
+        <tr><td>Viewport meta tag</td><td><code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code> — required for mobile scaling to work at all</td></tr>
+        <tr><td>Mobile-first approach</td><td>Write base styles for small screens, then add <code>min-width</code> queries to enhance for larger screens</td></tr>
+        <tr><td>Fluid layout</td><td>Prefer <code>%</code>, <code>fr</code>, <code>flex</code>, <code>max-width</code> over fixed pixel widths</td></tr>
+      </table>
+    </div>
+
+    <div class="topic" id="c-motion">
+      <h3>20. Transitions, transforms & animation</h3>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — transitions-animation.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  .transition-box {
+    width: 100px; height: 60px; background: #2F7A5C;
+    border-radius: 8px; transition: all 0.35s ease;
+    display: inline-block; margin: 10px; color:#fff; text-align:center; line-height:60px;
+    font-family: sans-serif; cursor: pointer;
+  }
+  .transition-box:hover { transform: scale(1.15) rotate(3deg); background: #C9962B; }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+  .bouncer {
+    width: 60px; height: 60px; border-radius: 50%; background: #C9962B;
+    display: inline-block; margin: 10px; animation: bounce 1s ease-in-out infinite;
+  }
+</style>
+
+<div class="transition-box">Hover me</div>
+<div class="bouncer"></div>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Property</th><th>Purpose</th></tr>
+        <tr><td><code>transition: property duration timing-function delay;</code></td><td>Smoothly animates a property change, e.g. on <code>:hover</code></td></tr>
+        <tr><td><code>transform: scale() / rotate() / translate() / skew()</code></td><td>Visually transforms an element without affecting layout flow</td></tr>
+        <tr><td><code>@keyframes name { 0% {...} 100% {...} }</code></td><td>Defines an animation sequence</td></tr>
+        <tr><td><code>animation: name duration timing-function iteration-count;</code></td><td>Applies a keyframe animation, e.g. <code>infinite</code> to loop forever</td></tr>
+      </table>
+    </div>
+    <div class="topic" id="c-vars">
+      <h3>21. CSS variables & functions</h3>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — variables-functions.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <textarea class="raw-code" hidden readonly>
+<style>
+  :root {
+    --brand-color: #2F7A5C;
+    --spacing: 16px;
+  }
+  .var-box {
+    background: var(--brand-color);
+    padding: var(--spacing);
+    color: white;
+    font-family: sans-serif;
+    border-radius: 8px;
+    width: calc(100% - 40px);   /* calc() mixes units and does math */
+    margin: 0 auto;
+  }
+</style>
+
+<div class="var-box">
+  Uses a CSS custom property for color/spacing, and calc() for width.
+</div>
+        </textarea>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame"></iframe></div>
+      </div>
+      <table class="ref">
+        <tr><th>Feature</th><th>Purpose</th></tr>
+        <tr><td><code>:root { --name: value; }</code></td><td>Declares a reusable custom property globally</td></tr>
+        <tr><td><code>var(--name)</code></td><td>Uses that property anywhere</td></tr>
+        <tr><td><code>calc(expr)</code></td><td>Mixes units in math, e.g. <code>calc(100% - 40px)</code></td></tr>
+        <tr><td><code>clamp(min, preferred, max)</code></td><td>Responsive value that never leaves a range</td></tr>
+        <tr><td><code>min() / max()</code></td><td>Picks smallest/largest of given values</td></tr>
+      </table>
+      <div class="note">Variables make theming easy — change one <code class="inline">--brand-color</code> value and every element using it updates.</div>
+    </div>
+
+    <div class="topic" id="c-libs">
+      <h3>22. Libraries & tools worth knowing</h3>
+      <p>You don't need any of these to learn HTML/CSS, but they're what real projects commonly reach for once the fundamentals above are solid:</p>
+      <table class="ref">
+        <tr><th>Tool</th><th>What it's for</th></tr>
+        <tr><td><strong>Bootstrap</strong></td><td>CSS framework with pre-built components (buttons, navbars, grid system)</td></tr>
+        <tr><td><strong>Tailwind CSS</strong></td><td>Utility-class framework — style directly in HTML with classes like <code>flex p-4 bg-green-600</code></td></tr>
+        <tr><td><strong>Font Awesome / Lucide</strong></td><td>Icon libraries, added via a link tag or as SVG/icon fonts</td></tr>
+        <tr><td><strong>Google Fonts</strong></td><td>Free web font hosting, linked via <code>&lt;link&gt;</code> in <code>&lt;head&gt;</code></td></tr>
+        <tr><td><strong>Sass / SCSS</strong></td><td>A CSS preprocessor adding variables, nesting, functions (compiles down to plain CSS)</td></tr>
+        <tr><td><strong>Normalize.css / a CSS reset</strong></td><td>Neutralizes inconsistent default browser styling before you start designing</td></tr>
+        <tr><td><strong>Browser DevTools (F12)</strong></td><td>Inspect any element, live-edit CSS, debug layout — the single most useful "tool" while learning</td></tr>
+      </table>
+    </div>
+  </section>
+  <!-- ============================================================ -->
+  <!-- FULL WORKED EXAMPLE -->
+  <!-- ============================================================ -->
+
+  <section class="chapter" id="full-example-section">
+    <div class="chapter-num">Part Three</div>
+    <h2>Putting it all together</h2>
+
+    <div class="topic" id="full-example">
+      <h3>23. Full worked example — a complete mini landing page</h3>
+      <p>This single file uses structure (semantic tags), text formatting, an image, a form, and CSS covering the box model, flexbox, grid, colors, typography, transitions and a media query — everything above, in one page. Step through how it's built, then run it.</p>
+      <ol>
+        <li><strong>Structure first:</strong> <code class="inline">header</code> → <code class="inline">nav</code>, <code class="inline">main</code> → <code class="inline">section</code>s, <code class="inline">footer</code>.</li>
+        <li><strong>Style the container:</strong> set base typography and colors with CSS variables on <code class="inline">:root</code>.</li>
+        <li><strong>Lay out the hero</strong> with Flexbox (heading + button, centered).</li>
+        <li><strong>Lay out the feature cards</strong> with CSS Grid (3 columns, wraps responsively).</li>
+        <li><strong>Add interaction:</strong> a <code class="inline">:hover</code> transition on cards and the button.</li>
+        <li><strong>Add a contact form</strong> using inputs, labels, and a submit button.</li>
+        <li><strong>Make it responsive</strong> with one media query for narrow screens.</li>
+      </ol>
+      <div class="demo">
+        <div class="demo-head">
+          <span class="demo-title">example — full-landing-page.html</span>
+          <div class="demo-actions"><button class="icon-btn run" title="Run">▶</button><button class="icon-btn copy" title="Copy code">⧉</button></div>
+        </div>
+        <script type="text/plain" class="raw-code">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML & CSS Complete Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<style>
+  :root {
+    --brand: #2F7A5C;
+    --accent: #C9962B;
+    --ink: #1A211D;
+    --bg: #F4F6F2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); }
+
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 32px; background: white; border-bottom: 1px solid #ddd;
+  }
+  header .logo { font-weight: bold; font-size: 1.2rem; color: var(--brand); }
+  nav a { margin-left: 18px; text-decoration: none; color: var(--ink); font-size: .9rem; }
+
+  .hero {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 60px 20px; gap: 14px;
+  }
+  .hero h1 { font-size: 2.2rem; color: var(--brand); }
+  .hero p { max-width: 420px; color: #555; }
+  .btn {
+    background: var(--brand); color: white; border: none; padding: 12px 26px;
+    border-radius: 30px; font-size: .95rem; cursor: pointer; transition: transform .2s, background .2s;
+  }
+  .btn:hover { background: var(--accent); transform: translateY(-2px); }
+
+  .features {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    padding: 20px 40px 50px; max-width: 900px; margin: 0 auto;
+  }
+  .card {
+    background: white; padding: 20px; border-radius: 10px; border: 1px solid #e2e2e2;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .card:hover { box-shadow: 0 8px 20px rgba(0,0,0,.08); transform: translateY(-4px); }
+  .card h3 { color: var(--brand); margin-bottom: 8px; font-size: 1.05rem; }
+  .card p { font-size: .88rem; color: #555; }
+
+  form.contact {
+    max-width: 380px; margin: 0 auto 60px; background: white; padding: 24px;
+    border-radius: 10px; border: 1px solid #e2e2e2;
+  }
+  form.contact label { display: block; font-size: .82rem; margin: 10px 0 4px; }
+  form.contact input, form.contact textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: .9rem;
+  }
+
+  footer { text-align: center; padding: 18px; font-size: .8rem; color: #777; }
+
+  @media (max-width: 600px) {
+    .features { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🌿 Studio Leaf</div>
+  <nav>
+    <a href="#">Home</a><a href="#">Work</a><a href="#">Contact</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Design that grows with you.</h1>
+  <p>We build clean, fast, and honest websites — no bloat, no nonsense, just good craft.</p>
+  <button class="btn">Start a project</button>
+</section>
+
+<section class="features">
+  <div class="card">
+    <h3>Structure</h3>
+    <p>Semantic HTML that's accessible and easy to maintain.</p>
+  </div>
+  <div class="card">
+    <h3>Style</h3>
+    <p>CSS Grid and Flexbox layouts that adapt to any screen.</p>
+  </div>
+  <div class="card">
+    <h3>Speed</h3>
+    <p>Lightweight pages that load fast and feel instant.</p>
+  </div>
+</section>
+
+<form class="contact" onsubmit="return false;">
+  <label for="fname">Name</label>
+  <input id="fname" type="text" placeholder="Your name" required>
+  <label for="fmsg">Message</label>
+  <textarea id="fmsg" rows="3" placeholder="Say hello..."></textarea>
+  <br><br>
+  <button class="btn" type="submit">Send message</button>
+</form>
+
+<footer>&copy; 2026 Studio Leaf. Built with HTML &amp; CSS only.</footer>
+
+</body>
+</html>
+        </script>
+        <pre class="code-block"><code></code></pre>
+        <div class="output-wrap" hidden><div class="output-label">Output</div><iframe class="output-frame" style="height:520px;"></iframe></div>
+      </div>
+      <div class="note">Notice this file uses <em>no JavaScript</em> at all — everything visual, including the hover effects, comes purely from CSS. That's the point: HTML for meaning, CSS for appearance.</div>
+    </div>
+  </section>
+  <!-- ============================================================ -->
+  <!-- CHEAT SHEET -->
+  <!-- ============================================================ -->
+
+  <section class="chapter" id="cheatsheet-section">
+    <div class="chapter-num">Quick Reference</div>
+    <h2>Cheat sheet</h2>
+
+    <div class="topic" id="cheatsheet">
+      <h4>How to write and run HTML/CSS on your own computer</h4>
+      <ol>
+        <li>Open any text editor (VS Code is the standard free choice).</li>
+        <li>Create a file named <code class="inline">index.html</code>.</li>
+        <li>Write your HTML, and either write CSS inside a <code class="inline">&lt;style&gt;</code> tag or link a separate <code class="inline">styles.css</code> file with <code class="inline">&lt;link rel="stylesheet" href="styles.css"&gt;</code> in the <code class="inline">&lt;head&gt;</code>.</li>
+        <li>Save the file, then double-click it (or right-click → Open with → your browser) to view it. No installation, compiler, or server is required for static pages.</li>
+        <li>In VS Code, the "Live Server" extension auto-refreshes the browser every time you save — the fastest workflow while learning.</li>
+      </ol>
+
+      <h4>Most-used HTML tags</h4>
+      <table class="cheat-table">
+        <tr><th>Tag</th><th>Purpose</th></tr>
+        <tr><td>&lt;h1&gt;–&lt;h6&gt;</td><td>Headings</td></tr>
+        <tr><td>&lt;p&gt;</td><td>Paragraph</td></tr>
+        <tr><td>&lt;a href=""&gt;</td><td>Link</td></tr>
+        <tr><td>&lt;img src="" alt=""&gt;</td><td>Image</td></tr>
+        <tr><td>&lt;ul&gt;/&lt;ol&gt;/&lt;li&gt;</td><td>Lists</td></tr>
+        <tr><td>&lt;table&gt;/&lt;tr&gt;/&lt;td&gt;</td><td>Tables</td></tr>
+        <tr><td>&lt;form&gt;/&lt;input&gt;/&lt;button&gt;</td><td>Forms</td></tr>
+        <tr><td>&lt;div&gt;/&lt;span&gt;</td><td>Generic containers</td></tr>
+        <tr><td>&lt;header&gt;/&lt;nav&gt;/&lt;main&gt;/&lt;section&gt;/&lt;article&gt;/&lt;aside&gt;/&lt;footer&gt;</td><td>Semantic layout</td></tr>
+        <tr><td>&lt;script&gt;</td><td>JavaScript</td></tr>
+        <tr><td>&lt;link&gt;</td><td>External resource (CSS, icons)</td></tr>
+      </table>
+
+      <h4>Most-used CSS properties</h4>
+      <table class="cheat-table">
+        <tr><th>Property</th><th>Purpose</th></tr>
+        <tr><td>color / background</td><td>Text / fill color</td></tr>
+        <tr><td>width / height</td><td>Box size</td></tr>
+        <tr><td>margin / padding</td><td>Outer / inner spacing</td></tr>
+        <tr><td>border / border-radius</td><td>Outline / rounded corners</td></tr>
+        <tr><td>font-size / font-weight / font-family</td><td>Text appearance</td></tr>
+        <tr><td>display</td><td>block / inline / flex / grid / none</td></tr>
+        <tr><td>position / top / left / right / bottom</td><td>Placement control</td></tr>
+        <tr><td>flex-direction / justify-content / align-items</td><td>Flexbox layout</td></tr>
+        <tr><td>grid-template-columns / gap</td><td>Grid layout</td></tr>
+        <tr><td>transition / animation / transform</td><td>Motion</td></tr>
+        <tr><td>@media</td><td>Responsive breakpoints</td></tr>
+      </table>
+
+      <h4>Golden rules to remember</h4>
+      <ul>
+        <li>HTML = structure & meaning. CSS = appearance. Never use HTML tags purely to make text look a certain way — use CSS.</li>
+        <li>Always close your tags, always quote your attribute values.</li>
+        <li>One <code class="inline">&lt;h1&gt;</code> per page; headings should be in logical order (don't skip from h1 to h4).</li>
+        <li>Every <code class="inline">&lt;img&gt;</code> needs a meaningful <code class="inline">alt</code>.</li>
+        <li>Use classes for styling that repeats; use ids sparingly (mainly for JS hooks or single anchors).</li>
+        <li>Prefer Flexbox for one-dimensional layouts, Grid for two-dimensional layouts.</li>
+        <li><code class="inline">box-sizing: border-box</code> on everything saves a lot of layout headaches.</li>
+        <li>Test responsively — resize the browser or use DevTools' device toolbar (Ctrl/Cmd+Shift+M).</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<footer>
+  HTML &amp; CSS Field Notes — everything from doctype to deployment, on one page. Press ▶ on any example to run it live.
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var demos = document.querySelectorAll('.demo');
+  demos.forEach(function (demo) {
+    var rawEl = demo.querySelector('.raw-code');
+    if (!rawEl) return;
+    var rawText = (rawEl.tagName === 'TEXTAREA') ? rawEl.value : rawEl.textContent;
+    var raw = rawText.replace(/^\n/, '').replace(/\n$/, '');
+    var codeEl = demo.querySelector('.code-block code');
+    if (codeEl) codeEl.textContent = raw;
+
+    var runBtn = demo.querySelector('.icon-btn.run');
+    var copyBtn = demo.querySelector('.icon-btn.copy');
+    var outWrap = demo.querySelector('.output-wrap');
+    var frame = demo.querySelector('.output-frame');
+
+    if (runBtn) {
+      runBtn.addEventListener('click', function () {
+        if (outWrap.hidden) {
+          outWrap.hidden = false;
+          runBtn.textContent = '⟳';
+          runBtn.title = 'Re-run';
+        }
+        frame.srcdoc = raw;
+      });
+    }
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        navigator.clipboard.writeText(raw).then(function () {
+          copyBtn.textContent = '✓';
+          copyBtn.classList.add('copied');
+          setTimeout(function () {
+            copyBtn.textContent = '⧉';
+            copyBtn.classList.remove('copied');
+          }, 1200);
+        });
+      });
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Brewed Complete Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --roast-900:#120d0a;
+  --roast-800:#1a130f;
+  --roast-700:#241a14;
+  --roast-600:#332419;
+  --crema:#f3e6d4;
+  --crema-dim:#c9b8a4;
+  --steam:#e8935a;
+  --steam-bright:#ffb17a;
+  --mint:#7fd9a8;
+  --mint-bright:#9df0c2;
+  --berry:#e2607a;
+  --sky:#7cb8e8;
+  --gold:#e8c468;
+  --line:rgba(243,230,212,0.10);
+  --line-bright:rgba(243,230,212,0.22);
+  --radius:14px;
+  --mono:'JetBrains Mono', monospace;
+  --display:'Fraunces', serif;
+  --sans:'Space Grotesk', sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 700px at 85% -10%, rgba(232,147,90,0.10), transparent 60%),
+    radial-gradient(900px 600px at -10% 20%, rgba(127,217,168,0.06), transparent 55%),
+    var(--roast-900);
+  color:var(--crema);
+  font-family:var(--sans);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--steam);color:var(--roast-900);}
+a{color:inherit;}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-track{background:var(--roast-900);}
+::-webkit-scrollbar-thumb{background:var(--roast-600);border-radius:8px;}
+::-webkit-scrollbar-thumb:hover{background:var(--steam);}
+
+.shell{display:grid;grid-template-columns:280px 1fr;min-height:100vh;}
+@media (max-width:900px){.shell{grid-template-columns:1fr;}}
+
+.sidebar{
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  border-right:1px solid var(--line);
+  padding:26px 18px 60px;
+  background:linear-gradient(180deg, var(--roast-800), var(--roast-900) 70%);
+}
+@media (max-width:900px){.sidebar{position:relative;height:auto;border-right:none;border-bottom:1px solid var(--line);}}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:6px;padding:0 6px;}
+.cup{width:34px;height:34px;position:relative;flex:none;}
+.cup svg{width:100%;height:100%;display:block;}
+.steamwisp{transform-origin:bottom center;animation:rise 3.2s ease-in-out infinite;}
+.steamwisp.s2{animation-delay:.6s;}
+.steamwisp.s3{animation-delay:1.2s;}
+@keyframes rise{
+  0%{opacity:0; transform:translateY(0) scaleY(0.6);}
+  30%{opacity:.9;}
+  100%{opacity:0; transform:translateY(-9px) scaleY(1.15);}
+}
+.brand-text{font-family:var(--display);font-weight:700;font-size:1.18rem;letter-spacing:.2px;}
+.brand-text small{display:block;font-family:var(--mono);font-weight:400;font-size:.66rem;letter-spacing:2px;text-transform:uppercase;color:var(--steam);margin-top:2px;}
+.sidebar-sub{font-size:.78rem;color:var(--crema-dim);padding:10px 6px 18px;border-bottom:1px solid var(--line);margin-bottom:12px;}
+.toc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+.toc-group{font-family:var(--mono);font-size:.66rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--crema-dim);opacity:.6;padding:14px 8px 6px;}
+.toc a{
+  display:flex;align-items:baseline;gap:9px;padding:7px 8px;border-radius:8px;
+  font-size:.86rem;color:var(--crema-dim);text-decoration:none;transition:background .15s, color .15s;
+}
+.toc a .num{font-family:var(--mono);font-size:.72rem;color:var(--steam);flex:none;width:20px;}
+.toc a:hover{background:var(--roast-700);color:var(--crema);}
+.toc a.active{background:var(--roast-600);color:var(--crema);}
+
+main{padding:0;min-width:0;}
+.hero{padding:80px 56px 60px;border-bottom:1px solid var(--line);position:relative;overflow:hidden;}
+@media (max-width:700px){.hero{padding:56px 22px 40px;}}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background-image:radial-gradient(circle at 1px 1px, var(--line-bright) 1px, transparent 1px);
+  background-size:26px 26px;opacity:.35;pointer-events:none;
+}
+.eyebrow{font-family:var(--mono);font-size:.76rem;letter-spacing:3px;text-transform:uppercase;color:var(--steam);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.eyebrow::before{content:"";width:24px;height:1px;background:var(--steam);}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2.3rem,5vw,4rem);line-height:1.04;margin:0 0 22px;max-width:920px;}
+.hero h1 em{font-style:italic;color:var(--steam-bright);}
+.hero p.lede{font-size:1.08rem;color:var(--crema-dim);max-width:640px;margin:0 0 30px;}
+.hero-tags{display:flex;flex-wrap:wrap;gap:10px;}
+.tag{font-family:var(--mono);font-size:.74rem;padding:6px 12px;border:1px solid var(--line-bright);border-radius:999px;color:var(--crema-dim);}
+
+section.topic{padding:52px 56px;border-bottom:1px solid var(--line);scroll-margin-top:20px;}
+@media (max-width:700px){section.topic{padding:38px 20px;}}
+.topic-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;}
+.topic-index{font-family:var(--mono);color:var(--steam);font-size:1rem;opacity:.75;}
+.topic h2{font-family:var(--display);font-size:clamp(1.5rem,3vw,2.1rem);margin:0;font-weight:600;}
+.topic-intro{color:var(--crema-dim);max-width:760px;margin:14px 0 26px;font-size:1rem;}
+.topic h3{font-family:var(--sans);font-size:1.02rem;margin:30px 0 10px;color:var(--steam-bright);font-weight:600;}
+.topic h3::before{content:"› ";color:var(--steam);}
+.topic p{max-width:780px;color:var(--crema-dim);}
+.topic ul{max-width:780px;color:var(--crema-dim);padding-left:20px;}
+.topic li{margin:6px 0;}
+.topic li b, .topic p b{color:var(--crema);}
+code.inline{font-family:var(--mono);background:var(--roast-700);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.86em;color:var(--gold);}
+
+.callout{max-width:780px;border-left:3px solid var(--steam);background:var(--roast-700);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;font-size:.92rem;color:var(--crema-dim);}
+.callout b{color:var(--steam-bright);}
+.callout.warn{border-color:var(--berry);}
+.callout.warn b{color:var(--berry);}
+
+.snippet{margin:18px 0 8px;border:1px solid var(--line-bright);border-radius:var(--radius);overflow:hidden;background:var(--roast-800);box-shadow:0 10px 30px -18px rgba(0,0,0,0.6);max-width:820px;}
+.snippet-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:var(--roast-700);border-bottom:1px solid var(--line);}
+.dots{display:flex;gap:6px;}
+.dots span{width:9px;height:9px;border-radius:50%;display:inline-block;}
+.dots span:nth-child(1){background:#e2607a;}
+.dots span:nth-child(2){background:#e8c468;}
+.dots span:nth-child(3){background:#7fd9a8;}
+.filename{font-family:var(--mono);font-size:.76rem;color:var(--crema-dim);}
+.run-btn{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:.76rem;font-weight:600;background:linear-gradient(180deg,var(--steam-bright),var(--steam));color:var(--roast-900);border:none;border-radius:8px;padding:7px 13px;cursor:pointer;transition:transform .12s, box-shadow .12s;box-shadow:0 4px 14px -4px rgba(232,147,90,0.55);}
+.run-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px -4px rgba(232,147,90,0.7);}
+.run-btn:active{transform:translateY(0);}
+.run-btn svg{width:11px;height:11px;flex:none;}
+.run-btn.loading{opacity:.75;cursor:progress;}
+pre.code{margin:0;padding:18px 20px;overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.65;}
+pre.code code{white-space:pre;}
+.k{color:#e8935a;}
+.ty{color:#7cb8e8;}
+.str{color:#9df0c2;}
+.num{color:#e8c468;}
+.cm{color:#7a6d60;font-style:italic;}
+.an{color:#e2607a;}
+.mt{color:#dcb8f0;}
+
+.output-panel{border-top:1px dashed var(--line-bright);background:var(--roast-900);display:none;}
+.output-panel.show{display:block;}
+.output-head{display:flex;align-items:center;gap:8px;padding:9px 14px;font-family:var(--mono);font-size:.72rem;color:var(--mint);text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid var(--line);}
+.output-head .blink{width:7px;height:7px;border-radius:50%;background:var(--mint);animation:blink 1s infinite;}
+@keyframes blink{50%{opacity:.2;}}
+pre.output-text{margin:0;padding:16px 20px;font-family:var(--mono);font-size:.85rem;color:var(--mint-bright);white-space:pre-wrap;min-height:20px;}
+.output-data{display:none;}
+
+footer{padding:50px 56px 80px;color:var(--crema-dim);font-size:.86rem;}
+footer .cup{width:26px;height:26px;display:inline-block;vertical-align:-7px;margin-right:8px;}
+
+.totop{position:fixed;right:22px;bottom:22px;width:44px;height:44px;border-radius:50%;background:var(--steam);color:var(--roast-900);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 22px -6px rgba(232,147,90,0.6);opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;}
+.totop.show{opacity:1;pointer-events:auto;}
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('java-notes')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('java-notes'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+<div class="shell">
+<nav class="sidebar" id="sidebar">
+  <div class="brand">
+    <span class="cup">
+      <svg viewBox="0 0 40 40" fill="none">
+        <path class="steamwisp s1" d="M14 6 Q16 3 14 0" stroke="#e8935a" stroke-width="1.4" stroke-linecap="round"/>
+        <path class="steamwisp s2" d="M20 6 Q22 3 20 0" stroke="#e8935a" stroke-width="1.4" stroke-linecap="round"/>
+        <path class="steamwisp s3" d="M26 6 Q28 3 26 0" stroke="#e8935a" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M8 14h20l-1.6 14.5A4 4 0 0 1 22.4 32H15.6a4 4 0 0 1-4-3.5L10 14z" fill="#241a14" stroke="#e8935a" stroke-width="1.6"/>
+        <path d="M28 17h3a4 4 0 0 1 0 8h-2.5" stroke="#e8935a" stroke-width="1.6" fill="none"/>
+        <rect x="6" y="33" width="24" height="2.4" rx="1.2" fill="#e8935a"/>
+      </svg>
+    </span>
+    <div class="brand-text">Java, Brewed<small>Notes · A to Z</small></div>
+  </div>
+  <div class="sidebar-sub">A full run-in-place syllabus — click <b style="color:#e8935a">▶ Run</b> on any snippet to brew its output.</div>
+  <ul class="toc" id="toc"></ul>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">Complete Java Curriculum</div>
+    <h1>Every concept from <em>System.out.println</em><br>to threads, streams &amp; generics.</h1>
+    <p class="lede">A single page covering Java syntax, control flow, object-oriented programming, collections, exception handling and advanced topics — with runnable snippets. Press <b style="color:#f3e6d4">▶ Run</b> under any code block to see its simulated console output appear, terminal-style.</p>
+    <div class="hero-tags">
+      <span class="tag">Beginner → Advanced</span>
+      <span class="tag">Sections A–Z</span>
+      <span class="tag">Interactive Snippets</span>
+      <span class="tag">Pure HTML / CSS / JS</span>
+    </div>
+  </section>
+
+  <div id="content"></div>
+
+  <footer>
+    <span class="cup"><svg viewBox="0 0 40 40" fill="none"><path d="M8 14h20l-1.6 14.5A4 4 0 0 1 22.4 32H15.6a4 4 0 0 1-4-3.5L10 14z" fill="none" stroke="#e8935a" stroke-width="1.6"/><path d="M28 17h3a4 4 0 0 1 0 8h-2.5" stroke="#e8935a" stroke-width="1.6" fill="none"/><rect x="6" y="33" width="24" height="2.4" rx="1.2" fill="#e8935a"/></svg></span>
+    Outputs shown here are pre-computed simulations that mimic a real <code class="inline">javac</code> + <code class="inline">java</code> run, since a browser can't compile Java directly — the code itself is real, standard Java you can paste into any IDE or JDK and run as-is.
+  </footer>
+</main>
+</div>
+<button class="totop" id="totop" aria-label="Back to top">↑</button>
+
+<script id="app-script">
+/* ======================= UTILITIES ======================= */
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+const KEYWORDS = "abstract assert boolean break byte case catch char class const continue default do double else enum extends final finally float for goto if implements import instanceof int interface long native new null package private protected public return short static strictfp super switch synchronized this throw throws transient true false try void volatile while var record yield sealed permits";
+const hlRe = new RegExp(
+  '(?<cm1>\\/\\/.*)|(?<cm2>\\/\\*[\\s\\S]*?\\*\\/)|(?<str1>"(?:[^"\\\\]|\\\\.)*")|(?<str2>\'(?:[^\'\\\\]|\\\\.)*\')|(?<an>@[A-Za-z]\\w*)|\\b(?<kw>' + KEYWORDS.split(' ').join('|') + ')\\b|\\b(?<ty>[A-Z][A-Za-z0-9_]*)\\b|\\b(?<num>\\d+\\.?\\d*[fFdDlL]?)\\b',
+  'g'
+);
+function hl(code){
+  let out = '', last = 0, m;
+  hlRe.lastIndex = 0;
+  while ((m = hlRe.exec(code))) {
+    out += escHtml(code.slice(last, m.index));
+    last = hlRe.lastIndex;
+    const g = m.groups;
+    let cls = null, content = null;
+    if (g.cm1 !== undefined) { cls='cm'; content=g.cm1; }
+    else if (g.cm2 !== undefined) { cls='cm'; content=g.cm2; }
+    else if (g.str1 !== undefined) { cls='str'; content=g.str1; }
+    else if (g.str2 !== undefined) { cls='str'; content=g.str2; }
+    else if (g.an !== undefined) { cls='an'; content=g.an; }
+    else if (g.kw !== undefined) { cls='k'; content=g.kw; }
+    else if (g.ty !== undefined) { cls='ty'; content=g.ty; }
+    else if (g.num !== undefined) { cls='num'; content=g.num; }
+    out += `<span class="${cls}">${escHtml(content)}</span>`;
+  }
+  out += escHtml(code.slice(last));
+  return out;
+}
+
+let SNIP_ID = 0;
+/** Returns HTML for one runnable code snippet card. */
+function S(filename, code, output){
+  SNIP_ID++;
+  const id = 'snip-' + SNIP_ID;
+  code = code.replace(/^\n/, '').replace(/\s+$/, '');
+  return `
+  <div class="snippet">
+    <div class="snippet-bar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="dots"><span></span><span></span><span></span></span>
+        <span class="filename">${escHtml(filename)}</span>
+      </div>
+      <button class="run-btn" onclick="runSnippet(this,'${id}')">
+        <svg viewBox="0 0 12 12" fill="currentColor"><path d="M2 1.5v9l8-4.5-8-4.5z"/></svg>
+        <span>Run</span>
+      </button>
+    </div>
+    <pre class="code"><code>${hl(code)}</code></pre>
+    <div class="output-panel" id="${id}-panel">
+      <div class="output-head"><span class="blink"></span> Console Output</div>
+      <pre class="output-text" id="${id}-text"></pre>
+    </div>
+    <div class="output-data" id="${id}-data">${escHtml(output.replace(/^\n/, '').replace(/\s+$/, ''))}</div>
+  </div>`;
+}
+
+function runSnippet(btn, id){
+  const panel = document.getElementById(id + '-panel');
+  const outEl = document.getElementById(id + '-text');
+  const raw = document.getElementById(id + '-data').textContent;
+  if (btn.classList.contains('loading')) return;
+  btn.classList.add('loading');
+  const original = btn.innerHTML;
+  btn.innerHTML = '<span>Compiling…</span>';
+  panel.classList.add('show');
+  outEl.textContent = '';
+  setTimeout(() => {
+    outEl.textContent = raw;
+    btn.classList.remove('loading');
+    btn.innerHTML = original;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 500 + Math.random() * 500);
+}
+
+/* ======================= TOPIC CONTENT ======================= */
+const TOPICS = [];
+function T(id, title, intro, body){ TOPICS.push({id, title, intro, body}); }
+
+/* ---- 00a ---- */
+T('what-is-java','What is Java?',
+`The plain-English definition, history, and the features that made Java one of the most widely used programming languages in the world — good to know word-for-word for exams.`,
+`
+<h3>Definition</h3>
+<div class="callout"><b>Exam definition:</b> Java is a high-level, object-oriented, platform-independent, robust and secure programming language developed by <b>James Gosling</b> and his team at <b>Sun Microsystems</b> in <b>1995</b> (Sun Microsystems was later acquired by <b>Oracle Corporation</b> in 2010, which maintains Java today). It was originally called <b>"Oak"</b> before being renamed Java.</div>
+<p>In simple words: Java is a language you write once, compile into a universal format called <b>bytecode</b>, and then run on <i>any</i> device that has a Java Virtual Machine — a phone, a laptop, a server — without rewriting the code for each platform.</p>
+
+<h3>Features of Java (very common exam question — "Write the features of Java")</h3>
+<ul>
+  <li><b>Simple</b> — syntax is close to C/C++ but removes complex features like pointers and manual memory management.</li>
+  <li><b>Object-Oriented</b> — everything is modeled around classes and objects (except primitives).</li>
+  <li><b>Platform Independent</b> — "Write Once, Run Anywhere" (WORA); bytecode runs on any device with a JVM.</li>
+  <li><b>Secure</b> — no explicit pointers, code runs inside the JVM sandbox, and comes with a built-in security manager.</li>
+  <li><b>Robust</b> — strong memory management, automatic garbage collection, and compile-time + runtime error checking.</li>
+  <li><b>Architecture-neutral</b> — the compiled bytecode isn't tied to any specific CPU architecture.</li>
+  <li><b>Portable</b> — the same bytecode behaves identically across operating systems.</li>
+  <li><b>Multithreaded</b> — has built-in support for running multiple tasks (threads) concurrently.</li>
+  <li><b>High Performance</b> — bytecode is close to native code, and the JIT (Just-In-Time) compiler speeds up execution further.</li>
+  <li><b>Distributed</b> — designed with networking libraries (like <code class="inline">java.net</code>) that make building networked/client-server applications easy.</li>
+  <li><b>Dynamic</b> — can load classes at runtime and adapt to an evolving environment.</li>
+  <li><b>Automatic Garbage Collection</b> — the JVM automatically frees memory used by objects no longer referenced, so you don't manually call <code class="inline">free()</code> like in C.</li>
+</ul>
+
+<h3>Where Java is used</h3>
+<ul>
+  <li>Android app development (Android's app layer is largely Java/Kotlin on the JVM ecosystem)</li>
+  <li>Enterprise back-end systems, banking software (Spring Boot, Java EE)</li>
+  <li>Web applications and REST APIs</li>
+  <li>Desktop GUI applications (Swing, JavaFX)</li>
+  <li>Embedded systems and scientific/research computing</li>
+</ul>
+
+<h3>Java vs C++ (a common comparison question)</h3>
+<ul>
+  <li>Java has <b>no pointers</b>; C++ does.</li>
+  <li>Java has <b>automatic garbage collection</b>; C++ requires manual memory management.</li>
+  <li>Java supports <b>only single inheritance</b> through classes (multiple inheritance via interfaces); C++ supports multiple inheritance directly through classes.</li>
+  <li>Java is <b>platform-independent</b> (compiles to bytecode); C++ compiles to platform-specific native machine code.</li>
+  <li>Java has <b>no operator overloading</b>; C++ allows it.</li>
+</ul>
+`);
+
+/* ---- 00b ---- */
+T('install-java','How to Install Java (JDK Setup)',
+`Before you can compile or run any Java program, you need the <b>JDK (Java Development Kit)</b> installed on your machine. Here's the full step-by-step process for every major OS.`,
+`
+<h3>Step 1 — Download the JDK</h3>
+<p>Go to the official source and download the latest <b>LTS (Long-Term Support)</b> version — such as Oracle JDK or the free, open-source <b>OpenJDK</b> (via Adoptium/Temurin):</p>
+<ul>
+  <li>Oracle JDK — <code class="inline">oracle.com/java/technologies/downloads</code></li>
+  <li>OpenJDK (Eclipse Temurin) — <code class="inline">adoptium.net</code></li>
+</ul>
+<p>Pick the installer matching your OS: <code class="inline">.exe</code>/<code class="inline">.msi</code> for Windows, <code class="inline">.pkg</code>/<code class="inline">.dmg</code> for macOS, or <code class="inline">.deb</code>/<code class="inline">.rpm</code>/tarball for Linux.</p>
+
+<h3>Step 2 — Install it</h3>
+<ul>
+  <li><b>Windows</b> — run the downloaded installer and click through the setup wizard (Next → Next → Install). Note the install path, usually <code class="inline">C:\\Program Files\\Java\\jdk-XX</code>.</li>
+  <li><b>macOS</b> — open the <code class="inline">.dmg</code> file and run the installer package; it installs under <code class="inline">/Library/Java/JavaVirtualMachines/</code>.</li>
+  <li><b>Linux (Debian/Ubuntu)</b> — simplest way is a package manager:</li>
+</ul>
+${S('terminal', `sudo apt update
+sudo apt install openjdk-21-jdk`,
+`Reading package lists... Done
+Setting up openjdk-21-jdk ...
+update-alternatives: using /usr/lib/jvm/java-21-openjdk-amd64/bin/java`)}
+
+<h3>Step 3 — Set the JAVA_HOME &amp; PATH environment variables (Windows)</h3>
+<ul>
+  <li>Search "Environment Variables" → Edit the system environment variables.</li>
+  <li>Add a new <b>System variable</b>: name <code class="inline">JAVA_HOME</code>, value = your JDK install folder (e.g. <code class="inline">C:\\Program Files\\Java\\jdk-21</code>).</li>
+  <li>Edit the <b>Path</b> variable and add a new entry: <code class="inline">%JAVA_HOME%\\bin</code>.</li>
+  <li>On macOS/Linux this is usually configured automatically by the installer/package manager, but can be set manually in <code class="inline">~/.bashrc</code> or <code class="inline">~/.zshrc</code> with <code class="inline">export JAVA_HOME=/path/to/jdk</code> and <code class="inline">export PATH=$JAVA_HOME/bin:$PATH</code>.</li>
+</ul>
+
+<h3>Step 4 — Verify the installation</h3>
+<p>Open a terminal / command prompt and run:</p>
+${S('terminal', `java -version
+javac -version`,
+`java version "21.0.2" 2024-01-16 LTS
+Java(TM) SE Runtime Environment (build 21.0.2+13-LTS-58)
+Java HotSpot(TM) 64-Bit Server VM (build 21.0.2+13-LTS-58, mixed mode)
+javac 21.0.2`)}
+<p>If both commands print a version number instead of "command not found," the JDK is installed correctly and the PATH is set up.</p>
+
+<h3>Step 5 — Pick an editor / IDE</h3>
+<ul>
+  <li><b>Beginner-friendly:</b> VS Code with the "Extension Pack for Java"</li>
+  <li><b>Full-featured IDEs:</b> IntelliJ IDEA, Eclipse, NetBeans — these auto-compile, auto-format, and highlight errors as you type</li>
+  <li><b>No install needed:</b> online compilers like replit.com or programiz.com's Java editor, useful for quick testing</li>
+</ul>
+
+<h3>Step 6 — Write, compile &amp; run your first program</h3>
+${S('terminal', `# 1. create a file named exactly like the public class: HelloWorld.java
+# 2. compile it
+javac HelloWorld.java
+# 3. run the compiled bytecode
+java HelloWorld`,
+`Hello, World!`)}
+<div class="callout warn"><b>Common installation mistakes:</b> forgetting to add <code class="inline">bin</code> to PATH, saving the file with a name that doesn't match the public class name, or trying to run <code class="inline">java HelloWorld.java</code> instead of <code class="inline">java HelloWorld</code> (no <code class="inline">.java</code> extension when running).</div>
+`);
+
+/* ---- 01 ---- */
+T('how-java-works','How Java Works',
+`Java is a compiled <b>and</b> interpreted, platform-independent, object-oriented language. Understanding its build pipeline explains almost every quirk you'll meet later.`,
+`
+<p>When you write a <code class="inline">.java</code> file, it goes through two stages before it actually runs:</p>
+<ul>
+  <li><b>Compilation</b> — the <code class="inline">javac</code> compiler turns your source code into <b>bytecode</b> (<code class="inline">.class</code> files), a platform-neutral instruction set — not native machine code.</li>
+  <li><b>Execution</b> — the <b>JVM (Java Virtual Machine)</b> loads that bytecode and interprets/JIT-compiles it into real machine instructions for whatever OS it's running on.</li>
+</ul>
+<p>That's why Java's slogan is <i>"Write Once, Run Anywhere"</i> — the same <code class="inline">.class</code> file runs unchanged on Windows, Linux or macOS, as long as a JVM is installed there.</p>
+<h3>JDK vs JRE vs JVM</h3>
+<ul>
+  <li><b>JVM</b> — the engine that actually executes bytecode (interpreter + JIT compiler + garbage collector).</li>
+  <li><b>JRE</b> (Java Runtime Environment) = JVM + core class libraries. Enough to <i>run</i> Java programs, not write them.</li>
+  <li><b>JDK</b> (Java Development Kit) = JRE + compiler (<code class="inline">javac</code>), debugger, and dev tools. What you install to <i>develop</i> Java.</li>
+</ul>
+<div class="callout"><b>Mental model:</b> JDK ⊃ JRE ⊃ JVM — each one contains the one before it.</div>
+<h3>Compiling and running from the command line</h3>
+${S('terminal', `javac HelloWorld.java   // compiles source -> HelloWorld.class (bytecode)
+java HelloWorld          // JVM loads the .class file and runs it`,
+`$ javac HelloWorld.java
+$ java HelloWorld
+Hello, World!`)}
+`);
+
+/* ---- 02 ---- */
+T('syntax','Basic Syntax &amp; Program Structure',
+`Every Java program follows the same skeleton: a class, a <code class="inline">main</code> method, and statements inside blocks. Get this shape memorized first.`,
+`
+<h3>Anatomy of a Java file</h3>
+<ul>
+  <li>A source file's name must match its <b>public class</b> name exactly, e.g. <code class="inline">HelloWorld.java</code> must contain <code class="inline">public class HelloWorld</code>.</li>
+  <li>Execution always starts at <code class="inline">public static void main(String[] args)</code> — the JVM's entry point.</li>
+  <li>Every statement ends with a semicolon <code class="inline">;</code>. Code blocks are wrapped in curly braces <code class="inline">{ }</code>.</li>
+  <li>Java is <b>case-sensitive</b>: <code class="inline">myVar</code> and <code class="inline">MyVar</code> are different identifiers.</li>
+</ul>
+${S('HelloWorld.java', `public class HelloWorld {
+    // program execution begins here
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");   // prints text + newline
+        System.out.print("No new line here.."); // prints without newline
+    }
+}`,
+`Hello, World!
+No new line here..`)}
+<h3>Breaking down <code class="inline">main</code></h3>
+<ul>
+  <li><b>public</b> — accessible from anywhere, including the JVM launcher.</li>
+  <li><b>static</b> — belongs to the class itself, so the JVM can call it without creating an object first.</li>
+  <li><b>void</b> — returns nothing.</li>
+  <li><b>String[] args</b> — command-line arguments passed in as an array of strings.</li>
+</ul>
+<h3>Comments</h3>
+${S('Comments.java', `// single-line comment
+/* multi-line
+   comment block */
+/**
+ * Javadoc comment — used to auto-generate documentation
+ * @author You
+ */
+public class Comments { }`,
+`(no output — comments are ignored by the compiler)`)}
+<h3>Identifiers &amp; naming conventions</h3>
+<ul>
+  <li>Classes: <code class="inline">PascalCase</code> — e.g. <code class="inline">StudentRecord</code></li>
+  <li>Methods &amp; variables: <code class="inline">camelCase</code> — e.g. <code class="inline">calculateTotal</code></li>
+  <li>Constants: <code class="inline">UPPER_SNAKE_CASE</code> — e.g. <code class="inline">MAX_SPEED</code></li>
+  <li>Identifiers can't start with a digit, and can't be a reserved keyword (<code class="inline">class</code>, <code class="inline">if</code>, <code class="inline">new</code>, etc.)</li>
+</ul>
+`);
+
+/* ---- 03 ---- */
+T('variables','Variables &amp; Data Types',
+`Java is <b>statically typed</b> — every variable's type is fixed at declaration and checked at compile time.`,
+`
+<h3>The 8 primitive types</h3>
+<ul>
+  <li><code class="inline">byte</code> — 8-bit integer, -128 to 127</li>
+  <li><code class="inline">short</code> — 16-bit integer</li>
+  <li><code class="inline">int</code> — 32-bit integer (most common whole-number type)</li>
+  <li><code class="inline">long</code> — 64-bit integer (suffix with <code class="inline">L</code>)</li>
+  <li><code class="inline">float</code> — 32-bit decimal (suffix with <code class="inline">f</code>)</li>
+  <li><code class="inline">double</code> — 64-bit decimal (default for decimals)</li>
+  <li><code class="inline">char</code> — single 16-bit Unicode character, single quotes <code class="inline">'A'</code></li>
+  <li><code class="inline">boolean</code> — <code class="inline">true</code> or <code class="inline">false</code> only</li>
+</ul>
+<p>Anything else — <code class="inline">String</code>, arrays, objects — is a <b>reference type</b>: the variable holds a memory address, not the value itself.</p>
+${S('Variables.java', `public class Variables {
+    public static void main(String[] args) {
+        int age = 21;
+        double price = 499.99;
+        char grade = 'A';
+        boolean isPassed = true;
+        String name = "Aditi";       // reference type
+        long population = 8_000_000_000L;
+        float pi = 3.14f;
+
+        System.out.println(name + " is " + age + " years old.");
+        System.out.println("Price: " + price + " | Grade: " + grade);
+        System.out.println("Passed? " + isPassed + " | World pop: " + population);
+    }
+}`,
+`Aditi is 21 years old.
+Price: 499.99 | Grade: A
+Passed? true | World pop: 8000000000`)}
+<h3>Type casting</h3>
+<p><b>Widening (implicit)</b>: smaller type → bigger type happens automatically. <b>Narrowing (explicit)</b>: bigger → smaller needs a manual cast and may lose data.</p>
+${S('Casting.java', `public class Casting {
+    public static void main(String[] args) {
+        int a = 10;
+        double b = a;          // widening: int -> double (automatic)
+
+        double c = 9.78;
+        int d = (int) c;       // narrowing: double -> int (manual cast, truncates)
+
+        System.out.println("Widened: " + b);
+        System.out.println("Narrowed: " + d);
+    }
+}`,
+`Widened: 10.0
+Narrowed: 9`)}
+<h3>var — local type inference (Java 10+)</h3>
+${S('VarDemo.java', `public class VarDemo {
+    public static void main(String[] args) {
+        var count = 5;              // inferred as int
+        var label = "Items";        // inferred as String
+        System.out.println(label + ": " + count);
+    }
+}`,
+`Items: 5`)}
+<div class="callout"><b>Note:</b> <code class="inline">var</code> still gives a fixed, compile-time type — it is NOT dynamic typing like in Python/JS.</div>
+`);
+
+/* ---- 04 ---- */
+T('operators','Operators',
+`Operators combine values into expressions. Java groups them into arithmetic, relational, logical, assignment, bitwise and the ternary operator.`,
+`
+<h3>Arithmetic</h3>
+<p><code class="inline">+ - * / %</code> (modulus/remainder). Integer division truncates: <code class="inline">7 / 2 == 3</code>, but <code class="inline">7 % 2 == 1</code>.</p>
+<h3>Relational &amp; Logical</h3>
+<p><code class="inline">== != &gt; &lt; &gt;= &lt;=</code> compare values and return <code class="inline">boolean</code>. Combine conditions with <code class="inline">&amp;&amp;</code> (AND), <code class="inline">||</code> (OR), <code class="inline">!</code> (NOT).</p>
+<h3>Assignment shorthand</h3>
+<p><code class="inline">+= -= *= /= %=</code> — e.g. <code class="inline">x += 5</code> is shorthand for <code class="inline">x = x + 5</code>. Increment/decrement: <code class="inline">++x</code> / <code class="inline">x++</code>.</p>
+${S('Operators.java', `public class Operators {
+    public static void main(String[] args) {
+        int a = 13, b = 4;
+        System.out.println("Sum: " + (a + b));
+        System.out.println("Quotient: " + (a / b));
+        System.out.println("Remainder: " + (a % b));
+        System.out.println("a > b? " + (a > b));
+        System.out.println("a==b && b<a: " + (a == b && b < a));
+        System.out.println("a==b || b<a: " + (a == b || b < a));
+
+        int score = 42;
+        score += 8;              // score = 50
+        System.out.println("After += : " + score);
+
+        // ternary operator: condition ? ifTrue : ifFalse
+        String result = (score >= 40) ? "Pass" : "Fail";
+        System.out.println("Result: " + result);
+    }
+}`,
+`Sum: 17
+Quotient: 3
+Remainder: 1
+a > b? true
+a==b && b<a: false
+a==b || b<a: false
+After += : 50
+Result: Pass`)}
+<h3>Operator precedence (high → low, common ones)</h3>
+<ul>
+  <li><code class="inline">++ --</code> (unary)</li>
+  <li><code class="inline">* / %</code></li>
+  <li><code class="inline">+ -</code></li>
+  <li><code class="inline">&lt; &lt;= &gt; &gt;=</code></li>
+  <li><code class="inline">== !=</code></li>
+  <li><code class="inline">&amp;&amp;</code>, then <code class="inline">||</code></li>
+  <li><code class="inline">?:</code> ternary</li>
+  <li><code class="inline">= += -= ...</code> assignment (lowest, right-to-left)</li>
+</ul>
+
+<h3>Unary operators</h3>
+<p>Act on a single operand: <code class="inline">+</code> (unary plus), <code class="inline">-</code> (unary minus/negation), <code class="inline">++</code> (increment), <code class="inline">--</code> (decrement), <code class="inline">!</code> (logical NOT). Increment/decrement come in two flavours:</p>
+${S('PrePost.java', `public class PrePost {
+    public static void main(String[] args) {
+        int a = 5;
+        System.out.println(a++);   // post-increment: prints 5, THEN a becomes 6
+        System.out.println(a);     // 6
+        System.out.println(++a);   // pre-increment: a becomes 7 FIRST, then prints 7
+    }
+}`,
+`5
+6
+7`)}
+
+<h3>Bitwise &amp; shift operators</h3>
+<p>Operate directly on the binary bits of integer types — common in low-level exam questions.</p>
+<ul>
+  <li><code class="inline">&amp;</code> — bitwise AND</li>
+  <li><code class="inline">|</code> — bitwise OR</li>
+  <li><code class="inline">^</code> — bitwise XOR</li>
+  <li><code class="inline">~</code> — bitwise complement (flips every bit)</li>
+  <li><code class="inline">&lt;&lt;</code> — left shift (multiplies by 2 per shift)</li>
+  <li><code class="inline">&gt;&gt;</code> — signed right shift (divides by 2 per shift, keeps sign)</li>
+  <li><code class="inline">&gt;&gt;&gt;</code> — unsigned right shift (fills with 0 regardless of sign)</li>
+</ul>
+${S('Bitwise.java', `public class Bitwise {
+    public static void main(String[] args) {
+        int a = 5;   // binary 0101
+        int b = 3;   // binary 0011
+
+        System.out.println("a & b = " + (a & b));   // 0001 -> 1
+        System.out.println("a | b = " + (a | b));   // 0111 -> 7
+        System.out.println("a ^ b = " + (a ^ b));   // 0110 -> 6
+        System.out.println("~a    = " + (~a));      // -6
+        System.out.println("a << 1 = " + (a << 1)); // 10
+        System.out.println("a >> 1 = " + (a >> 1)); // 2
+    }
+}`,
+`a & b = 1
+a | b = 7
+a ^ b = 6
+~a    = -6
+a << 1 = 10
+a >> 1 = 2`)}
+
+<h3>instanceof operator</h3>
+<p>Tests whether an object is an instance of a particular class/interface — returns a <code class="inline">boolean</code>. Very useful before downcasting.</p>
+${S('InstanceOfDemo.java', `public class InstanceOfDemo {
+    public static void main(String[] args) {
+        Object obj = "Hello";
+        System.out.println(obj instanceof String);   // true
+        System.out.println(obj instanceof Integer);  // false
+    }
+}`,
+`true
+false`)}
+
+<h3>Complete operator category list (for quick recall in exams)</h3>
+<ul>
+  <li><b>Arithmetic:</b> <code class="inline">+ - * / %</code></li>
+  <li><b>Unary:</b> <code class="inline">+ - ++ -- !</code></li>
+  <li><b>Relational:</b> <code class="inline">== != &gt; &lt; &gt;= &lt;=</code></li>
+  <li><b>Logical:</b> <code class="inline">&amp;&amp; || !</code></li>
+  <li><b>Bitwise:</b> <code class="inline">&amp; | ^ ~</code></li>
+  <li><b>Shift:</b> <code class="inline">&lt;&lt; &gt;&gt; &gt;&gt;&gt;</code></li>
+  <li><b>Assignment:</b> <code class="inline">= += -= *= /= %= &amp;= |= ^= &lt;&lt;= &gt;&gt;=</code></li>
+  <li><b>Ternary (conditional):</b> <code class="inline">?:</code></li>
+  <li><b>instanceof:</b> type-checking operator</li>
+</ul>
+`);
+
+/* ---- 05 ---- */
+T('input','Taking User Input',
+`The <code class="inline">Scanner</code> class (from <code class="inline">java.util</code>) is the standard way to read keyboard input in console programs.`,
+`
+${S('InputDemo.java', `import java.util.Scanner;
+
+public class InputDemo {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter your name: ");
+        String name = sc.nextLine();
+
+        System.out.print("Enter your age: ");
+        int age = sc.nextInt();
+
+        System.out.println("Hello " + name + ", next year you'll be " + (age + 1) + "!");
+        sc.close();
+    }
+}`,
+`Enter your name: Rohan
+Enter your age: 24
+Hello Rohan, next year you'll be 25!`)}
+<h3>Common Scanner methods</h3>
+<ul>
+  <li><code class="inline">nextLine()</code> — reads a full line of text</li>
+  <li><code class="inline">next()</code> — reads a single word (stops at whitespace)</li>
+  <li><code class="inline">nextInt()</code>, <code class="inline">nextDouble()</code>, <code class="inline">nextBoolean()</code> — read typed values</li>
+</ul>
+<div class="callout warn"><b>Gotcha:</b> mixing <code class="inline">nextInt()</code> then <code class="inline">nextLine()</code> often grabs an empty leftover line — call an extra <code class="inline">sc.nextLine()</code> to flush the buffer if this happens.</div>
+`);
+
+/* ---- 06 ---- */
+T('conditionals','Conditional Statements',
+`Conditionals let a program branch: run different code depending on whether an expression is <code class="inline">true</code> or <code class="inline">false</code>.`,
+`
+<h3>if / else if / else</h3>
+${S('Grade.java', `public class Grade {
+    public static void main(String[] args) {
+        int marks = 78;
+
+        if (marks >= 90) {
+            System.out.println("Grade: A+");
+        } else if (marks >= 75) {
+            System.out.println("Grade: A");
+        } else if (marks >= 60) {
+            System.out.println("Grade: B");
+        } else {
+            System.out.println("Grade: F");
+        }
+    }
+}`,
+`Grade: A`)}
+<h3>switch statement</h3>
+<p>Cleaner than a long <code class="inline">else if</code> chain when comparing one variable against many constant values. Each case needs a <code class="inline">break</code> or execution "falls through" into the next case.</p>
+${S('DayName.java', `public class DayName {
+    public static void main(String[] args) {
+        int day = 3;
+        String name;
+
+        switch (day) {
+            case 1: name = "Monday"; break;
+            case 2: name = "Tuesday"; break;
+            case 3: name = "Wednesday"; break;
+            case 4: name = "Thursday"; break;
+            case 5: name = "Friday"; break;
+            case 6: case 7: name = "Weekend"; break;
+            default: name = "Invalid day";
+        }
+        System.out.println("Day " + day + " is " + name);
+    }
+}`,
+`Day 3 is Wednesday`)}
+<h3>Modern switch expression (Java 14+)</h3>
+${S('SwitchExpr.java', `public class SwitchExpr {
+    public static void main(String[] args) {
+        int day = 6;
+        String type = switch (day) {
+            case 1, 2, 3, 4, 5 -> "Weekday";
+            case 6, 7 -> "Weekend";
+            default -> "Invalid";
+        };
+        System.out.println(type);
+    }
+}`,
+`Weekend`)}
+`);
+
+/* ---- 07 ---- */
+T('loops','Loops',
+`Loops repeat a block of code while a condition holds. Java has four looping constructs, plus <code class="inline">break</code> and <code class="inline">continue</code> to control flow inside them.`,
+`
+<h3>for loop</h3>
+<p>Best when you know the number of iterations in advance: <code class="inline">for (init; condition; update)</code>.</p>
+${S('ForLoop.java', `public class ForLoop {
+    public static void main(String[] args) {
+        for (int i = 1; i <= 5; i++) {
+            System.out.println("Count: " + i);
+        }
+    }
+}`,
+`Count: 1
+Count: 2
+Count: 3
+Count: 4
+Count: 5`)}
+<h3>while &amp; do-while</h3>
+<p><code class="inline">while</code> checks the condition <b>before</b> each run; <code class="inline">do-while</code> checks it <b>after</b>, so the body always runs at least once.</p>
+${S('WhileLoops.java', `public class WhileLoops {
+    public static void main(String[] args) {
+        int i = 1;
+        while (i <= 3) {
+            System.out.println("while i=" + i);
+            i++;
+        }
+
+        int j = 1;
+        do {
+            System.out.println("do-while j=" + j);
+            j++;
+        } while (j <= 3);
+    }
+}`,
+`while i=1
+while i=2
+while i=3
+do-while j=1
+do-while j=2
+do-while j=3`)}
+<h3>Enhanced for-each (for arrays &amp; collections)</h3>
+${S('ForEach.java', `public class ForEach {
+    public static void main(String[] args) {
+        String[] fruits = {"Mango", "Apple", "Guava"};
+        for (String fruit : fruits) {
+            System.out.println("I like " + fruit);
+        }
+    }
+}`,
+`I like Mango
+I like Apple
+I like Guava`)}
+<h3>break, continue &amp; labeled loops</h3>
+${S('BreakContinue.java', `public class BreakContinue {
+    public static void main(String[] args) {
+        for (int i = 1; i <= 6; i++) {
+            if (i == 4) continue;   // skip this iteration
+            if (i == 6) break;      // stop the loop entirely
+            System.out.println("i = " + i);
+        }
+    }
+}`,
+`i = 1
+i = 2
+i = 3
+i = 5`)}
+`);
+
+/* ---- 08 ---- */
+T('arrays','Arrays',
+`An array is a fixed-size, ordered collection of elements of the <b>same type</b>, stored in contiguous memory and accessed by a zero-based index.`,
+`
+<h3>1D arrays</h3>
+${S('ArrayBasics.java', `import java.util.Arrays;
+
+public class ArrayBasics {
+    public static void main(String[] args) {
+        int[] scores = {88, 92, 76, 100, 65};
+
+        System.out.println("First: " + scores[0]);
+        System.out.println("Length: " + scores.length);
+
+        int total = 0;
+        for (int s : scores) total += s;
+        System.out.println("Total: " + total);
+
+        Arrays.sort(scores);
+        System.out.println("Sorted: " + Arrays.toString(scores));
+    }
+}`,
+`First: 88
+Length: 5
+Total: 421
+Sorted: [65, 76, 88, 92, 100]`)}
+<h3>2D arrays (matrices)</h3>
+${S('Grid.java', `public class Grid {
+    public static void main(String[] args) {
+        int[][] matrix = {
+            {1, 2, 3},
+            {4, 5, 6}
+        };
+
+        for (int row = 0; row < matrix.length; row++) {
+            for (int col = 0; col < matrix[row].length; col++) {
+                System.out.print(matrix[row][col] + " ");
+            }
+            System.out.println();
+        }
+    }
+}`,
+`1 2 3 
+4 5 6 `)}
+<div class="callout"><b>Note:</b> Java arrays have a fixed length once created. Need to grow dynamically? Use <code class="inline">ArrayList</code> instead (see the Collections section).</div>
+`);
+
+/* ---- 09 ---- */
+T('strings','Strings',
+`A <code class="inline">String</code> is a reference type representing text. Strings in Java are <b>immutable</b> — once created, their contents never change; every "modifying" method returns a brand-new String.`,
+`
+${S('StringBasics.java', `public class StringBasics {
+    public static void main(String[] args) {
+        String s = "  Java Programming  ";
+
+        System.out.println("Length: " + s.length());
+        System.out.println("Trimmed: [" + s.trim() + "]");
+        System.out.println("Upper: " + s.toUpperCase());
+        System.out.println("Contains 'Prog'? " + s.contains("Prog"));
+        System.out.println("Replaced: " + s.trim().replace("Java", "Python"));
+        System.out.println("Substring: " + s.trim().substring(0, 4));
+        System.out.println("Split: " + java.util.Arrays.toString(s.trim().split(" ")));
+
+        String a = "abc";
+        String b = "abc";
+        String c = new String("abc");
+        System.out.println("a == b (pool): " + (a == b));
+        System.out.println("a == c (new obj): " + (a == c));
+        System.out.println("a.equals(c): " + a.equals(c));
+    }
+}`,
+`Length: 21
+Trimmed: [Java Programming]
+Upper:   JAVA PROGRAMMING  
+Contains 'Prog'? true
+Replaced: Python Programming
+Substring: Java
+Split: [Java, Programming]
+a == b (pool): true
+a == c (new obj): false
+a.equals(c): true`)}
+<h3>StringBuilder — for heavy string building</h3>
+<p>Because Strings are immutable, concatenating in a loop creates many throwaway objects. <code class="inline">StringBuilder</code> is mutable and far more efficient for that.</p>
+${S('BuilderDemo.java', `public class BuilderDemo {
+    public static void main(String[] args) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= 5; i++) {
+            sb.append(i).append(",");
+        }
+        sb.deleteCharAt(sb.length() - 1); // drop trailing comma
+        System.out.println(sb.toString());
+        System.out.println("Reversed: " + sb.reverse());
+    }
+}`,
+`1,2,3,4,5
+Reversed: 5,4,3,2,1`)}
+`);
+
+/* ---- 10 ---- */
+T('methods','Methods (Functions)',
+`A method is a named, reusable block of code. Methods are how you break a program into logical pieces and avoid repeating yourself.`,
+`
+<h3>Declaring &amp; calling methods</h3>
+${S('MethodBasics.java', `public class MethodBasics {
+
+    // returnType methodName(parameters)
+    static int square(int n) {
+        return n * n;
+    }
+
+    static void greet(String name) {
+        System.out.println("Hi, " + name + "!");
+    }
+
+    public static void main(String[] args) {
+        greet("Team");
+        int result = square(6);
+        System.out.println("6 squared is " + result);
+    }
+}`,
+`Hi, Team!
+6 squared is 36`)}
+<h3>Method overloading</h3>
+<p>Same method name, different parameter lists — Java picks the right version at compile time based on argument types/count.</p>
+${S('Overload.java', `public class Overload {
+    static int add(int a, int b) { return a + b; }
+    static double add(double a, double b) { return a + b; }
+    static int add(int a, int b, int c) { return a + b + c; }
+
+    public static void main(String[] args) {
+        System.out.println(add(2, 3));
+        System.out.println(add(2.5, 3.5));
+        System.out.println(add(1, 2, 3));
+    }
+}`,
+`5
+6.0
+6`)}
+<h3>Varargs &amp; recursion</h3>
+${S('Recursion.java', `public class Recursion {
+    // varargs: accepts any number of ints
+    static int sum(int... nums) {
+        int total = 0;
+        for (int n : nums) total += n;
+        return total;
+    }
+
+    // classic recursive factorial
+    static long factorial(int n) {
+        if (n <= 1) return 1;          // base case
+        return n * factorial(n - 1);   // recursive case
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Sum: " + sum(1, 2, 3, 4));
+        System.out.println("5! = " + factorial(5));
+    }
+}`,
+`Sum: 10
+5! = 120`)}
+`);
+
+/* ---- 11 ---- */
+T('oop-basics','OOP Basics: Classes &amp; Objects',
+`Java is fundamentally object-oriented: programs model the world as <b>classes</b> (blueprints) and <b>objects</b> (instances built from those blueprints) with <b>fields</b> (state) and <b>methods</b> (behaviour).`,
+`
+${S('Car.java', `class Car {
+    // fields (instance state)
+    String model;
+    int speed;
+
+    // method (behaviour)
+    void accelerate(int amount) {
+        speed += amount;
+        System.out.println(model + " speeds up to " + speed + " km/h");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Car car1 = new Car();          // create an object
+        car1.model = "Tesla Model 3";
+        car1.speed = 0;
+        car1.accelerate(60);
+
+        Car car2 = new Car();
+        car2.model = "Mahindra XUV";
+        car2.accelerate(40);
+    }
+}`,
+`Tesla Model 3 speeds up to 60 km/h
+Mahindra XUV speeds up to 40 km/h`)}
+<h3>The 4 pillars of OOP</h3>
+<ul>
+  <li><b>Encapsulation</b> — bundling data + methods, hiding internal state</li>
+  <li><b>Inheritance</b> — a class reusing/extending another class</li>
+  <li><b>Polymorphism</b> — one interface, many implementations</li>
+  <li><b>Abstraction</b> — exposing only essential details, hiding complexity</li>
+</ul>
+<p>Each gets its own section below.</p>
+`);
+
+/* ---- 12 ---- */
+T('constructors','Constructors',
+`A constructor initializes a new object's state. It has the <b>same name as the class</b> and <b>no return type</b> — not even <code class="inline">void</code>.`,
+`
+${S('Student.java', `class Student {
+    String name;
+    int age;
+
+    // default constructor
+    Student() {
+        this("Unknown", 0);   // calls the parameterized constructor below
+    }
+
+    // parameterized constructor
+    Student(String name, int age) {
+        this.name = name;   // "this" refers to the current object's field
+        this.age = age;
+    }
+
+    void show() {
+        System.out.println(name + " is " + age + " years old");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Student s1 = new Student("Neha", 20);
+        Student s2 = new Student();       // uses default constructor
+
+        s1.show();
+        s2.show();
+    }
+}`,
+`Neha is 20 years old
+Unknown is 0 years old`)}
+<h3>Key rules</h3>
+<ul>
+  <li>If you don't write any constructor, Java silently supplies a no-arg default one.</li>
+  <li>The moment you write <i>any</i> constructor yourself, the automatic default one disappears.</li>
+  <li><code class="inline">this(...)</code> calls another constructor of the same class — must be the first line.</li>
+</ul>
+<div class="callout"><b>How to answer "What is a constructor?" in an exam:</b> "A constructor is a special method-like block used to initialize an object at the time of its creation. It has the same name as the class, has no return type (not even void), and is called automatically when an object is created using <code class="inline">new</code>. Java provides two types — default (no-argument) and parameterized constructors — and a class can have multiple constructors through constructor overloading."</div>
+`);
+
+/* ---- 13 ---- */
+T('inheritance','Inheritance',
+`Inheritance lets one class (<b>subclass</b>) acquire the fields and methods of another (<b>superclass</b>) using <code class="inline">extends</code> — modelling an "is-a" relationship.`,
+`
+${S('Animals.java', `class Animal {
+    String name;
+    Animal(String name) { this.name = name; }
+
+    void eat() {
+        System.out.println(name + " is eating");
+    }
+}
+
+class Dog extends Animal {
+    Dog(String name) {
+        super(name);              // calls Animal's constructor
+    }
+
+    void bark() {
+        System.out.println(name + " says Woof!");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Dog d = new Dog("Rex");
+        d.eat();     // inherited from Animal
+        d.bark();    // defined in Dog
+    }
+}`,
+`Rex is eating
+Rex says Woof!`)}
+<h3>Types of inheritance in Java</h3>
+<ul>
+  <li><b>Single</b> — one subclass, one superclass (shown above)</li>
+  <li><b>Multilevel</b> — A → B → C, a chain of extension</li>
+  <li><b>Hierarchical</b> — multiple subclasses share one superclass</li>
+  <li><b>Multiple (via classes)</b> — <i>not allowed</i> in Java to avoid the "diamond problem"; achieved instead through <b>interfaces</b> (see Abstraction).</li>
+</ul>
+<div class="callout"><b><code class="inline">super</code> keyword:</b> refers to the immediate parent class — used to call its constructor (<code class="inline">super(...)</code>) or an overridden method (<code class="inline">super.methodName()</code>).</div>
+<div class="callout"><b>How to answer "What is inheritance?" in an exam:</b> "Inheritance is an OOP mechanism where one class (subclass/child) acquires the properties and behaviours (fields and methods) of another class (superclass/parent) using the <code class="inline">extends</code> keyword. It promotes code reusability and establishes an IS-A relationship. Java supports single, multilevel, and hierarchical inheritance through classes, but not multiple inheritance through classes — that is achieved using interfaces instead."</div>
+`);
+
+/* ---- 14 ---- */
+T('polymorphism','Polymorphism',
+`"Many forms." The same method call behaves differently depending on the object (runtime) or the arguments (compile time).`,
+`
+<h3>Compile-time polymorphism — method overloading</h3>
+<p>Already covered in Methods: multiple methods, same name, different parameter signatures, resolved at compile time.</p>
+<h3>Runtime polymorphism — method overriding</h3>
+<p>A subclass provides its own implementation of a method already defined in its superclass. Java decides <i>which</i> version to run based on the object's actual type at runtime — this is <b>dynamic dispatch</b>.</p>
+${S('Shapes.java', `class Shape {
+    double area() { return 0; }
+    String describe() { return "A generic shape with area " + area(); }
+}
+
+class Circle extends Shape {
+    double radius;
+    Circle(double radius) { this.radius = radius; }
+
+    @Override
+    double area() { return Math.PI * radius * radius; }
+}
+
+class Rectangle extends Shape {
+    double w, h;
+    Rectangle(double w, double h) { this.w = w; this.h = h; }
+
+    @Override
+    double area() { return w * h; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Shape[] shapes = { new Circle(3), new Rectangle(4, 5) };
+
+        for (Shape s : shapes) {
+            System.out.printf("%s -> area = %.2f%n", s.getClass().getSimpleName(), s.area());
+        }
+    }
+}`,
+`Circle -> area = 28.27
+Rectangle -> area = 20.00`)}
+<div class="callout"><b><code class="inline">@Override</code>:</b> not mandatory, but always use it — the compiler then verifies you're really overriding a parent method, catching typos at compile time instead of silently creating a new, unrelated method.</div>
+<h3>Overloading vs Overriding (frequent exam comparison)</h3>
+<ul>
+  <li><b>Overloading</b> — same class, same method name, <i>different</i> parameters; resolved at <b>compile time</b>.</li>
+  <li><b>Overriding</b> — parent/child classes, same method name, <i>same</i> parameters; resolved at <b>runtime</b>.</li>
+  <li>Overloading is also called <b>static/early binding</b>; overriding is <b>dynamic/late binding</b>.</li>
+</ul>
+<div class="callout"><b>How to answer "What is polymorphism?" in an exam:</b> "Polymorphism means 'many forms' — the ability of an object or method to behave differently in different contexts. Java supports two types: compile-time (static) polymorphism, achieved through method overloading, and runtime (dynamic) polymorphism, achieved through method overriding using inheritance and the <code class="inline">@Override</code> annotation. Runtime polymorphism is implemented internally through dynamic method dispatch."</div>
+`);
+
+/* ---- 15 ---- */
+T('encapsulation','Encapsulation',
+`Encapsulation means keeping a class's fields <code class="inline">private</code> and exposing controlled access through <code class="inline">public</code> getter/setter methods — protecting the object's internal state from invalid changes.`,
+`
+${S('BankAccount.java', `class BankAccount {
+    private double balance;   // hidden — can't be touched directly from outside
+
+    BankAccount(double initial) {
+        this.balance = initial;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) balance += amount;
+    }
+
+    public void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+        } else {
+            System.out.println("Withdrawal denied: insufficient funds");
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BankAccount acc = new BankAccount(1000);
+        acc.deposit(500);
+        acc.withdraw(2000);   // will be denied
+        acc.withdraw(300);
+        System.out.println("Final balance: " + acc.getBalance());
+    }
+}`,
+`Withdrawal denied: insufficient funds
+Final balance: 1200.0`)}
+<p>Because <code class="inline">balance</code> is private, nothing outside <code class="inline">BankAccount</code> can set it to an invalid value directly (e.g. <code class="inline">acc.balance = -500;</code> won't even compile) — every change is forced through validated methods.</p>
+<div class="callout"><b>How to answer "What is encapsulation?" in an exam:</b> "Encapsulation is the process of binding data (fields) and the methods that operate on that data into a single unit (a class), while restricting direct access to the data using access modifiers like private. Access is provided only through public getter and setter methods. It is also called data hiding, and it helps protect an object's internal state from unintended or invalid modification."</div>
+`);
+
+/* ---- 16 ---- */
+T('abstraction','Abstraction: Abstract Classes &amp; Interfaces',
+`Abstraction hides implementation details and exposes only what's necessary. Java gives you two tools: <code class="inline">abstract class</code> and <code class="inline">interface</code>.`,
+`
+<h3>Abstract classes</h3>
+<p>Can't be instantiated directly; may mix fully-implemented methods with <code class="inline">abstract</code> ones that subclasses <i>must</i> implement.</p>
+${S('Vehicle.java', `abstract class Vehicle {
+    abstract void startEngine();     // no body — subclass must implement
+
+    void honk() {                    // regular method, shared by all subclasses
+        System.out.println("Beep beep!");
+    }
+}
+
+class ElectricCar extends Vehicle {
+    @Override
+    void startEngine() {
+        System.out.println("Silent electric hum...");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Vehicle v = new ElectricCar();
+        v.startEngine();
+        v.honk();
+    }
+}`,
+`Silent electric hum...
+Beep beep!`)}
+<h3>Interfaces</h3>
+<p>A pure contract of method signatures (plus optional <code class="inline">default</code> and <code class="inline">static</code> methods). A class <code class="inline">implements</code> an interface and can implement <b>multiple</b> interfaces — Java's answer to multiple inheritance.</p>
+${S('Interfaces.java', `interface Flyable {
+    void fly();
+    default void land() {
+        System.out.println("Landing gently.");
+    }
+}
+
+interface Swimmable {
+    void swim();
+}
+
+class Duck implements Flyable, Swimmable {
+    public void fly()  { System.out.println("Duck flies low over the pond"); }
+    public void swim() { System.out.println("Duck paddles across the pond"); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Duck d = new Duck();
+        d.fly();
+        d.swim();
+        d.land();   // inherited default method, no override needed
+    }
+}`,
+`Duck flies low over the pond
+Duck paddles across the pond
+Landing gently.`)}
+<h3>Abstract class vs Interface — when to use which</h3>
+<ul>
+  <li>Use an <b>abstract class</b> when subclasses share common state/code and represent a clear "is-a" family (e.g. <code class="inline">Vehicle</code>).</li>
+  <li>Use an <b>interface</b> to define a capability/contract that unrelated classes can plug into (e.g. <code class="inline">Comparable</code>, <code class="inline">Runnable</code>).</li>
+  <li>A class can extend only <b>one</b> abstract/regular class, but implement <b>many</b> interfaces.</li>
+</ul>
+<div class="callout"><b>How to answer "What is abstraction?" in an exam:</b> "Abstraction is the process of hiding internal implementation details and showing only the essential features of an object to the user. In Java it is achieved using abstract classes (0–100% abstraction) and interfaces (100% abstraction, or partial with default methods). It lets a programmer focus on 'what an object does' rather than 'how it does it'."</div>
+`);
+
+/* ---- 17 ---- */
+T('static-final','static, final &amp; this/super',
+`A few keywords that come up constantly once classes get more advanced.`,
+`
+<h3>static — belongs to the class, not the object</h3>
+${S('Counter.java', `class Counter {
+    static int totalObjects = 0;   // shared by ALL instances
+
+    Counter() {
+        totalObjects++;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new Counter();
+        new Counter();
+        new Counter();
+        System.out.println("Objects created: " + Counter.totalObjects);
+    }
+}`,
+`Objects created: 3`)}
+<h3>final — locks something from changing</h3>
+${S('FinalDemo.java', `public class FinalDemo {
+    static final double TAX_RATE = 0.18;   // constant, can't be reassigned
+
+    public static void main(String[] args) {
+        double price = 1000;
+        double total = price + (price * TAX_RATE);
+        System.out.println("Total with tax: " + total);
+        // TAX_RATE = 0.20;   // <- compile error if uncommented
+    }
+}`,
+`Total with tax: 1180.0`)}
+<ul>
+  <li><code class="inline">final</code> variable → value can't be reassigned once set.</li>
+  <li><code class="inline">final</code> method → can't be overridden by a subclass.</li>
+  <li><code class="inline">final</code> class → can't be extended at all (e.g. <code class="inline">String</code> is final).</li>
+</ul>
+<h3>this vs super</h3>
+<ul>
+  <li><code class="inline">this</code> — refers to the current object (disambiguates fields from parameters, chains constructors).</li>
+  <li><code class="inline">super</code> — refers to the immediate parent class (calls its constructor or an overridden method).</li>
+</ul>
+<div class="callout"><b>How to answer "What is static keyword?" in an exam:</b> "The static keyword in Java means a member belongs to the class itself rather than to any individual object. Static variables are shared across all instances, static methods can be called without creating an object, and static blocks run once when the class is first loaded. It is used for utility/helper methods, constants, and counters shared across all objects."</div>
+<div class="callout"><b>How to answer "What is final keyword?" in an exam:</b> "The final keyword is used to restrict modification. A final variable's value cannot be changed once assigned (i.e., it becomes a constant), a final method cannot be overridden by subclasses, and a final class cannot be extended/inherited at all."</div>
+`);
+
+/* ---- 18 ---- */
+T('exceptions','Exception Handling',
+`Exceptions are runtime problems that would otherwise crash your program. Java lets you catch and recover from them gracefully with <code class="inline">try/catch/finally</code>.`,
+`
+<h3>try / catch / finally</h3>
+${S('TryCatch.java', `public class TryCatch {
+    public static void main(String[] args) {
+        int[] numbers = {10, 20, 30};
+
+        try {
+            System.out.println(numbers[5]);   // out of bounds!
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Caught: " + e.getMessage());
+        } finally {
+            System.out.println("This always runs, error or not.");
+        }
+
+        System.out.println("Program continues normally.");
+    }
+}`,
+`Caught: Index 5 out of bounds for length 3
+This always runs, error or not.
+Program continues normally.`)}
+<h3>Multi-catch &amp; checked vs unchecked</h3>
+<ul>
+  <li><b>Checked exceptions</b> (e.g. <code class="inline">IOException</code>) — must be declared with <code class="inline">throws</code> or handled; checked at compile time.</li>
+  <li><b>Unchecked exceptions</b> (e.g. <code class="inline">NullPointerException</code>, <code class="inline">ArithmeticException</code>) — subclasses of <code class="inline">RuntimeException</code>; not enforced by the compiler.</li>
+</ul>
+${S('MultiCatch.java', `public class MultiCatch {
+    static int divide(int a, int b) {
+        return a / b;
+    }
+
+    public static void main(String[] args) {
+        int[] tests = {0, -1};
+        for (int divisor : tests) {
+            try {
+                System.out.println("100 / " + divisor + " = " + divide(100, divisor));
+            } catch (ArithmeticException | NumberFormatException e) {
+                System.out.println("Error dividing by " + divisor + ": " + e.getMessage());
+            }
+        }
+    }
+}`,
+`Error dividing by 0: / by zero
+100 / -1 = -100`)}
+<h3>Custom exceptions &amp; throw/throws</h3>
+${S('CustomException.java', `class InsufficientFundsException extends Exception {
+    InsufficientFundsException(String message) {
+        super(message);
+    }
+}
+
+class Account {
+    double balance = 200;
+
+    void withdraw(double amount) throws InsufficientFundsException {
+        if (amount > balance) {
+            throw new InsufficientFundsException("Not enough balance for withdrawal of " + amount);
+        }
+        balance -= amount;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Account acc = new Account();
+        try {
+            acc.withdraw(500);
+        } catch (InsufficientFundsException e) {
+            System.out.println("Transaction failed: " + e.getMessage());
+        }
+    }
+}`,
+`Transaction failed: Not enough balance for withdrawal of 500.0`)}
+<h3>try-with-resources</h3>
+<p>Automatically closes any resource implementing <code class="inline">AutoCloseable</code> (like file streams) once the block ends — no manual <code class="inline">finally { close(); }</code> needed.</p>
+${S('TryWithResources.java', `import java.io.*;
+
+public class TryWithResources {
+    public static void main(String[] args) {
+        try (StringReader reader = new StringReader("Hello")) {
+            int ch;
+            while ((ch = reader.read()) != -1) {
+                System.out.print((char) ch);
+            }
+            System.out.println();
+        } catch (IOException e) {
+            System.out.println("IO error: " + e.getMessage());
+        }
+        // reader.close() is called automatically here
+    }
+}`,
+`Hello`)}
+<h3>Exception hierarchy (good to sketch in an exam)</h3>
+<ul>
+  <li><code class="inline">Throwable</code> is the root of everything.</li>
+  <li>It splits into <code class="inline">Error</code> (serious problems like <code class="inline">OutOfMemoryError</code> — not meant to be caught) and <code class="inline">Exception</code>.</li>
+  <li><code class="inline">Exception</code> splits into <b>checked</b> exceptions (e.g. <code class="inline">IOException</code>, <code class="inline">SQLException</code>) and <code class="inline">RuntimeException</code>, whose subclasses are <b>unchecked</b> (e.g. <code class="inline">NullPointerException</code>, <code class="inline">ArithmeticException</code>, <code class="inline">ArrayIndexOutOfBoundsException</code>).</li>
+</ul>
+<div class="callout"><b>How to answer "What is exception handling?" in an exam:</b> "Exception handling is a mechanism to gracefully handle runtime errors so the normal flow of the program is not disrupted. It uses five keywords: try (block that may throw an exception), catch (block that handles it), finally (block that always executes), throw (used to explicitly throw an exception), and throws (used in a method signature to declare exceptions it might throw). Exceptions are categorized as checked, handled at compile time, and unchecked, which occur at runtime."</div>
+`);
+
+/* ---- 19 ---- */
+T('collections','Collections Framework',
+`Arrays are fixed-size and low-level. The <b>Collections Framework</b> (<code class="inline">java.util</code>) gives you dynamic, feature-rich data structures: lists, sets and maps.`,
+`
+<h3>ArrayList — a resizable, ordered list</h3>
+${S('ListDemo.java', `import java.util.ArrayList;
+import java.util.List;
+
+public class ListDemo {
+    public static void main(String[] args) {
+        List<String> cities = new ArrayList<>();
+        cities.add("Mumbai");
+        cities.add("Delhi");
+        cities.add("Bengaluru");
+        cities.remove("Delhi");
+        cities.add(1, "Chennai");
+
+        System.out.println(cities);
+        System.out.println("Contains Chennai? " + cities.contains("Chennai"));
+
+        for (String city : cities) {
+            System.out.println("- " + city);
+        }
+    }
+}`,
+`[Mumbai, Chennai, Bengaluru]
+Contains Chennai? true
+- Mumbai
+- Chennai
+- Bengaluru`)}
+<h3>HashMap — key/value pairs</h3>
+${S('MapDemo.java', `import java.util.HashMap;
+import java.util.Map;
+
+public class MapDemo {
+    public static void main(String[] args) {
+        Map<String, Integer> prices = new HashMap<>();
+        prices.put("Coffee", 150);
+        prices.put("Tea", 80);
+        prices.put("Juice", 120);
+
+        prices.put("Tea", 90);   // overwrites existing key
+
+        for (Map.Entry<String, Integer> entry : prices.entrySet()) {
+            System.out.println(entry.getKey() + " -> Rs." + entry.getValue());
+        }
+        System.out.println("Has Coffee? " + prices.containsKey("Coffee"));
+    }
+}`,
+`Coffee -> Rs.150
+Tea -> Rs.90
+Juice -> Rs.120
+Has Coffee? true`)}
+<h3>HashSet — unique, unordered elements</h3>
+${S('SetDemo.java', `import java.util.HashSet;
+import java.util.Set;
+
+public class SetDemo {
+    public static void main(String[] args) {
+        Set<Integer> ids = new HashSet<>();
+        ids.add(101);
+        ids.add(102);
+        ids.add(101);   // duplicate — ignored
+
+        System.out.println("Unique IDs: " + ids);
+        System.out.println("Count: " + ids.size());
+    }
+}`,
+`Unique IDs: [101, 102]
+Count: 2`)}
+<h3>Common collection types at a glance</h3>
+<ul>
+  <li><b>List</b> (<code class="inline">ArrayList</code>, <code class="inline">LinkedList</code>) — ordered, allows duplicates, indexed access</li>
+  <li><b>Set</b> (<code class="inline">HashSet</code>, <code class="inline">TreeSet</code>) — no duplicates</li>
+  <li><b>Map</b> (<code class="inline">HashMap</code>, <code class="inline">TreeMap</code>) — key → value lookups</li>
+  <li><b>Queue/Deque</b> (<code class="inline">ArrayDeque</code>, <code class="inline">LinkedList</code>) — FIFO/LIFO structures</li>
+</ul>
+`);
+
+/* ---- 20 ---- */
+T('generics','Generics',
+`Generics let classes and methods operate on a <b>type parameter</b> instead of a fixed type — giving compile-time type safety without duplicating code for every type.`,
+`
+${S('GenericsDemo.java', `class Box<T> {
+    private T content;
+
+    void set(T content) { this.content = content; }
+    T get() { return content; }
+}
+
+public class Main {
+    // generic method
+    static <T> void printTwice(T value) {
+        System.out.println(value + " " + value);
+    }
+
+    public static void main(String[] args) {
+        Box<String> textBox = new Box<>();
+        textBox.set("Hello Generics");
+        System.out.println(textBox.get());
+
+        Box<Integer> numberBox = new Box<>();
+        numberBox.set(42);
+        System.out.println(numberBox.get());
+
+        printTwice("Echo");
+        printTwice(7);
+    }
+}`,
+`Hello Generics
+42
+Echo Echo
+7 7`)}
+<p>Without generics you'd need an <code class="inline">Object</code>-typed box and manual casting everywhere — generics move that type checking to compile time, catching mismatches before the program ever runs.</p>
+<div class="callout"><b>Bounded types:</b> <code class="inline">&lt;T extends Number&gt;</code> restricts <code class="inline">T</code> to <code class="inline">Number</code> or its subclasses, letting you safely call numeric methods on it.</div>
+`);
+
+/* ---- 21 ---- */
+T('multithreading','Multithreading',
+`A thread is an independent path of execution. Java can run multiple threads concurrently, letting a program do several things "at once."`,
+`
+<h3>Extending Thread vs implementing Runnable</h3>
+${S('ThreadDemo.java', `class MyThread extends Thread {
+    public void run() {
+        for (int i = 1; i <= 3; i++) {
+            System.out.println("MyThread: " + i);
+        }
+    }
+}
+
+class MyRunnable implements Runnable {
+    public void run() {
+        for (int i = 1; i <= 3; i++) {
+            System.out.println("MyRunnable: " + i);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Thread t1 = new MyThread();
+        Thread t2 = new Thread(new MyRunnable());
+
+        t1.start();   // NOT t1.run() -- start() spins up a new call stack
+        t1.join();    // wait for t1 to finish before continuing
+        t2.start();
+        t2.join();
+
+        System.out.println("Main thread finished.");
+    }
+}`,
+`MyThread: 1
+MyThread: 2
+MyThread: 3
+MyRunnable: 1
+MyRunnable: 2
+MyRunnable: 3
+Main thread finished.`)}
+<div class="callout warn"><b>Prefer <code class="inline">Runnable</code>:</b> implementing it (instead of extending <code class="inline">Thread</code>) leaves your class free to extend something else too, since Java only allows single inheritance of classes.</div>
+<h3>synchronized — preventing race conditions</h3>
+${S('SyncCounter.java', `class Counter {
+    private int count = 0;
+
+    synchronized void increment() {   // only one thread at a time may enter
+        count++;
+    }
+
+    int getCount() { return count; }
+}
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Counter counter = new Counter();
+        Runnable task = () -> {
+            for (int i = 0; i < 1000; i++) counter.increment();
+        };
+
+        Thread t1 = new Thread(task);
+        Thread t2 = new Thread(task);
+        t1.start(); t2.start();
+        t1.join(); t2.join();
+
+        System.out.println("Final count: " + counter.getCount());
+    }
+}`,
+`Final count: 2000`)}
+<h3>Thread lifecycle (common exam diagram question)</h3>
+<ul>
+  <li><b>New</b> — a <code class="inline">Thread</code> object is created but <code class="inline">start()</code> hasn't been called yet.</li>
+  <li><b>Runnable</b> — after <code class="inline">start()</code>, it's ready to run and waiting for CPU time from the scheduler.</li>
+  <li><b>Running</b> — the thread is actively executing.</li>
+  <li><b>Blocked/Waiting</b> — paused, e.g. waiting for a lock (<code class="inline">synchronized</code>) or for <code class="inline">sleep()</code>/<code class="inline">wait()</code> to finish.</li>
+  <li><b>Terminated</b> — the thread has finished executing <code class="inline">run()</code> or was stopped.</li>
+</ul>
+<div class="callout"><b>How to answer "What is multithreading?" in an exam:</b> "Multithreading is Java's capability to execute two or more parts (threads) of a program concurrently, maximizing CPU utilization. A thread can be created by extending the Thread class or implementing the Runnable interface. Threads share the same memory space, which can lead to race conditions when multiple threads access shared data — this is prevented using the synchronized keyword, which allows only one thread to access a critical section at a time."</div>
+`);
+
+/* ---- 22 ---- */
+T('lambdas-streams','Lambda Expressions &amp; Streams',
+`Java 8 introduced a functional style: <b>lambda expressions</b> for compact anonymous functions and the <b>Stream API</b> for declarative collection processing.`,
+`
+<h3>Lambda expressions &amp; functional interfaces</h3>
+<p>A lambda is a short-hand implementation of a <b>functional interface</b> — an interface with exactly one abstract method.</p>
+${S('LambdaDemo.java', `interface Operation {
+    int apply(int a, int b);
+}
+
+public class LambdaDemo {
+    public static void main(String[] args) {
+        Operation add = (a, b) -> a + b;
+        Operation multiply = (a, b) -> a * b;
+
+        System.out.println("Sum: " + add.apply(4, 5));
+        System.out.println("Product: " + multiply.apply(4, 5));
+
+        // built-in functional interfaces
+        Runnable task = () -> System.out.println("Task running via lambda");
+        task.run();
+    }
+}`,
+`Sum: 9
+Product: 20
+Task running via lambda`)}
+<h3>Streams — filter, map, reduce</h3>
+${S('StreamDemo.java', `import java.util.List;
+import java.util.stream.Collectors;
+
+public class StreamDemo {
+    public static void main(String[] args) {
+        List<Integer> numbers = List.of(4, 9, 15, 22, 30, 3, 18);
+
+        List<Integer> result = numbers.stream()
+                .filter(n -> n % 2 == 0)       // keep evens
+                .map(n -> n * 2)                // double each
+                .sorted()                       // ascending order
+                .collect(Collectors.toList());
+
+        System.out.println("Transformed: " + result);
+
+        int sum = numbers.stream().mapToInt(Integer::intValue).sum();
+        System.out.println("Sum of all: " + sum);
+
+        long countAbove10 = numbers.stream().filter(n -> n > 10).count();
+        System.out.println("Count > 10: " + countAbove10);
+    }
+}`,
+`Transformed: [8, 36, 44, 60]
+Sum of all: 101
+Count > 10: 4`)}
+<p>Streams don't modify the original collection — they describe a pipeline of operations that runs once, lazily, when a terminal operation (<code class="inline">collect</code>, <code class="inline">sum</code>, <code class="inline">count</code>...) is called.</p>
+`);
+
+/* ---- 23 ---- */
+T('file-io','File I/O',
+`Java's <code class="inline">java.io</code> and <code class="inline">java.nio.file</code> packages read and write files on disk.`,
+`
+${S('FileDemo.java', `import java.io.*;
+import java.nio.file.*;
+
+public class FileDemo {
+    public static void main(String[] args) throws IOException {
+        Path path = Path.of("notes.txt");
+
+        // write
+        Files.writeString(path, "Java file I/O is straightforward.\\nLine two.");
+
+        // read all lines
+        for (String line : Files.readAllLines(path)) {
+            System.out.println("Read: " + line);
+        }
+
+        // append using BufferedWriter
+        try (BufferedWriter bw = Files.newBufferedWriter(path, StandardOpenOption.APPEND)) {
+            bw.write("\\nAppended line.");
+        }
+
+        System.out.println("--- after append ---");
+        Files.readAllLines(path).forEach(System.out::println);
+    }
+}`,
+`Read: Java file I/O is straightforward.
+Read: Line two.
+--- after append ---
+Java file I/O is straightforward.
+Line two.
+Appended line.`)}
+<div class="callout"><b>Always handle <code class="inline">IOException</code>:</b> it's a checked exception — the compiler forces you to either catch it or declare <code class="inline">throws IOException</code>, since disk operations can always fail (missing file, no permission, full disk...).</div>
+`);
+
+/* ---- 24 ---- */
+T('wrap-up','Packages, Access Modifiers &amp; Cheat Sheet',
+`A quick reference to close things out: how code is organised into packages, who can see what, and a one-glance summary of everything above.`,
+`
+<h3>Packages</h3>
+<p>A package groups related classes and prevents naming collisions, like folders for code. Declared with <code class="inline">package</code> at the top of a file, brought in elsewhere with <code class="inline">import</code>.</p>
+${S('com/shop/Product.java', `package com.shop;
+
+public class Product {
+    public String name;
+    public double price;
+}`,
+`(no output — this file just declares a reusable class)`)}
+${S('com/app/Main.java', `package com.app;
+import com.shop.Product;
+
+public class Main {
+    public static void main(String[] args) {
+        Product p = new Product();
+        p.name = "Notebook";
+        p.price = 49.0;
+        System.out.println(p.name + " costs Rs." + p.price);
+    }
+}`,
+`Notebook costs Rs.49.0`)}
+<h3>Access modifiers</h3>
+<ul>
+  <li><b>public</b> — visible everywhere</li>
+  <li><b>protected</b> — visible in the same package + subclasses (even in other packages)</li>
+  <li><i>(default / package-private, no keyword)</i> — visible only within the same package</li>
+  <li><b>private</b> — visible only inside the declaring class</li>
+</ul>
+<h3>Cheat sheet: syntax quick reference</h3>
+${S('CheatSheet.java', `// class & object
+class Foo { }                        Foo f = new Foo();
+
+// conditional
+if (x > 0) { } else { }
+switch (x) { case 1 -> {} default -> {} }
+
+// loops
+for (int i = 0; i < n; i++) { }
+while (cond) { }
+do { } while (cond);
+for (Type item : collection) { }
+
+// method
+static int add(int a, int b) { return a + b; }
+
+// arrays
+int[] arr = {1, 2, 3};
+
+// exception
+try { } catch (Exception e) { } finally { }
+
+// generics
+List<String> list = new ArrayList<>();
+
+// lambda
+Runnable r = () -> System.out.println("run");`,
+`(reference block — nothing to execute, just the shapes to remember)`)}
+<div class="callout"><b>You've now covered Java end-to-end:</b> syntax, control flow, OOP's four pillars, exceptions, collections, generics, concurrency and the modern functional style. From here, the best next step is building small real projects — a calculator, a to-do list, a simple bank simulator — that force you to combine everything above.</div>
+`);
+
+/* ---- 25 (final) ---- */
+T('revision','Quick Revision Sheet — Every Concept in One Line',
+`A last-minute, scroll-and-recall page. Every topic above, compressed into a single exam-ready sentence — use this the night before a test.`,
+`
+<h3>Fundamentals</h3>
+<ul>
+  <li><b>Java</b> — a high-level, object-oriented, platform-independent language by James Gosling (Sun Microsystems, 1995), now maintained by Oracle.</li>
+  <li><b>JVM</b> — executes bytecode; <b>JRE</b> = JVM + libraries; <b>JDK</b> = JRE + compiler/tools.</li>
+  <li><b>Bytecode</b> — the platform-neutral <code class="inline">.class</code> output of <code class="inline">javac</code>, interpreted/JIT-compiled by the JVM.</li>
+  <li><b>main method</b> — <code class="inline">public static void main(String[] args)</code>, the program's entry point.</li>
+</ul>
+<h3>Data &amp; control flow</h3>
+<ul>
+  <li><b>Primitive types</b> — byte, short, int, long, float, double, char, boolean (8 total).</li>
+  <li><b>Type casting</b> — widening is automatic; narrowing needs an explicit cast and may lose data.</li>
+  <li><b>Operators</b> — arithmetic, unary, relational, logical, bitwise, shift, assignment, ternary, instanceof.</li>
+  <li><b>if / else if / switch</b> — branch execution based on a condition.</li>
+  <li><b>for / while / do-while / for-each</b> — repeat code; do-while always runs at least once.</li>
+  <li><b>break</b> exits a loop entirely; <b>continue</b> skips to the next iteration.</li>
+  <li><b>Arrays</b> — fixed-size, same-type, zero-indexed collections; 2D arrays are arrays of arrays.</li>
+  <li><b>String</b> — immutable; use <code class="inline">StringBuilder</code> for heavy concatenation.</li>
+</ul>
+<h3>OOP pillars</h3>
+<ul>
+  <li><b>Class</b> — blueprint; <b>Object</b> — instance of a class created with <code class="inline">new</code>.</li>
+  <li><b>Constructor</b> — same name as class, no return type, runs on object creation.</li>
+  <li><b>Encapsulation</b> — private fields + public getters/setters = data hiding.</li>
+  <li><b>Inheritance</b> — <code class="inline">extends</code>, reuse parent's members, models "is-a".</li>
+  <li><b>Polymorphism</b> — overloading (compile-time) vs overriding (runtime, via <code class="inline">@Override</code>).</li>
+  <li><b>Abstraction</b> — abstract class (partial) vs interface (full contract, multiple "inheritance").</li>
+  <li><b>this</b> — current object; <b>super</b> — immediate parent class.</li>
+  <li><b>static</b> — belongs to the class, not the instance; <b>final</b> — locks a variable/method/class from change.</li>
+</ul>
+<h3>Robustness &amp; advanced</h3>
+<ul>
+  <li><b>try/catch/finally</b> — handle runtime errors gracefully; <b>throw</b> raises one, <b>throws</b> declares one.</li>
+  <li><b>Checked</b> exceptions are compiler-enforced; <b>unchecked</b> (RuntimeException) are not.</li>
+  <li><b>Collections</b> — List (ordered, dupes ok), Set (unique), Map (key→value).</li>
+  <li><b>Generics</b> — <code class="inline">&lt;T&gt;</code> gives compile-time type safety without duplicating code.</li>
+  <li><b>Thread / Runnable</b> — two ways to create a thread; <code class="inline">start()</code> not <code class="inline">run()</code> begins concurrent execution.</li>
+  <li><b>synchronized</b> — restricts a critical section to one thread at a time.</li>
+  <li><b>Lambda</b> — <code class="inline">(params) -&gt; expression</code>, a short-hand implementation of a functional interface.</li>
+  <li><b>Stream API</b> — <code class="inline">filter → map → collect</code> style declarative data processing.</li>
+</ul>
+<div class="callout"><b>Exam strategy tip:</b> for "explain X" questions, always answer in this order — <i>1) one-line definition, 2) why/when it's used, 3) a tiny code snippet or keyword example, 4) one related keyword or comparison (e.g. overloading vs overriding).</i> Examiners specifically look for that structure.</div>
+`);
+
+/* ======================= RENDER ======================= */
+const contentEl = document.getElementById('content');
+const tocEl = document.getElementById('toc');
+let html = '';
+let tocHtml = '';
+TOPICS.forEach((t, i) => {
+  const num = String(i + 1).padStart(2, '0');
+  html += `
+  <section class="topic" id="${t.id}">
+    <div class="topic-head">
+      <span class="topic-index">${num}</span>
+      <h2>${t.title}</h2>
+    </div>
+    <p class="topic-intro">${t.intro}</p>
+    ${t.body}
+  </section>`;
+  tocHtml += `<li><a href="#${t.id}" data-id="${t.id}"><span class="num">${num}</span>${t.title.replace(/<[^>]+>/g,'')}</a></li>`;
+});
+contentEl.innerHTML = html;
+tocEl.innerHTML = tocHtml;
+
+/* ======================= SCROLL SPY + BACK TO TOP ======================= */
+const tocLinks = Array.from(document.querySelectorAll('#toc a'));
+const sections = Array.from(document.querySelectorAll('section.topic'));
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    const link = tocLinks.find(l => l.dataset.id === entry.target.id);
+    if (!link) return;
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+sections.forEach(s => observer.observe(s));
+
+const totop = document.getElementById('totop');
+window.addEventListener('scroll', () => {
+  totop.classList.toggle('show', window.scrollY > 600);
+});
+totop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+</script>
+</body>
+</html>

@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBMS & SQL Complete Reference Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-0:#0a0e14;
+  --bg-1:#0f141c;
+  --bg-2:#151b26;
+  --bg-3:#1b2330;
+  --border:#232c3a;
+  --border-soft:#1a212c;
+  --text-0:#eef2f7;
+  --text-1:#aab4c4;
+  --text-2:#6f7a8c;
+  --accent:#3ecf8e;
+  --accent-2:#5b9dff;
+  --accent-3:#ffb454;
+  --accent-4:#ff6b8b;
+  --accent-purple:#b78cff;
+  --ddl:#5b9dff;
+  --dml:#3ecf8e;
+  --dcl:#ffb454;
+  --tcl:#b78cff;
+  --dql:#ff6b8b;
+  --mono:'JetBrains Mono', monospace;
+  --sans:'Inter', sans-serif;
+  --display:'Sora', sans-serif;
+  --radius:10px;
+  --shadow:0 8px 30px rgba(0,0,0,0.35);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg-0);
+  color:var(--text-0);
+  font-family:var(--sans);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(62,207,142,0.3);color:#fff;}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-track{background:var(--bg-1);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px;}
+::-webkit-scrollbar-thumb:hover{background:#2c3646;}
+
+a{color:inherit;}
+h1,h2,h3,h4{font-family:var(--display);margin:0;color:var(--text-0);}
+code,pre{font-family:var(--mono);}
+p{margin:0 0 12px 0;color:var(--text-1);}
+
+/* ===== Top progress bar ===== */
+#top-progress{
+  position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  width:0%;z-index:1000;transition:width .15s ease;
+}
+
+/* ===== Layout ===== */
+.layout{display:flex;min-height:100vh;}
+.sidebar{
+  width:290px;flex-shrink:0;background:var(--bg-1);border-right:1px solid var(--border-soft);
+  position:sticky;top:0;height:100vh;overflow-y:auto;padding:20px 0 60px;
+}
+.sidebar-header{padding:0 20px 16px;border-bottom:1px solid var(--border-soft);margin-bottom:10px;}
+.sidebar-brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.05rem;}
+.sidebar-brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent);}
+.sidebar-sub{font-size:0.72rem;color:var(--text-2);margin-top:4px;font-family:var(--mono);letter-spacing:0.5px;}
+.progress-wrap{padding:14px 20px;border-bottom:1px solid var(--border-soft);margin-bottom:8px;}
+.progress-label{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-2);margin-bottom:6px;font-family:var(--mono);}
+.progress-track{height:6px;background:var(--bg-3);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition:width .3s ease;border-radius:3px;}
+
+.nav-group{margin-bottom:4px;}
+.nav-group-title{
+  padding:14px 20px 6px;font-size:0.68rem;text-transform:uppercase;letter-spacing:1.2px;
+  color:var(--text-2);font-weight:600;font-family:var(--mono);
+}
+.nav-link{
+  display:flex;align-items:center;gap:10px;padding:8px 20px;font-size:0.86rem;color:var(--text-1);
+  text-decoration:none;border-left:2px solid transparent;transition:all .15s ease;cursor:pointer;
+}
+.nav-link .num{font-family:var(--mono);font-size:0.72rem;color:var(--text-2);min-width:22px;}
+.nav-link:hover{background:var(--bg-2);color:var(--text-0);}
+.nav-link.active{background:var(--bg-2);color:var(--accent);border-left-color:var(--accent);}
+.nav-link.done .num::after{content:'';}
+.nav-link .check{margin-left:auto;width:14px;height:14px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;}
+.nav-link.done .check{background:var(--accent);border-color:var(--accent);position:relative;}
+.nav-link.done .check::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#08130d;}
+
+.main{flex:1;min-width:0;}
+
+/* ===== Mobile ===== */
+.hamburger{
+  display:none;position:fixed;top:14px;left:14px;z-index:1001;width:42px;height:42px;
+  background:var(--bg-2);border:1px solid var(--border);border-radius:8px;cursor:pointer;
+  align-items:center;justify-content:center;flex-direction:column;gap:4px;
+}
+.hamburger span{width:18px;height:2px;background:var(--text-0);border-radius:1px;}
+.sidebar-overlay{display:none;}
+
+@media (max-width:960px){
+  .hamburger{display:flex;}
+  .sidebar{
+    position:fixed;left:0;top:0;z-index:1000;transform:translateX(-100%);transition:transform .25s ease;
+    box-shadow:var(--shadow);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;
+  }
+  .sidebar-overlay.show{display:block;}
+}
+
+/* ===== Hero ===== */
+.hero{
+  padding:90px 60px 60px;background:
+    radial-gradient(circle at 15% 20%, rgba(62,207,142,0.10), transparent 45%),
+    radial-gradient(circle at 85% 0%, rgba(91,157,255,0.10), transparent 45%);
+  border-bottom:1px solid var(--border-soft);position:relative;overflow:hidden;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:0.78rem;
+  color:var(--accent);border:1px solid rgba(62,207,142,0.35);background:rgba(62,207,142,0.06);
+  padding:6px 12px;border-radius:20px;margin-bottom:22px;
+}
+.hero h1{font-size:3rem;font-weight:800;line-height:1.12;margin-bottom:18px;letter-spacing:-0.5px;}
+.hero h1 .grad{background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.hero p.lead{font-size:1.08rem;color:var(--text-1);max-width:680px;margin-bottom:30px;}
+.hero-stats{display:flex;gap:36px;flex-wrap:wrap;margin-bottom:34px;}
+.hstat b{display:block;font-family:var(--display);font-size:1.7rem;color:var(--text-0);font-weight:800;}
+.hstat span{font-size:0.78rem;color:var(--text-2);font-family:var(--mono);}
+.hero-links{display:flex;gap:12px;flex-wrap:wrap;}
+.pill-link{
+  font-family:var(--mono);font-size:0.82rem;padding:9px 16px;border-radius:8px;border:1px solid var(--border);
+  background:var(--bg-2);color:var(--text-1);text-decoration:none;transition:all .15s ease;
+}
+.pill-link:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
+.pill-link.primary{background:var(--accent);color:#08130d;border-color:var(--accent);font-weight:600;}
+.pill-link.primary:hover{color:#08130d;filter:brightness(1.08);}
+
+/* ===== Content sections ===== */
+.content{padding:50px 60px 100px;max-width:1000px;}
+.category-block{margin-bottom:64px;}
+.category-head{display:flex;align-items:baseline;gap:14px;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border-soft);}
+.category-letter{
+  font-family:var(--display);font-size:1.1rem;font-weight:800;color:var(--bg-0);background:var(--accent);
+  width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.category-head h2{font-size:1.5rem;}
+.category-desc{color:var(--text-2);font-size:0.88rem;margin-top:2px;}
+
+.card{
+  background:var(--bg-1);border:1px solid var(--border-soft);border-radius:var(--radius);
+  padding:26px 28px;margin-bottom:22px;scroll-margin-top:24px;
+}
+.card-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
+.card-num{font-family:var(--mono);color:var(--text-2);font-size:0.85rem;}
+.card h3{font-size:1.22rem;}
+.tag{
+  font-family:var(--mono);font-size:0.66rem;padding:2px 8px;border-radius:5px;text-transform:uppercase;
+  letter-spacing:0.5px;font-weight:600;
+}
+.tag.ddl{background:rgba(91,157,255,0.12);color:var(--ddl);}
+.tag.dml{background:rgba(62,207,142,0.12);color:var(--dml);}
+.tag.dcl{background:rgba(255,180,84,0.12);color:var(--dcl);}
+.tag.tcl{background:rgba(183,140,255,0.12);color:var(--tcl);}
+.tag.dql{background:rgba(255,107,139,0.12);color:var(--dql);}
+.tag.core{background:rgba(238,242,247,0.08);color:var(--text-1);}
+
+.card .desc{margin-bottom:14px;}
+.card .desc strong{color:var(--text-0);}
+.syntax-box{
+  background:var(--bg-2);border:1px solid var(--border-soft);border-left:3px solid var(--accent-2);
+  border-radius:6px;padding:12px 16px;margin-bottom:14px;font-family:var(--mono);font-size:0.83rem;
+  color:var(--accent-2);overflow-x:auto;white-space:pre;
+}
+.syntax-label{font-family:var(--mono);font-size:0.66rem;color:var(--text-2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+
+/* ===== Code panel ===== */
+.code-panel{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:10px;background:#0c1017;}
+.code-toolbar{
+  display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg-3);
+  border-bottom:1px solid var(--border);
+}
+.code-toolbar .dots{display:flex;gap:6px;}
+.code-toolbar .dots span{width:9px;height:9px;border-radius:50%;background:#3a4456;}
+.code-toolbar .label{font-family:var(--mono);font-size:0.72rem;color:var(--text-2);}
+.run-btn{
+  display:flex;align-items:center;gap:6px;background:var(--accent);color:#08130d;border:none;
+  padding:6px 12px;border-radius:6px;font-family:var(--mono);font-size:0.74rem;font-weight:700;
+  cursor:pointer;transition:filter .15s ease;
+}
+.run-btn:hover{filter:brightness(1.1);}
+.run-btn.running{background:var(--accent-3);}
+.run-btn svg{width:11px;height:11px;}
+.code-editor{
+  width:100%;background:transparent;border:none;color:var(--text-0);font-family:var(--mono);
+  font-size:0.85rem;padding:16px;resize:vertical;min-height:60px;outline:none;line-height:1.55;
+}
+.output-panel{
+  border-top:1px solid var(--border);background:#080b10;padding:14px 16px;font-family:var(--mono);
+  font-size:0.8rem;color:var(--text-1);display:none;max-height:320px;overflow:auto;
+}
+.output-panel.show{display:block;}
+.output-panel table{border-collapse:collapse;width:100%;font-size:0.78rem;}
+.output-panel th{
+  text-align:left;padding:6px 10px;background:var(--bg-2);color:var(--accent);border-bottom:1px solid var(--border);
+  position:sticky;top:0;
+}
+.output-panel td{padding:6px 10px;border-bottom:1px solid var(--border-soft);color:var(--text-0);}
+.output-panel tr:hover td{background:var(--bg-2);}
+.output-meta{color:var(--text-2);margin-top:8px;font-size:0.74rem;}
+.output-panel .err{color:var(--accent-4);}
+.output-panel .ok-msg{color:var(--accent);}
+
+.note-box{
+  background:rgba(255,180,84,0.06);border:1px solid rgba(255,180,84,0.25);border-radius:8px;
+  padding:12px 16px;margin-top:14px;font-size:0.85rem;color:var(--text-1);
+}
+.note-box b{color:var(--accent-3);}
+.compare-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:0.85rem;}
+.compare-table th,.compare-table td{border:1px solid var(--border-soft);padding:8px 12px;text-align:left;}
+.compare-table th{background:var(--bg-2);color:var(--accent);font-family:var(--mono);font-size:0.76rem;}
+.compare-table td{color:var(--text-1);}
+
+/* ===== simulator panels ===== */
+.sim-box{background:var(--bg-2);border:1px solid var(--border-soft);border-radius:8px;padding:18px;margin-top:14px;}
+.sim-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.sim-btn{
+  background:var(--bg-3);border:1px solid var(--border);color:var(--text-1);padding:7px 14px;border-radius:6px;
+  font-family:var(--mono);font-size:0.76rem;cursor:pointer;transition:all .15s ease;
+}
+.sim-btn:hover{border-color:var(--accent-2);color:var(--text-0);}
+.sim-btn.active{background:var(--accent-2);color:#08130d;border-color:var(--accent-2);}
+.sim-canvas-wrap{background:#0c1017;border-radius:6px;padding:10px;overflow-x:auto;}
+
+/* ===== footer nav ===== */
+.page-footer{padding:40px 60px 80px;border-top:1px solid var(--border-soft);color:var(--text-2);font-size:0.85rem;text-align:center;}
+.page-footer b{color:var(--text-1);}
+
+@media (max-width:960px){
+  .hero{padding:90px 24px 40px;}
+  .hero h1{font-size:2.1rem;}
+  .content{padding:36px 20px 80px;}
+  .card{padding:20px;}
+}
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('dbms-sql')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('dbms-sql'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+
+<div id="top-progress"></div>
+<div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+<div class="sidebar-overlay" id="overlay"></div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand"><span class="dot"></span> DBMS &amp; SQL — A to Z</div>
+      <div class="sidebar-sub">56 concepts · 11 modules</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label"><span>PROGRESS</span><span id="progress-count">0 / 56</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div id="nav-container"></div>
+  </nav>
+
+  <!-- SIDEBAR_PLACEHOLDER -->
+
+  <div class="main">
+    <header class="hero">
+      <div class="hero-eyebrow">◆ COMPLETE REFERENCE GUIDE</div>
+      <h1>Database Management Systems<br><span class="grad">&amp; SQL, from first principles to internals.</span></h1>
+      <p class="lead">A single-file, self-contained reference covering DBMS theory, the relational model, SQL in full (DDL · DML · DCL · TCL · DQL), stored programs, normalization, transactions, indexing, and modern distributed databases — with a live, in-browser SQL playground built into every query example.</p>
+      <div class="hero-stats">
+        <div class="hstat"><b>56</b><span>CONCEPTS</span></div>
+        <div class="hstat"><b>11</b><span>MODULES</span></div>
+        <div class="hstat"><b>30+</b><span>RUNNABLE QUERIES</span></div>
+        <div class="hstat"><b>5</b><span>SQL CATEGORIES</span></div>
+      </div>
+      <div class="hero-links">
+        <a class="pill-link primary" href="#c1">Start learning →</a>
+        <a class="pill-link" href="#sql-playground">Open SQL Playground</a>
+        <a class="pill-link" href="#c9">Jump to Normalization</a>
+        <a class="pill-link" href="#c11">Jump to Transactions</a>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <div class="card" id="sql-playground" style="border-color:var(--accent);">
+        <div class="card-head"><span class="tag dql">LIVE</span><h3>SQL Playground — Sample Database</h3></div>
+        <p class="desc">Every runnable panel below queries this in-memory sample database, executed by a small SQL engine built into this page. Click <b>▶ Run</b> on any query box, or edit the query yourself and re-run it.</p>
+        <div class="compare-table" style="margin-top:14px;">
+          <table class="compare-table">
+            <tr><th>Table</th><th>Columns</th></tr>
+            <tr><td><code>employees</code></td><td>emp_id, name, dept_id, salary, manager_id, hire_date, city</td></tr>
+            <tr><td><code>departments</code></td><td>dept_id, dept_name, location, budget</td></tr>
+            <tr><td><code>projects</code></td><td>project_id, project_name, dept_id, budget, status</td></tr>
+          </table>
+        </div>
+        <div class="code-panel" style="margin-top:16px;">
+          <div class="code-toolbar">
+            <div class="dots"><span></span><span></span><span></span></div>
+            <div class="label">playground.sql</div>
+            <button class="run-btn" onclick="runQuery(this)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>RUN</button>
+          </div>
+          <textarea class="code-editor" rows="3">SELECT name, salary, dept_id FROM employees WHERE salary > 60000 ORDER BY salary DESC;</textarea>
+          <div class="output-panel"></div>
+        </div>
+      </div>
+
+      <div class="category-block" id="c1">
+        <div class="category-head">
+          <div class="category-letter">A</div>
+          <div><h2>Foundations of DBMS</h2><div class="category-desc">What a database management system is, why it replaced file systems, and how it's architected.</div></div>
+        </div>
+
+        <div class="card" id="s1">
+          <div class="card-head"><span class="card-num">01</span><span class="tag core">CORE</span><h3>What is a DBMS?</h3></div>
+          <p class="desc"><strong>Definition:</strong> A Database Management System (DBMS) is software that creates, stores, manages, and controls access to data in a <b>database</b> — a structured, persistent collection of related data. It sits between applications and the physical data, offering a controlled interface instead of direct file access.</p>
+          <p class="desc">A DBMS provides four core guarantees: <strong>data definition</strong> (schemas), <strong>data manipulation</strong> (query/update), <strong>data control</strong> (security/permissions), and <strong>data integrity</strong> (constraints, transactions).</p>
+          <div class="note-box"><b>Examples:</b> MySQL, PostgreSQL, Oracle Database, SQL Server, SQLite, MongoDB. The first four are <em>relational</em> DBMS (RDBMS) — the focus of this guide.</div>
+        </div>
+
+        <div class="card" id="s2">
+          <div class="card-head"><span class="card-num">02</span><span class="tag core">CORE</span><h3>File System vs DBMS</h3></div>
+          <p class="desc">Before DBMS became standard, applications stored data directly in OS files. This caused problems a DBMS is specifically designed to solve.</p>
+          <table class="compare-table">
+            <tr><th>Problem in File Systems</th><th>How DBMS Solves It</th></tr>
+            <tr><td>Data redundancy &amp; inconsistency</td><td>Centralized storage, normalization</td></tr>
+            <tr><td>Difficult concurrent access</td><td>Concurrency control (locking, MVCC)</td></tr>
+            <tr><td>No atomicity on crashes</td><td>Transactions &amp; recovery (ACID)</td></tr>
+            <tr><td>No standard query language</td><td>SQL as a declarative interface</td></tr>
+            <tr><td>Weak security</td><td>User roles, GRANT/REVOKE (DCL)</td></tr>
+            <tr><td>Rigid, hard-to-change structure</td><td>Data independence (logical/physical)</td></tr>
+          </table>
+        </div>
+
+        <div class="card" id="s3">
+          <div class="card-head"><span class="card-num">03</span><span class="tag core">CORE</span><h3>DBMS Architecture</h3></div>
+          <p class="desc"><strong>1-Tier:</strong> the database is directly accessible to the user on the same machine (e.g. local SQLite file) — used mainly for development.</p>
+          <p class="desc"><strong>2-Tier (Client-Server):</strong> a client application talks directly to the database server over a network, e.g. a desktop app connecting straight to MySQL.</p>
+          <p class="desc"><strong>3-Tier:</strong> a middle <em>application/logic tier</em> sits between the client and the database, so clients never talk to the DB directly. This is the standard architecture for web applications (browser → app server → database).</p>
+          <div class="note-box"><b>ANSI-SPARC 3-level schema architecture</b> (a separate but related idea): <b>External</b> level (user views) → <b>Conceptual</b> level (logical schema, tables/relationships) → <b>Internal</b> level (physical storage, indexes, files). This layering is what enables data independence (below).</div>
+        </div>
+
+        <div class="card" id="s4">
+          <div class="card-head"><span class="card-num">04</span><span class="tag core">CORE</span><h3>Database Languages Overview</h3></div>
+          <p class="desc">SQL itself is subdivided into five functional categories. Every SQL statement in this guide is tagged with the category it belongs to — you'll see these tags throughout.</p>
+          <table class="compare-table">
+            <tr><th>Category</th><th>Purpose</th><th>Commands</th></tr>
+            <tr><td><span class="tag ddl">DDL</span></td><td>Data Definition — defines schema/structure</td><td>CREATE, ALTER, DROP, TRUNCATE</td></tr>
+            <tr><td><span class="tag dml">DML</span></td><td>Data Manipulation — modifies data</td><td>INSERT, UPDATE, DELETE</td></tr>
+            <tr><td><span class="tag dql">DQL</span></td><td>Data Query — retrieves data</td><td>SELECT</td></tr>
+            <tr><td><span class="tag dcl">DCL</span></td><td>Data Control — permissions</td><td>GRANT, REVOKE</td></tr>
+            <tr><td><span class="tag tcl">TCL</span></td><td>Transaction Control — transaction boundaries</td><td>COMMIT, ROLLBACK, SAVEPOINT</td></tr>
+          </table>
+          <div class="note-box">Some textbooks fold DQL into DML. Both conventions are common in practice — this guide keeps them separate for clarity.</div>
+        </div>
+      </div>
+
+      <div class="category-block" id="c2">
+        <div class="category-head">
+          <div class="category-letter">B</div>
+          <div><h2>Data Modeling &amp; ER</h2><div class="category-desc">Modeling real-world information before it becomes tables — the design phase of database creation.</div></div>
+        </div>
+
+        <div class="card" id="s5">
+          <div class="card-head"><span class="card-num">05</span><span class="tag core">CORE</span><h3>Data Models Overview</h3></div>
+          <table class="compare-table">
+            <tr><th>Model</th><th>Structure</th><th>Where used today</th></tr>
+            <tr><td>Hierarchical</td><td>Tree — one parent, many children</td><td>Legacy systems, XML/file systems</td></tr>
+            <tr><td>Network</td><td>Graph — many-to-many via pointers</td><td>Mostly historical (CODASYL)</td></tr>
+            <tr><td>Relational</td><td>Tables (relations) linked by keys</td><td>MySQL, PostgreSQL, Oracle, SQL Server</td></tr>
+            <tr><td>Object-Oriented</td><td>Objects with attributes + methods</td><td>Niche OODBMS</td></tr>
+            <tr><td>Document / NoSQL</td><td>JSON-like documents, key-value, graph</td><td>MongoDB, Redis, Neo4j</td></tr>
+          </table>
+          <p class="desc" style="margin-top:10px;">This guide focuses on the <strong>Relational Model</strong>, which is designed on paper using the <strong>Entity-Relationship (ER) Model</strong> below.</p>
+        </div>
+
+        <div class="card" id="s6">
+          <div class="card-head"><span class="card-num">06</span><span class="tag core">CORE</span><h3>Entity-Relationship Model</h3></div>
+          <p class="desc"><strong>Definition:</strong> A conceptual design tool that represents data as <strong>entities</strong> (real-world objects, e.g. Employee), their <strong>attributes</strong> (properties, e.g. name, salary), and <strong>relationships</strong> between entities (e.g. Employee <em>works in</em> Department).</p>
+          <p class="desc"><strong>Entity types:</strong> a <em>strong entity</em> has its own primary key (e.g. Employee); a <em>weak entity</em> depends on another entity for identification (e.g. Dependent, identified only along with an Employee).</p>
+          <p class="desc"><strong>Attribute types:</strong> simple, composite (Name → First + Last), single-valued, multi-valued (PhoneNumbers), derived (Age, from DateOfBirth).</p>
+        </div>
+
+        <div class="card" id="s7">
+          <div class="card-head"><span class="card-num">07</span><span class="tag core">CORE</span><h3>ER Diagram Notation &amp; Cardinality</h3></div>
+          <p class="desc">Standard shapes: <strong>rectangles</strong> = entities, <strong>ellipses</strong> = attributes, <strong>diamonds</strong> = relationships, <strong>double rectangles</strong> = weak entities.</p>
+          <p class="desc"><strong>Cardinality</strong> describes how many instances of one entity relate to another:</p>
+          <table class="compare-table">
+            <tr><th>Cardinality</th><th>Meaning</th><th>Example</th></tr>
+            <tr><td>1 : 1</td><td>One entity relates to exactly one of another</td><td>Employee ↔ Parking Spot</td></tr>
+            <tr><td>1 : N</td><td>One relates to many</td><td>Department → Employees</td></tr>
+            <tr><td>M : N</td><td>Many relate to many</td><td>Students ↔ Courses</td></tr>
+          </table>
+          <div class="note-box"><b>Participation:</b> <em>total</em> participation (double line) means every instance must participate in the relationship; <em>partial</em> (single line) means participation is optional.</div>
+        </div>
+
+        <div class="card" id="s8">
+          <div class="card-head"><span class="card-num">08</span><span class="tag core">CORE</span><h3>Generalization, Specialization &amp; Aggregation</h3></div>
+          <p class="desc"><strong>Generalization:</strong> bottom-up — combine common attributes of multiple lower-level entities into a higher-level entity (Car + Truck → Vehicle).</p>
+          <p class="desc"><strong>Specialization:</strong> top-down — split a higher-level entity into specialized sub-entities (Employee → Manager, Engineer).</p>
+          <p class="desc"><strong>Aggregation:</strong> treats a relationship itself as a higher-level entity, so it can participate in further relationships (e.g. "Employee works-on Project", as a whole, is Monitored-by a Manager).</p>
+        </div>
+
+        <div class="card" id="s9">
+          <div class="card-head"><span class="card-num">09</span><span class="tag core">CORE</span><h3>Mapping ER to Relational Schema</h3></div>
+          <p class="desc">Rules for converting an ER diagram into tables:</p>
+          <div class="syntax-label">MAPPING RULES</div>
+          <div class="syntax-box">1. Strong entity        → its own table, key attribute = primary key
+2. Weak entity          → table with FK to owner + partial key = composite PK
+3. 1:1 relationship     → FK on either side (often the side with total participation)
+4. 1:N relationship     → FK placed on the "many" side
+5. M:N relationship     → new junction/bridge table holding both FKs
+6. Multi-valued attr.   → separate table referencing the owning entity's PK</div>
+          <div class="note-box">Example: Students ↔ Courses (M:N) becomes three tables — <code>students</code>, <code>courses</code>, and a junction table <code>enrollments(student_id, course_id, grade)</code>.</div>
+        </div>
+      </div>
+
+      <div class="category-block" id="c3">
+        <div class="category-head">
+          <div class="category-letter">C</div>
+          <div><h2>Relational Model &amp; Keys</h2><div class="category-desc">The mathematical foundation of tables, rows, and the keys that uniquely identify and connect them.</div></div>
+        </div>
+
+        <div class="card" id="s10">
+          <div class="card-head"><span class="card-num">10</span><span class="tag core">CORE</span><h3>Relational Model Basics</h3></div>
+          <table class="compare-table">
+            <tr><th>Formal term</th><th>Everyday term</th></tr>
+            <tr><td>Relation</td><td>Table</td></tr>
+            <tr><td>Tuple</td><td>Row / record</td></tr>
+            <tr><td>Attribute</td><td>Column / field</td></tr>
+            <tr><td>Domain</td><td>Set of valid values for an attribute (e.g. INT, VARCHAR(50))</td></tr>
+            <tr><td>Degree</td><td>Number of attributes (columns)</td></tr>
+            <tr><td>Cardinality</td><td>Number of tuples (rows)</td></tr>
+          </table>
+          <div class="note-box"><b>Relation properties:</b> no duplicate tuples, tuple order doesn't matter, attribute order doesn't matter, every attribute value is atomic (this last rule is what 1NF formalizes).</div>
+        </div>
+
+        <div class="card" id="s11">
+          <div class="card-head"><span class="card-num">11</span><span class="tag core">CORE</span><h3>Candidate, Primary, Super &amp; Alternate Keys</h3></div>
+          <p class="desc"><strong>Super Key:</strong> any set of attributes that can uniquely identify a tuple (may contain extra, unnecessary attributes).</p>
+          <p class="desc"><strong>Candidate Key:</strong> a <em>minimal</em> super key — no attribute can be removed without losing uniqueness. A table can have several.</p>
+          <p class="desc"><strong>Primary Key:</strong> the candidate key chosen to be the table's main identifier. Cannot be NULL, must be unique.</p>
+          <p class="desc"><strong>Alternate Key:</strong> any candidate key <em>not</em> chosen as primary key.</p>
+          <div class="code-panel">
+            <div class="code-toolbar"><div class="dots"><span></span><span></span><span></span></div><div class="label">keys_demo.sql</div>
+              <button class="run-btn" onclick="runQuery(this)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>RUN</button></div>
+            <textarea class="code-editor" rows="2">SELECT emp_id, name FROM employees WHERE emp_id = 4;</textarea>
+            <div class="output-panel"></div>
+          </div>
+          <p class="desc" style="margin-top:10px;">Here <code>emp_id</code> is the primary key — it alone uniquely picks one row, unlike <code>name</code> which is not guaranteed unique.</p>
+        </div>
+
+        <div class="card" id="s12">
+          <div class="card-head"><span class="card-num">12</span><span class="tag core">CORE</span><h3>Foreign Key &amp; Referential Integrity</h3></div>
+          <p class="desc"><strong>Definition:</strong> A foreign key is an attribute (or set of attributes) in one table that references the primary key of another table, linking the two relations.</p>
+          <div class="syntax-label">SYNTAX</div>
+          <div class="syntax-box">CREATE TABLE employees (
+  emp_id     INT PRIMARY KEY,
+  dept_id    INT,
+  FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+);</div>
+          <p class="desc"><strong>Referential integrity</strong> is the rule this enforces: a foreign key value must either match an existing primary key value in the referenced table, or be NULL. Databases reject inserts/updates that would violate this — and by default reject deleting a referenced parent row.</p>
+        </div>
+
+        <div class="card" id="s13">
+          <div class="card-head"><span class="card-num">13</span><span class="tag core">CORE</span><h3>Composite &amp; Surrogate Keys</h3></div>
+          <p class="desc"><strong>Composite key:</strong> a primary key made of two or more columns together, e.g. <code>enrollments(student_id, course_id)</code> — neither column alone is unique, but the pair is.</p>
+          <p class="desc"><strong>Surrogate key:</strong> an artificial key with no business meaning, generated purely for identification — typically an auto-incrementing integer or UUID (e.g. <code>emp_id</code>), used instead of a natural/business key that might change over time.</p>
+        </div>
+
+        <div class="card" id="s14">
+          <div class="card-head"><span class="card-num">14</span><span class="tag core">CORE</span><h3>Integrity Constraints</h3></div>
+          <table class="compare-table">
+            <tr><th>Constraint</th><th>Rule</th></tr>
+            <tr><td>Entity integrity</td><td>Primary key can never be NULL</td></tr>
+            <tr><td>Referential integrity</td><td>Foreign key must match a parent PK or be NULL</td></tr>
+            <tr><td>Domain integrity</td><td>Column values must respect the declared data type/range</td></tr>
+            <tr><td>Key integrity</td><td>No two rows share the same primary key value</td></tr>
+            <tr><td>NOT NULL / CHECK / UNIQUE</td><td>Column-level rules enforced by the DBMS on every write</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="category-block" id="c4">
+        <div class="category-head">
+          <div class="category-letter">D</div>
+          <div><h2>Relational Algebra</h2><div class="category-desc">The formal, procedural query language that SQL is built to express — useful for reasoning about what a query really does.</div></div>
+        </div>
+
+        <div class="card" id="s15">
+          <div class="card-head"><span class="card-num">15</span><span class="tag core">CORE</span><h3>Basic Operations (σ, π, ∪, −, ×)</h3></div>
+          <table class="compare-table">
+            <tr><th>Operator</th><th>Name</th><th>Meaning</th><th>SQL equivalent</th></tr>
+            <tr><td>σ (sigma)</td><td>Selection</td><td>Filters rows by a condition</td><td>WHERE</td></tr>
+            <tr><td>π (pi)</td><td>Projection</td><td>Picks specific columns</td><td>SELECT col1, col2</td></tr>
+            <tr><td>∪</td><td>Union</td><td>Combines rows from two union-compatible relations</td><td>UNION</td></tr>
+            <tr><td>−</td><td>Set Difference</td><td>Rows in A not in B</td><td>EXCEPT / MINUS</td></tr>
+            <tr><td>×</td><td>Cartesian Product</td><td>Every row of A paired with every row of B</td><td>CROSS JOIN</td></tr>
+            <tr><td>ρ (rho)</td><td>Rename</td><td>Renames a relation or attribute</td><td>AS (alias)</td></tr>
+          </table>
+          <div class="syntax-label">EXAMPLE</div>
+          <div class="syntax-box">σ salary > 60000 (employees)        -- selection
+π name, salary (employees)          -- projection
+π name (σ salary > 60000 (employees))  -- combined</div>
+        </div>
+
+        <div class="card" id="s16">
+          <div class="card-head"><span class="card-num">16</span><span class="tag core">CORE</span><h3>Join &amp; Division Operations</h3></div>
+          <p class="desc"><strong>⋈ (Natural Join / Theta Join):</strong> combines two relations on a matching condition — the algebraic origin of every SQL JOIN.</p>
+          <div class="syntax-box">employees ⋈ employees.dept_id = departments.dept_id departments</div>
+          <p class="desc"><strong>÷ (Division):</strong> finds tuples in A that are associated with <em>all</em> tuples in B — e.g. "find students enrolled in every course a department offers." SQL expresses this with nested NOT EXISTS rather than a direct operator.</p>
+        </div>
+
+        <div class="card" id="s17">
+          <div class="card-head"><span class="card-num">17</span><span class="tag core">CORE</span><h3>Relational Algebra vs SQL</h3></div>
+          <p class="desc">Relational algebra is <em>procedural</em> — you specify the sequence of operations. SQL is <em>declarative</em> — you specify <em>what</em> you want, and the DBMS's query optimizer decides the actual execution plan (often re-ordering operations for performance, e.g. pushing selections before joins).</p>
+          <div class="note-box">Relational calculus (tuple &amp; domain calculus) is the declarative theoretical counterpart — SQL's SELECT syntax is closer in spirit to calculus, while its evaluation follows algebra.</div>
+        </div>
+      </div>
+
+      <div class="category-block" id="c5">
+        <div class="category-head">
+          <div class="category-letter">E</div>
+          <div><h2>SQL Fundamentals</h2><div class="category-desc">Structured Query Language, in full — every statement type, with runnable examples.</div></div>
+        </div>
+
+        <div class="card" id="s18">
+          <div class="card-head"><span class="card-num">18</span><span class="tag core">CORE</span><h3>Introduction to SQL &amp; Its Categories</h3></div>
+          <p class="desc"><strong>SQL (Structured Query Language)</strong> is the standard declarative language for relational databases. It is used identically in spirit — though with dialect differences — across MySQL, PostgreSQL, Oracle, SQL Server, and SQLite (each covered in its own companion guide in this series).</p>
+          <p class="desc">SQL splits into five categories, each covered as its own concept below:</p>
+          <div class="syntax-box">DDL   — CREATE, ALTER, DROP, TRUNCATE          (structure)
+DML   — INSERT, UPDATE, DELETE                 (data)
+DQL   — SELECT                                 (retrieval)
+DCL   — GRANT, REVOKE                          (permissions)
+TCL   — COMMIT, ROLLBACK, SAVEPOINT            (transactions)</div>
+        </div>
+
+        <div class="card" id="s19">
+          <div class="card-head"><span class="card-num">19</span><span class="tag ddl">DDL</span><h3>DDL — CREATE, ALTER, DROP, TRUNCATE</h3></div>
+          <p class="desc">Data Definition Language statements define and modify the <em>structure</em> of the database — they are auto-committed in most RDBMS (cannot be rolled back).</p>
+          <div class="syntax-label">SYNTAX</div>
+          <div class="syntax-box">CREATE TABLE table_name (col1 TYPE constraints, col2 TYPE constraints, ...);
+ALTER TABLE table_name ADD COLUMN col_name TYPE;
+ALTER TABLE table_name DROP COLUMN col_name;
+DROP TABLE table_name;
+TRUNCATE TABLE table_name;   -- removes all rows, keeps structure</div>
+          <div class="code-panel">
+            <div class="code-toolbar"><div class="dots"><span></span><span></span><span></span></div><div class="label">ddl_demo.sql</div>
+              <button class="run-btn" onclick="runQuery(this)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>RUN</button></div>
+            <textarea class="code-editor" rows="2">CREATE TABLE interns (intern_id, name);
+SELECT * FROM interns;</textarea>
+            <div class="output-panel"></div>
+          </div>
+          <div class="note-box"><b>DROP</b> deletes the table and its data permanently; <b>TRUNCATE</b> empties the table but keeps its schema; <b>DELETE</b> (DML) removes rows one at a time and can be rolled back.</div>
+        </div>
+
+        <div class="card" id="s20">
+          <div class="card-head"><span class="card-num">20</span><span class="tag dml">DML</span><h3>DML — INSERT, UPDATE, DELETE</h3></div>
+          <p class="desc">Data Manipulation Language statements change the <em>contents</em> of tables. Unlike DDL, these are transactional and can be rolled back before COMMIT.</p>
+          <div class="syntax-label">SYNTAX</div>
+          <div class="syntax-box">INSERT INTO table_name (col1, col2) VALUES (val1, val2);
+UPDATE table_name SET col1 = val1 WHERE condition;
+DELETE FROM table_name WHERE condition;</div>
+          <div class="code-panel">
+            <div class="code-toolbar"><div class="dots"><span></span><span></span><span></span></div><div class="label">dml_demo.sql</div>
+              <button class="run-btn" onclick="runQuery(this)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>RUN</button></div>
+            <textarea class="code-editor" rows="4">INSERT INTO employees (emp_id,name,dept_id,salary,manager_id,hire_date,city) VALUES (50,'Meera Joshi',10,63000,1,'2024-02-10','Bengaluru');
+UPDATE employees SET salary = 67000 WHERE emp_id = 50;
+SELECT emp_id, name, salary FROM employees WHERE emp_id = 50;
+DELETE FROM employees WHERE emp_id = 50;</textarea>
+            <div class="output-panel"></div>
+          </div>
+          <div class="note-box"><b>Always pair UPDATE/DELETE with WHERE.</b> Omitting WHERE updates or deletes every row in the table.</div>
+        </div>
+
+        <div class="card" id="s21">
+          <div class="card-head"><span class="card-num">21</span><span class="tag dql">DQL</span><h3>DQL — SELECT, WHERE, ORDER BY, LIMIT</h3></div>
+          <div class="syntax-label">SYNTAX</div>
+          <div class="syntax-box">SELECT column1, column2, ...
+FROM table_name
+WHERE condition
+ORDER BY column [ASC|DESC]
+LIMIT n;</div>
+          <div class="code-panel">
+            <div class="code-toolbar"><div class="dots"><span></span><span></span><span></span></div><div class="label">select_demo.sql</div>
+              <button class="run-btn" onclick="runQuery(this)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>RUN</button></div>
+            <textarea class="code-editor" rows="2">SELECT name, city, salary FROM employees WHERE city = 'Chennai' ORDER BY salary DESC LIMIT 5;</textarea>
+            <div class="output-panel"></div>
+          </div>
+        </div>
+
+        <div class="card" id="s22">
+          <div class="card-head"><span class="card-num">22</span><span class="tag dcl">DCL</span><h3>DCL — GRANT, REVOKE</h3></div>
+          <p class="desc">Data Control Language manages who can do what. Access control operates on database objects (tables, views, schemas) and specific privilege types.</p>
+          <div class="syntax-label">SYNTAX</div>
+          <div class="syntax-box">GRANT SELECT, INSERT ON employees TO analyst_role;
+REVOKE INSERT ON employees FROM analyst_role;
+GRANT ALL PRIVILEGES ON database_name.* TO 'admin'@'localhost';</div>
+          <div class="note-box">DCL is not part of the in-browser playground (it requires real user/role infrastructure), but the syntax above is standard across MySQL, PostgreSQL, and Oracle.</div>
+        </div>
+
+        <div class="card" id="s23">
+          <div class="card-head"><span class="card-num">23</span><span class="tag tcl">TCL</span><h3>TCL — COMMIT, ROLLBACK, SAVEPOINT</h3></div>
+          <p class="desc">Transaction Control Language marks the boundaries of a transaction — a group of DML statements that succeed or fail together (see Module I for full ACID coverage).</p>
+          <div class="syntax-label">SYNTAX</div>
+          <div class="syntax-box">BEGIN TRANSACTION;
+  UPDATE accounts SET balance = balance - 500 WHERE acct_id = 1;
+  SAVEPOINT after_debit;
+  UPDATE accounts SET balance = balance + 500 WHERE acct_id = 2;
+COMMIT;              -- makes changes permanent
+-- or:
+ROLLBACK TO after_debit;   -- undo back to a savepoint
+ROLLBACK;                  -- undo the entire transaction</div>
+        </div>
+
+        <div class="card" id="s24">
+          <div class="card-head"><span class="card-num">24</span><span class="tag core">CORE</span><h3>SQL Data Types &amp; Constraints</h3></div>
+          <table class="compare-table">
+            <tr><th>Category</th><th>Common types</th></tr>
+            <tr><td>Numeric</td><td>INT, BIGINT, DECIMAL(p,s), FLOAT, DOUBLE</td></tr>
+            <tr><td>String</td><td>CHAR(n), VARCHAR(n), TEXT</td></tr>
+            <tr><td>Date/Time</td><td>DATE, TIME, DATETIME, TIMESTAMP</td></tr>
+            <tr><td>Boolean</td><td>BOOLEAN / BIT / TINYINT(1)</td></tr>
+            <tr><td>Other</td><td>BLOB, JSON, UUID, ENUM (dialect-specific)</td></tr>
+          </table>
+          <p class="desc" style="margin-top:12px;"><strong>Constraints</strong> enforce rules at the column or table level:</p>
+          <div class="syntax-box">NOT NULL        -- value required
+UNIQUE          -- no duplicate values
+PRIMARY KEY     -- NOT NULL + UNIQUE, identifies the row
+FOREIGN KEY     -- must match a parent table's key
+CHECK (age >= 18)   -- custom boolean rule
+DEFAULT 0       -- value used when none supplied</div>
+        </div>
+
+        <div class="card" id="s25">
+          <div class="card-head"><span class="card-num">25</span><span class="tag dql">DQL</span><h3>Aggregate Functions, GROUP BY &amp; HAVING</h3></div>
+          <p class="desc">Aggregate functions collapse many rows into one summary value: <code>COUNT()</code>, <code>SUM()</code>, <code>AVG()</code>, <code>MIN()</code>, <code>MAX()</code>. <strong>GROUP BY</strong> applies them per group instead of the whole table. <strong>HAVING</strong> filters groups <em>after</em> aggregation (WHERE filters rows before).</p>
+          <div class="syntax-label">SYNTAX</div>
+          <div class="syntax-box">SELECT dept_id, COUNT(*) AS emp_count, AVG(salary) AS avg_salary
+FROM employees
+GROUP BY dept_id
+HAVING COUNT(*) > 1
+ORDER BY avg_salary DESC;</div>
+          <div class="code-panel">
+            <div class="code-toolbar"><div class="dots"><span></span><span></span><span></span></div><div class="label">group_by_demo.sql</div>
+              <button class="run-btn" onclick="runQuery(this)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>RUN</button></div>
+            <textarea class="code-editor" rows="2">SELECT dept_id, COUNT(*) AS emp_count, AVG(salary) AS avg_salary FROM employees GROUP BY dept_id ORDER BY avg_salary DESC;</textarea>
+            <div class="output-panel"></div>
+          </div>
+          <div class="note-box"><b>Rule:</b> every non-aggregated column in SELECT must appear in GROUP BY.</div>
+        </div>
+      </div>
+
+      <div class="category-block" id="c6">
+        <div class="category-head">
+          <div class="category-letter">F</div>
+          <div><h2>Advanced SQL</h2><div class="category-desc">Joins, subqueries, views, indexes, window functions, and CTEs — where real-world querying lives.</div></div>
+        </div>
+
+        <div class="card" id="s26">
+          <div class="card-head"><span class="card-num">26</span><span class="tag dql">DQL</span><h3>Joins — INNER, LEFT, RIGHT, FULL</h3></div>
+          <p class="desc">Joins combine rows from two or more tables based on a related column.</p>
+          <table class="compare-table">
+            <tr><th>Join</th><th>Returns</th></tr>
+            <tr><td>INNER JOIN</td><td>Only rows with a match in both tables</td></tr>
+            <tr><td>LEFT JOIN</td><td>All left rows + matches from right (NULL if none)</td></tr>
+            <tr><td>RIGHT JOIN</td><td>All right rows + matches from left (NULL if none)</td></tr>
+            <tr><td>FULL OUTER JOIN</td><td>All rows from both sides, matched where possible</td></tr>
+          </table>
+          <div class="syntax-box">SELECT e.name, d.dept_name
+FROM employees e
+INNER JOIN departments d ON e.dept_id = d.dept_id;</div>
+          <div class="code-panel">
+            <div class="code-toolbar"><div class="dots"><span></span><span></span><span></span></div><div class="label">joins_demo.sql</div>
+              <button class="run-btn" onclick="runQuery(this)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>RUN</button></div>
+            <textarea class="code-editor" rows="2">SELECT d.dept_name, p.project_name, p.status FROM departments d LEFT JOIN projects p ON d.dept_id = p.dept_id;</textarea>
+            <div class="output-panel"></div>
+          </div>
+          <p class="desc" style="margin-top:10px;">Try changing <code>LEFT JOIN</code> to <code>JOIN</code> (inner) above and re-running — notice the HR department (which has no projects) disappears from the result.</p>
+        </div>
+
+        <div class="card" id="s27">
+          <div class="card-head"><span class="card-num">27</span><span class="tag dql">DQL</span><h3>Self, Cross &amp; Natural Joins</h3></div>
+          <p class="desc"><strong>Self Join:</strong> a table joined to itself — typically for hierarchical data like employee → manager.</p>
+          <div class="syntax-box">SELECT e.name AS employee, m.name AS manager
+FROM employees e
+JOIN employees m ON e.manager_id = m.emp_id;</div>
+          <p class="desc"><strong>Cross Join:</strong> the Cartesian product — every row of A paired with every row of B (no ON clause). Rarely used directly except to generate combinations.</p>
+          <p class="desc"><strong>Natural Join:</strong> automatically joins on all identically-named columns in both tables — convenient but risky if column names collide unintentionally. Most style guides recommend explicit <code>ON</code> conditions instead.</p>
+        </div>
+
+        <div class="card" id="s28">
+          <div class="card-head"><span class="card-num">28</span><span class="tag dql">DQL</span><h3>Subqueries — Scalar, Nested &amp; Correlated</h3></div>
+          <p class="desc"><strong>Scalar subquery:</strong> returns a single value, usable anywhere a value is expected.</p>
+          <p class="desc"><strong>Nested (IN) subquery:</strong> returns a list, used with IN/NOT IN.</p>
+          <p class="desc"><strong>Correlated subquery:</strong> references a column from the outer query, so it re-runs once per outer row — powerful but can be slow on large tables.</p>
+          <div class="code-panel">
+            <div class="code-toolbar"><div class="dots"><span></span><span></span><span></span></div><div class="label">subquery_demo.sql</div>
+              <button class="run-btn" onclick="runQuery(this)"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>RUN</button></div>
+            <textarea class="code-editor" rows="2">SELECT name, salary FROM employees WHERE salary > (SELECT AVG(salary) FROM employees) ORDER BY salary DESC;</textarea>
+            <div class="output-panel"></div>
+          </div>
+        </div>
+
+        <div class="card" id="s29">
+          <div class="card-head"><span class="card-num">29</span><span class="tag dql">DQL</span><h3>Set Operations — UNION, INTERSECT, EXCEPT</h3></div>
+          <table class="compare-table">
+            <tr><th>Operator</th><th>Returns</th></tr>
+            <tr><td>UNION</td><td>Rows from either query, duplicates removed</td></tr>
+            <tr><td>UNION ALL</td><td>Rows from either query, duplicates kept (faster)</td></tr>
+            <tr><td>INTERSECT</td><td>Rows present in both queries</td></tr>
+            <tr><td>EXCEPT / MINUS</td><td>Rows in the first query but not the second</td></tr>
+          </table>
+          <div class="syntax-box">SELECT city FROM employees
+UNION
+SELECT location FROM departments;</div>
+          <div class="note-box">Both queries in a set operation must return the same number of columns with compatible types. <code>MINUS</code> is Oracle's name for <code>EXCEPT</code>.</div>
+        </div>
+
+        <div class="card" id="s30">
+          <div class="card-head"><span class="card-num">30</span><span class="tag ddl">DDL</span><h3>Views</h3></div>
+          <p class="desc"><strong>Definition:</strong> A view is a saved, named SELECT query that behaves like a virtual table. It doesn't store data itself (unless materialized) — it re-runs its defining query each time it's referenced.</p>
+          <div class="syntax-label">SYNTAX</div>
+          <div class="syntax-box">CREATE VIEW high_earners AS
+SELECT name, salary, dept_id FROM employees WHERE salary > 65000;
+
+SELECT * FROM high_earners;   -- queried just like a table
+
+DROP VIEW high_earners;</div>
+          <p class="desc">Views simplify complex recurring queries, restrict column/row access for security, and provide a stable interface even if underlying tables change.</p>
+        </div>
+
+        <div class="card" id="s31">
+          <div class="card-head"><span class="card-num">31</span><span class="tag ddl">DDL</span><h3>Indexes in SQL</h3></div>
+          <p class="desc">An index is an auxiliary structure that speeds up lookups on a column, at the cost of extra storage and slower writes (the index must be updated on every INSERT/UPDATE/DELETE).</p>
+          <div class="syntax-label">SYNTAX</div>
+          <div class="syntax-box">CREATE INDEX idx_emp_salary ON employees(salary);
+CREATE UNIQUE INDEX idx_emp_email ON employees(email);
+DROP INDEX idx_emp_salary;</div>
+          <div class="note-box">Primary keys and UNIQUE constraints automatically create an index. See Module J for the internal B-Tree/hash structures that make indexes fast.</div>
+        </div>
+
+        <div class="card" id="s32">
+          <div class="card-head"><span class="card-num">32</span><span class="tag dql">DQL</span><h3>Window Functions</h3></div>
+          <p class="desc">Unlike GROUP BY (which collapses rows), window functions compute a value <em>across a set of related rows</em> while keeping every row in the output.</p>
+          <div class="syntax-box">SELECT name, dept_id, salary,
+  RANK()       OVER (PARTITION BY dept_id ORDER BY salary DESC) AS rank_in_dept,
+  AVG(salary)  OVER (PARTITION BY dept_id)                      AS dept_avg,
+  ROW_NUMBER() OVER (ORDER BY salary DESC)                      AS overall_rank
+FROM employees;</div>
+          <table class="compare-table">
+            <tr><th>Function</th><th>Behavior</th></tr>
+            <tr><td>ROW_NUMBER()</td><td>Sequential number, no ties</td></tr>
+            <tr><td>RANK()</td><td>Same rank for ties, gaps after</td></tr>
+            <tr><td>DENSE_RANK()</td><td>Same rank for ties, no gaps</td></tr>
+            <tr><td>LAG() / LEAD()</td><td>Value from a previous/next row</td></tr>
+          </table>
+          <div class="note-box">Window functions aren't executed by this page's playground engine (they need real per-partition state) — the syntax above is standard across PostgreSQL, MySQL 8+, and Oracle.</div>
+        </div>
+
+        <div class="card" id="s33">
+          <div class="card-head"><span class="card-num">33</span><span class="tag dql">DQL</span><h3>Common Table Expressions (CTE) &amp; Recursive Queries</h3></div>
+          <p class="desc">A CTE is a named, temporary result set defined with <code>WITH</code>, scoped to a single query — it makes complex queries readable by breaking them into named steps.</p>
+          <div class="syntax-box">WITH dept_totals AS (
+  SELECT dept_id, SUM(salary) AS total_salary
+  FROM employees GROUP BY dept_id
+)
+SELECT d.dept_name, t.total_salary
+FROM dept_totals t JOIN departments d ON t.dept_id = d.dept_id;
+
+-- Recursive CTE (e.g. organization chart):
+WITH RECURSIVE org_chart AS (
+  SELECT emp_id, name, manager_id, 1 AS level FROM employees WHERE manager_id IS NULL
+  UNION ALL
+  SELECT e.emp_id, e.name, e.manager_id, oc.level + 1
+  FROM employees e JOIN org_chart oc ON e.manager_id = oc.emp_id
+)
+SELECT * FROM org_chart;</div>
+        </div>
+      </div>
+
+      <div class="category-block" id="c7">
+        <div class="category-head">
+          <div class="category-letter">G</div>
+          <div><h2>Stored Programs (PL/SQL style)</h2><div class="category-desc">Procedural extensions to SQL — logic that lives inside the database itself. Full dialect-specific syntax is in the companion PL/SQL guide.</div></div>
+        </div>
+
+        <div class="card" id="s34">
+          <div class="card-head"><span class="card-num">34</span><span class="tag core">CORE</span><h3>Stored Procedures</h3></div>
+          <p class="desc">A stored procedure is a named, precompiled block of procedural SQL stored in the database and invoked by name — useful for encapsulating multi-step business logic close to the data.</p>
+          <div class="syntax-label">SYNTAX (generic / PL-SQL style)</div>
+          <div class="syntax-box">CREATE PROCEDURE give_raise(IN p_emp_id INT, IN p_amount DECIMAL)
+BEGIN
+  UPDATE employees SET salary = salary + p_amount WHERE emp_id = p_emp_id;
+END;
+
+CALL give_raise(3, 5000);</div>
+          <div class="note-box">Procedures can take IN, OUT, and INOUT parameters, and don't necessarily return a value — that's the key difference from functions.</div>
+        </div>
+
+        <div class="card" id="s35">
+          <div class="card-head"><span class="card-num">35</span><span class="tag core">CORE</span><h3>User-Defined Functions</h3></div>
+          <p class="desc">A function is a stored routine that <strong>always returns a value</strong> and can be used inline inside a SQL statement (e.g. in a SELECT list), unlike a procedure.</p>
+          <div class="syntax-box">CREATE FUNCTION annual_salary(monthly DECIMAL) RETURNS DECIMAL
+BEGIN
+  RETURN monthly * 12;
+END;
+
+SELECT name, annual_salary(salary/12) FROM employees;</div>
+        </div>
+
+        <div class="card" id="s36">
+          <div class="card-head"><span class="card-num">36</span><span class="tag core">CORE</span><h3>Triggers</h3></div>
+          <p class="desc">A trigger is code that runs automatically <strong>before</strong> or <strong>after</strong> an INSERT, UPDATE, or DELETE on a table — used for auditing, enforcing complex rules, or keeping denormalized data in sync.</p>
+          <div class="syntax-box">CREATE TRIGGER trg_salary_audit
+AFTER UPDATE ON employees
+FOR EACH ROW
+BEGIN
+  INSERT INTO salary_audit(emp_id, old_salary, new_salary, changed_at)
+  VALUES (OLD.emp_id, OLD.salary, NEW.salary, NOW());
+END;</div>
+          <div class="note-box"><code>OLD</code> and <code>NEW</code> refer to the row's values before and after the change. Triggers are powerful but can make data flow hard to trace — use sparingly.</div>
+        </div>
+
+        <div class="card" id="s37">
+          <div class="card-head"><span class="card-num">37</span><span class="tag core">CORE</span><h3>Cursors</h3></div>
+          <p class="desc">A cursor lets procedural code step through a result set <strong>row by row</strong> — necessary when a task can't be expressed as one set-based SQL statement.</p>
+          <div class="syntax-box">DECLARE emp_cursor CURSOR FOR SELECT emp_id, salary FROM employees;
+DECLARE v_id INT; DECLARE v_sal DECIMAL;
+
+OPEN emp_cursor;
+FETCH emp_cursor INTO v_id, v_sal;
+WHILE FOUND DO
+  UPDATE employees SET salary = v_sal * 1.05 WHERE emp_id = v_id;
+  FETCH emp_cursor INTO v_id, v_sal;
+END WHILE;
+CLOSE emp_cursor;</div>
+          <div class="note-box">Cursors are slower than a single set-based UPDATE — prefer set-based SQL whenever the logic allows it; reach for cursors only when row-by-row procedural logic is genuinely required.</div>
+        </div>
+
+        <div class="card" id="s38">
+          <div class="card-head"><span class="card-num">38</span><span class="tag core">CORE</span><h3>Exception Handling</h3></div>
+          <p class="desc">Procedural SQL blocks can catch and handle runtime errors instead of letting them abort silently.</p>
+          <div class="syntax-box">BEGIN
+  INSERT INTO employees(emp_id, name) VALUES (1, 'Duplicate');
+EXCEPTION
+  WHEN unique_violation THEN
+    RAISE NOTICE 'Employee ID already exists, skipping insert.';
+  WHEN OTHERS THEN
+    RAISE NOTICE 'Unexpected error occurred.';
+END;</div>
+        </div>
+      </div>
+
+      <div class="category-block" id="c8">
+        <div class="category-head">
+          <div class="category-letter">H</div>
+          <div><h2>Normalization &amp; Design</h2><div class="category-desc">Eliminating redundancy and anomalies by systematically restructuring tables.</div></div>
+        </div>
+
+        <div class="card" id="s39">
+          <div class="card-head"><span class="card-num">39</span><span class="tag core">CORE</span><h3>Functional Dependencies</h3></div>
+          <p class="desc"><strong>Definition:</strong> An attribute B is functionally dependent on attribute A (written A → B) if each value of A is associated with exactly one value of B. Functional dependencies are the formal basis for every normal form.</p>
+          <div class="syntax-box">emp_id → name, salary, dept_id      -- emp_id determines everything about the employee
+dept_id → dept_name, location       -- a partial dependency risk if mixed into employees table</div>
+          <p class="desc"><strong>Trivial FD:</strong> B is a subset of A (always true, not useful). <strong>Partial FD:</strong> a non-key attribute depends on only part of a composite key. <strong>Transitive FD:</strong> A → B and B → C implies A → C indirectly.</p>
+        </div>
+
+        <div class="card" id="s40">
+          <div class="card-head"><span class="card-num">40</span><span class="tag core">CORE</span><h3>First Normal Form (1NF)</h3></div>
+          <p class="desc"><strong>Rule:</strong> every column must hold atomic (indivisible) values, and each row must be unique — no repeating groups or multi-valued columns.</p>
+          <div class="sim-box">
+            <div class="sim-controls">
+              <button class="sim-btn active" onclick="showNF(this,'nf1','before')">Before (violates 1NF)</button>
+              <button class="sim-btn" onclick="showNF(this,'nf1','after')">After (1NF applied)</button>
+            </div>
+            <div class="sim-canvas-wrap" id="nf1-canvas"></div>
+          </div>
+        </div>
+
+        <div class="card" id="s41">
+          <div class="card-head"><span class="card-num">41</span><span class="tag core">CORE</span><h3>Second &amp; Third Normal Form (2NF, 3NF)</h3></div>
+          <p class="desc"><strong>2NF:</strong> must be in 1NF, and every non-key attribute must depend on the <em>entire</em> primary key — no partial dependency on part of a composite key.</p>
+          <p class="desc"><strong>3NF:</strong> must be in 2NF, and no non-key attribute may depend transitively on the key through another non-key attribute (every non-key column depends on "the key, the whole key, and nothing but the key").</p>
+          <div class="sim-box">
+            <div class="sim-controls">
+              <button class="sim-btn active" onclick="showNF(this,'nf3','before')">Before (transitive dependency)</button>
+              <button class="sim-btn" onclick="showNF(this,'nf3','after')">After (3NF applied)</button>
+            </div>
+            <div class="sim-canvas-wrap" id="nf3-canvas"></div>
+          </div>
+        </div>
+
+        <div class="card" id="s42">
+          <div class="card-head"><span class="card-num">42</span><span class="tag core">CORE</span><h3>Boyce-Codd Normal Form (BCNF)</h3></div>
+          <p class="desc"><strong>Rule:</strong> a stricter version of 3NF — for every functional dependency A → B, A must be a super key. BCNF resolves rare anomalies that 3NF allows when a table has multiple overlapping candidate keys.</p>
+          <div class="note-box">In practice, most well-designed 3NF schemas are already in BCNF. The distinction matters mainly when a table has more than one candidate key that overlaps in columns.</div>
+        </div>
+
+        <div class="card" id="s43">
+          <div class="card-head"><span class="card-num">43</span><span class="tag core">CORE</span><h3>4NF &amp; 5NF</h3></div>
+          <p class="desc"><strong>4NF:</strong> must be in BCNF, and have no <em>multi-valued dependencies</em> — e.g. a table storing (student, language_spoken, sport_played) mixes two independent multi-valued facts about a student and should be split into two tables.</p>
+          <p class="desc"><strong>5NF (Project-Join Normal Form):</strong> a table should not be reconstructible by joining smaller tables unless that join-decomposition is truly lossless and necessary — resolves rare join-dependency redundancy. Mostly of theoretical interest in everyday schema design.</p>
+        </div>
+
+        <div class="card" id="s44">
+          <div class="card-head"><span class="card-num">44</span><span class="tag core">CORE</span><h3>Denormalization</h3></div>
+          <p class="desc"><strong>Definition:</strong> the deliberate, controlled reintroduction of redundancy into a normalized schema — trading some write-time consistency risk for read-time performance, typically in reporting/analytics systems (data warehouses) where reads vastly outnumber writes.</p>
+          <div class="note-box"><b>Common technique:</b> storing a precomputed <code>total_orders</code> count on a customer row instead of always running <code>COUNT()</code> over the orders table.</div>
+        </div>
+      </div>
+
+      <div class="category-block" id="c9">
+        <div class="category-head">
+          <div class="category-letter">I</div>
+          <div><h2>Transactions &amp; Concurrency</h2><div class="category-desc">How a DBMS keeps data correct when many operations happen at once, and recovers cleanly from crashes.</div></div>
+        </div>
+
+        <div class="card" id="s45">
+          <div class="card-head"><span class="card-num">45</span><span class="tag core">CORE</span><h3>Transactions &amp; ACID Properties</h3></div>
+          <p class="desc"><strong>Definition:</strong> a transaction is a sequence of one or more operations treated as a single logical unit of work — either all of it happens, or none of it does.</p>
+          <table class="compare-table">
+            <tr><th>Property</th><th>Guarantee</th></tr>
+            <tr><td><b>A</b>tomicity</td><td>All operations succeed, or all are rolled back</td></tr>
+            <tr><td><b>C</b>onsistency</td><td>A transaction moves the DB from one valid state to another, respecting all constraints</td></tr>
+            <tr><td><b>I</b>solation</td><td>Concurrent transactions don't see each other's incomplete changes</td></tr>
+            <tr><td><b>D</b>urability</td><td>Once committed, changes survive even a crash</td></tr>
+          </table>
+          <div class="syntax-box">-- Classic example: bank transfer
+BEGIN;
+  UPDATE accounts SET balance = balance - 500 WHERE acct_id = 1;
+  UPDATE accounts SET balance = balance + 500 WHERE acct_id = 2;
+COMMIT;  -- if either UPDATE fails, ROLLBACK undoes both</div>
+        </div>
+
+        <div class="card" id="s46">
+          <div class="card-head"><span class="card-num">46</span><span class="tag core">CORE</span><h3>Schedules &amp; Serializability</h3></div>
+          <p class="desc">A <strong>schedule</strong> is the order in which operations from multiple transactions actually execute. A schedule is <strong>serializable</strong> if its result is equivalent to some serial (one-at-a-time) execution of the same transactions — the gold standard for correctness under concurrency.</p>
+          <p class="desc"><strong>Conflict serializability</strong> is checked by building a precedence graph of conflicting operations; if the graph has no cycles, the schedule is conflict-serializable.</p>
+        </div>
+
+        <div class="card" id="s47">
+          <div class="card-head"><span class="card-num">47</span><span class="tag core">CORE</span><h3>Concurrency Control — Locking Protocols</h3></div>
+          <p class="desc"><strong>Shared (S) lock:</strong> allows concurrent reads, blocks writes. <strong>Exclusive (X) lock:</strong> blocks all other reads and writes.</p>
+          <p class="desc"><strong>Two-Phase Locking (2PL):</strong> every transaction has a <em>growing phase</em> (acquiring locks) followed by a <em>shrinking phase</em> (releasing locks) — once a lock is released, no new locks can be acquired. This guarantees conflict serializability.</p>
+          <div class="note-box"><b>Strict 2PL</b> (used by most real databases) holds all exclusive locks until COMMIT/ROLLBACK, avoiding cascading rollbacks.</div>
+        </div>
+
+        <div class="card" id="s48">
+          <div class="card-head"><span class="card-num">48</span><span class="tag core">CORE</span><h3>Timestamp Ordering &amp; MVCC</h3></div>
+          <p class="desc"><strong>Timestamp ordering:</strong> each transaction gets a unique timestamp at start; conflicting operations are ordered by timestamp instead of locks, aborting/retrying a transaction that would violate the order.</p>
+          <p class="desc"><strong>MVCC (Multi-Version Concurrency Control):</strong> used by PostgreSQL, MySQL InnoDB, and Oracle — instead of blocking readers, the DB keeps multiple versions of a row, so readers see a consistent snapshot while writers create new versions. This lets reads and writes proceed without blocking each other.</p>
+        </div>
+
+        <div class="card" id="s49">
+          <div class="card-head"><span class="card-num">49</span><span class="tag core">CORE</span><h3>Deadlocks — Detection, Prevention &amp; Recovery</h3></div>
+          <p class="desc"><strong>Deadlock:</strong> two or more transactions each hold a lock the other needs, so none can proceed.</p>
+          <table class="compare-table">
+            <tr><th>Strategy</th><th>Approach</th></tr>
+            <tr><td>Prevention</td><td>Order resource acquisition, or use wait-die / wound-wait schemes based on timestamps</td></tr>
+            <tr><td>Detection</td><td>Build a wait-for graph periodically; a cycle means deadlock</td></tr>
+            <tr><td>Recovery</td><td>Abort one transaction (the "victim") to break the cycle, then retry it</td></tr>
+          </table>
+          <p class="desc">Recovery techniques for crashes rely on the <strong>write-ahead log (WAL)</strong>: changes are logged before being applied, so after a crash the DBMS can <em>redo</em> committed transactions and <em>undo</em> uncommitted ones. <strong>Checkpoints</strong> periodically flush logged changes to disk to bound recovery time.</p>
+        </div>
+      </div>
+
+      <div class="category-block" id="c10">
+        <div class="category-head">
+          <div class="category-letter">J</div>
+          <div><h2>Storage &amp; Query Optimization</h2><div class="category-desc">What happens physically on disk, and how the optimizer decides the fastest way to answer a query.</div></div>
+        </div>
+
+        <div class="card" id="s50">
+          <div class="card-head"><span class="card-num">50</span><span class="tag core">CORE</span><h3>Storage Hierarchy &amp; File Organization</h3></div>
+          <p class="desc"><strong>Storage hierarchy</strong> (fastest/smallest to slowest/largest): CPU registers → cache → main memory (RAM) → SSD/disk → tape/archive. Databases are optimized around the reality that disk access is orders of magnitude slower than memory.</p>
+          <table class="compare-table">
+            <tr><th>File organization</th><th>Layout</th></tr>
+            <tr><td>Heap (unordered)</td><td>Rows appended in insertion order — fast inserts, slow search</td></tr>
+            <tr><td>Sequential (sorted)</td><td>Rows kept in key order — fast range scans, slower inserts</td></tr>
+            <tr><td>Hash</td><td>Rows placed by a hash of the key — very fast exact-match lookup</td></tr>
+            <tr><td>Clustered</td><td>Table rows physically ordered by an index key (usually the PK)</td></tr>
+          </table>
+        </div>
+
+        <div class="card" id="s51">
+          <div class="card-head"><span class="card-num">51</span><span class="tag core">CORE</span><h3>Indexing Structures — B-Tree, B+Tree, Hashing</h3></div>
+          <p class="desc"><strong>B-Tree:</strong> a balanced, self-sorting tree where every node stores both keys and data pointers — good for point lookups.</p>
+          <p class="desc"><strong>B+Tree</strong> (used by nearly every RDBMS index): internal nodes store only keys for navigation; all actual data pointers live in leaf nodes, which are linked together — this makes both point lookups <em>and</em> range scans (<code>BETWEEN</code>, <code>ORDER BY</code>) efficient.</p>
+          <p class="desc"><strong>Hash index:</strong> O(1) average lookup for exact-match equality, but useless for range queries or sorting, since hashing destroys order.</p>
+          <div class="note-box">This is why <code>WHERE salary = 50000</code> can use a hash or B+Tree index equally well, but <code>WHERE salary BETWEEN 40000 AND 60000</code> needs a B+Tree.</div>
+        </div>
+
+        <div class="card" id="s52">
+          <div class="card-head"><span class="card-num">52</span><span class="tag core">CORE</span><h3>Query Processing &amp; Optimization</h3></div>
+          <p class="desc">A SQL query passes through four stages before returning results:</p>
+          <div class="syntax-box">1. Parsing        — check syntax, resolve table/column names
+2. Translation     — convert to an internal relational-algebra tree
+3. Optimization    — choose the cheapest execution plan (join order, index use)
+4. Execution       — run the chosen plan, stream results back</div>
+          <p class="desc">The <strong>query optimizer</strong> uses table statistics (row counts, value distributions) to estimate the cost of alternative plans — e.g. whether to use an index scan or a full table scan, and in what order to join multiple tables. Tools like <code>EXPLAIN</code> (MySQL/PostgreSQL) or <code>EXPLAIN PLAN</code> (Oracle) reveal the chosen plan.</p>
+        </div>
+      </div>
+
+      <div class="category-block" id="c11">
+        <div class="category-head">
+          <div class="category-letter">K</div>
+          <div><h2>Modern &amp; Advanced Topics</h2><div class="category-desc">Where relational databases sit in today's distributed, high-scale systems landscape.</div></div>
+        </div>
+
+        <div class="card" id="s53">
+          <div class="card-head"><span class="card-num">53</span><span class="tag core">CORE</span><h3>SQL vs NoSQL</h3></div>
+          <table class="compare-table">
+            <tr><th></th><th>SQL (Relational)</th><th>NoSQL</th></tr>
+            <tr><td>Schema</td><td>Fixed, defined upfront</td><td>Flexible / schema-less</td></tr>
+            <tr><td>Scaling</td><td>Primarily vertical (bigger server)</td><td>Primarily horizontal (more servers)</td></tr>
+            <tr><td>Consistency</td><td>Strong (ACID) by default</td><td>Often eventual consistency (tunable)</td></tr>
+            <tr><td>Best for</td><td>Structured data, complex joins, transactions</td><td>High-volume, flexible, distributed workloads</td></tr>
+            <tr><td>Types</td><td>MySQL, PostgreSQL, Oracle, SQL Server</td><td>Document (MongoDB), Key-Value (Redis), Column (Cassandra), Graph (Neo4j)</td></tr>
+          </table>
+        </div>
+
+        <div class="card" id="s54">
+          <div class="card-head"><span class="card-num">54</span><span class="tag core">CORE</span><h3>Distributed Databases &amp; CAP Theorem</h3></div>
+          <p class="desc">A distributed database spreads data across multiple physical nodes for scale and fault tolerance. The <strong>CAP theorem</strong> states a distributed system can only fully guarantee two of the following three at once, in the presence of a network partition:</p>
+          <table class="compare-table">
+            <tr><th>Property</th><th>Meaning</th></tr>
+            <tr><td>Consistency (C)</td><td>Every read sees the latest write</td></tr>
+            <tr><td>Availability (A)</td><td>Every request gets a (non-error) response</td></tr>
+            <tr><td>Partition tolerance (P)</td><td>The system keeps working despite network failures between nodes</td></tr>
+          </table>
+          <div class="note-box">Since network partitions are unavoidable in practice, real systems choose between <b>CP</b> (consistent but may reject requests during a partition) and <b>AP</b> (available but may serve stale data).</div>
+        </div>
+
+        <div class="card" id="s55">
+          <div class="card-head"><span class="card-num">55</span><span class="tag core">CORE</span><h3>Sharding &amp; Replication</h3></div>
+          <p class="desc"><strong>Sharding (horizontal partitioning):</strong> splitting one large table's rows across multiple database servers by a shard key (e.g. customer region), so each server holds only a slice of the data.</p>
+          <p class="desc"><strong>Replication:</strong> copying the same data to multiple servers for redundancy and read scalability.</p>
+          <table class="compare-table">
+            <tr><th>Replication type</th><th>Behavior</th></tr>
+            <tr><td>Master-Slave (Primary-Replica)</td><td>Writes go to primary; replicas serve reads</td></tr>
+            <tr><td>Master-Master</td><td>Multiple nodes accept writes, sync with each other</td></tr>
+          </table>
+        </div>
+
+        <div class="card" id="s56">
+          <div class="card-head"><span class="card-num">56</span><span class="tag core">CORE</span><h3>Data Warehousing, OLAP vs OLTP &amp; Security</h3></div>
+          <table class="compare-table">
+            <tr><th></th><th>OLTP</th><th>OLAP</th></tr>
+            <tr><td>Purpose</td><td>Day-to-day transactions</td><td>Analysis &amp; reporting</td></tr>
+            <tr><td>Query pattern</td><td>Many short reads/writes</td><td>Few, large, complex aggregations</td></tr>
+            <tr><td>Schema</td><td>Normalized</td><td>Denormalized (star/snowflake schema)</td></tr>
+            <tr><td>Example</td><td>Order-processing app DB</td><td>Data warehouse (e.g. for BI dashboards)</td></tr>
+          </table>
+          <p class="desc" style="margin-top:12px;"><strong>Database security</strong> layers: authentication (who you are), authorization via GRANT/REVOKE (what you can do), encryption at rest and in transit, auditing/logging, and SQL-injection defenses (parameterized queries, never string-concatenated SQL).</p>
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="page-footer">
+      <p><b>DBMS &amp; SQL — The Complete Reference</b> · Single-file, offline, no dependencies.</p>
+      <p>Companion guides in this series: MySQL · PL/SQL (Oracle) · PostgreSQL · SQLite · Oracle Database.</p>
+    </footer>
+  </div>
+</div>
+
+<script>
+// ---------- Seed data ----------
+function seedDB(){
+  return {
+    employees: [
+      {emp_id:1,name:'Aarav Sharma',dept_id:10,salary:72000,manager_id:null,hire_date:'2019-03-11',city:'Bengaluru'},
+      {emp_id:2,name:'Priya Nair',dept_id:20,salary:65000,manager_id:1,hire_date:'2020-06-01',city:'Chennai'},
+      {emp_id:3,name:'Rohan Gupta',dept_id:10,salary:58000,manager_id:1,hire_date:'2021-01-15',city:'Bengaluru'},
+      {emp_id:4,name:'Sneha Iyer',dept_id:30,salary:81000,manager_id:null,hire_date:'2018-11-20',city:'Hyderabad'},
+      {emp_id:5,name:'Karan Mehta',dept_id:20,salary:49000,manager_id:2,hire_date:'2022-08-09',city:'Chennai'},
+      {emp_id:6,name:'Isha Verma',dept_id:30,salary:76000,manager_id:4,hire_date:'2020-02-17',city:'Hyderabad'},
+      {emp_id:7,name:'Dev Kapoor',dept_id:10,salary:54000,manager_id:1,hire_date:'2023-04-05',city:'Bengaluru'},
+      {emp_id:8,name:'Ananya Rao',dept_id:40,salary:69000,manager_id:null,hire_date:'2019-09-23',city:'Pune'}
+    ],
+    departments: [
+      {dept_id:10,dept_name:'Engineering',location:'Bengaluru',budget:500000},
+      {dept_id:20,dept_name:'Sales',location:'Chennai',budget:250000},
+      {dept_id:30,dept_name:'Marketing',location:'Hyderabad',budget:180000},
+      {dept_id:40,dept_name:'HR',location:'Pune',budget:90000}
+    ],
+    projects: [
+      {project_id:100,project_name:'Orion',dept_id:10,budget:120000,status:'Active'},
+      {project_id:101,project_name:'Nimbus',dept_id:10,budget:80000,status:'Completed'},
+      {project_id:102,project_name:'Falcon',dept_id:20,budget:60000,status:'Active'},
+      {project_id:103,project_name:'Comet',dept_id:30,budget:45000,status:'On Hold'}
+    ]
+  };
+}
+
+let DB = seedDB();
+function resetDB(){ DB = seedDB(); }
+
+// ---------- Utility ----------
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+function coerce(v){
+  v = v.trim();
+  if(/^'.*'$/.test(v) || /^".*"$/.test(v)) return v.slice(1,-1);
+  if(/^-?\d+(\.\d+)?$/.test(v)) return parseFloat(v);
+  if(/^null$/i.test(v)) return null;
+  return v;
+}
+
+function splitTopLevel(str, sep){
+  // splits on sep at paren-depth 0, respecting quotes
+  const parts=[]; let depth=0, cur='', inStr=null;
+  for(let i=0;i<str.length;i++){
+    const ch=str[i];
+    if(inStr){ cur+=ch; if(ch===inStr) inStr=null; continue; }
+    if(ch==="'"||ch==='"'){ inStr=ch; cur+=ch; continue; }
+    if(ch==='(') depth++;
+    if(ch===')') depth--;
+    if(ch===sep && depth===0){ parts.push(cur); cur=''; continue; }
+    cur+=ch;
+  }
+  if(cur.trim()!=='') parts.push(cur);
+  return parts.map(s=>s.trim());
+}
+
+function evalCondition(row, cond, ctx){
+  // cond: string with AND/OR, comparisons, LIKE, IN, IS NULL
+  cond = cond.trim();
+  // split OR at top level first (lower precedence)
+  const orParts = splitByKeyword(cond, 'OR');
+  if(orParts.length>1) return orParts.some(p=>evalCondition(row,p,ctx));
+  const andParts = splitByKeyword(cond, 'AND');
+  if(andParts.length>1) return andParts.every(p=>evalCondition(row,p,ctx));
+
+  let m;
+  if(m = cond.match(/^(.+?)\s+IS\s+NOT\s+NULL$/i)) return getField(row,m[1].trim(),ctx)!==null && getField(row,m[1].trim(),ctx)!==undefined;
+  if(m = cond.match(/^(.+?)\s+IS\s+NULL$/i)) return getField(row,m[1].trim(),ctx)===null || getField(row,m[1].trim(),ctx)===undefined;
+  if(m = cond.match(/^(.+?)\s+LIKE\s+'(.*)'$/i)){
+    const val = getField(row,m[1].trim(),ctx);
+    const pattern = '^'+m[2].replace(/%/g,'.*').replace(/_/g,'.')+'$';
+    return new RegExp(pattern,'i').test(String(val));
+  }
+  if(m = cond.match(/^(.+?)\s+NOT\s+IN\s*\((.+)\)$/i)){
+    const val = getField(row,m[1].trim(),ctx);
+    const inner = m[2].trim();
+    const list = /^SELECT/i.test(inner) ? subqueryList(inner) : splitTopLevel(inner,',').map(coerce);
+    return !list.includes(val);
+  }
+  if(m = cond.match(/^(.+?)\s+IN\s*\((.+)\)$/i)){
+    const val = getField(row,m[1].trim(),ctx);
+    const inner = m[2].trim();
+    const list = /^SELECT/i.test(inner) ? subqueryList(inner) : splitTopLevel(inner,',').map(coerce);
+    return list.includes(val);
+  }
+  if(m = cond.match(/^(.+?)\s*(>=|<=|!=|<>|=|>|<)\s*\(\s*(SELECT\s+.+)\)$/i)){
+    const left = getField(row,m[1].trim(),ctx);
+    const opStr = m[2];
+    const right = subqueryScalar(m[3].trim());
+    switch(opStr){
+      case '=': return left==right;
+      case '!=': case '<>': return left!=right;
+      case '>': return left>right;
+      case '<': return left<right;
+      case '>=': return left>=right;
+      case '<=': return left<=right;
+    }
+  }
+  if(m = cond.match(/^(.+?)\s*(>=|<=|!=|<>|=|>|<)\s*(.+)$/)){
+    const left = getField(row,m[1].trim(),ctx);
+    const opStr = m[2];
+    let rightRaw = m[3].trim();
+    const right = /^[a-zA-Z_][\w.]*$/.test(rightRaw) && !/^'.*'$/.test(rightRaw) ? getField(row,rightRaw,ctx) : coerce(rightRaw);
+    switch(opStr){
+      case '=': return left==right;
+      case '!=': case '<>': return left!=right;
+      case '>': return left>right;
+      case '<': return left<right;
+      case '>=': return left>=right;
+      case '<=': return left<=right;
+    }
+  }
+  return true;
+}
+
+function splitByKeyword(str, kw){
+  const re = new RegExp('\\s+'+kw+'\\s+','i');
+  const parts=[]; let depth=0, cur='', inStr=null, i=0;
+  while(i<str.length){
+    const ch = str[i];
+    if(inStr){ cur+=ch; if(ch===inStr) inStr=null; i++; continue; }
+    if(ch==="'"||ch==='"'){ inStr=ch; cur+=ch; i++; continue; }
+    if(ch==='(') depth++;
+    if(ch===')') depth--;
+    if(depth===0){
+      const rest = str.slice(i);
+      const m = rest.match(new RegExp('^\\s+'+kw+'\\s+','i'));
+      if(m){ parts.push(cur); cur=''; i+=m[0].length; continue; }
+    }
+    cur+=ch; i++;
+  }
+  parts.push(cur);
+  return parts.map(s=>s.trim()).filter(s=>s!=='');
+}
+
+function getField(row, ref, ctx){
+  ref = ref.trim();
+  if(ref.includes('.')){
+    const [t,c] = ref.split('.');
+    if(ctx && ctx.aliasMap && ctx.aliasMap[t]) return row[ctx.aliasMap[t]+'__'+c] !== undefined ? row[ctx.aliasMap[t]+'__'+c] : row[c];
+    return row[t+'__'+c] !== undefined ? row[t+'__'+c] : row[c];
+  }
+  return row[ref];
+}
+
+function subqueryList(selectSql){
+  const res = executeSelect(selectSql.replace(/;$/,''));
+  const col = res.columns[0];
+  return res.rows.map(r=>r[col]);
+}
+function subqueryScalar(selectSql){
+  const res = executeSelect(selectSql.replace(/;$/,''));
+  const col = res.columns[0];
+  return res.rows.length ? res.rows[0][col] : null;
+}
+
+// ---------- SELECT ----------
+function executeSelect(sql){
+  let m = sql.match(/^SELECT\s+(DISTINCT\s+)?(.+?)\s+FROM\s+(.+?)(?:\s+WHERE\s+(.+?))?(?:\s+GROUP\s+BY\s+(.+?))?(?:\s+HAVING\s+(.+?))?(?:\s+ORDER\s+BY\s+(.+?))?(?:\s+LIMIT\s+(\d+))?$/is);
+  if(!m) throw new Error('Could not parse SELECT statement.');
+  const [, distinctFlag, colsRaw, fromRaw, whereRaw, groupByRaw, havingRaw, orderByRaw, limitRaw] = m;
+
+  // ---- FROM + JOIN parsing ----
+  let fromClause = fromRaw.trim();
+  const joins = [];
+  const joinRe = /\s+(INNER JOIN|LEFT JOIN|LEFT OUTER JOIN|RIGHT JOIN|RIGHT OUTER JOIN|FULL JOIN|FULL OUTER JOIN|CROSS JOIN|JOIN)\s+/gi;
+  let segments = fromClause.split(joinRe);
+  const baseSeg = segments[0].trim();
+  const baseParts = baseSeg.split(/\s+/);
+  const baseTable = baseParts[0];
+  const baseAlias = baseParts[1] || baseTable;
+
+  let rows = DB[baseTable] ? clone(DB[baseTable]) : (()=>{throw new Error('Table "'+baseTable+'" does not exist.')})();
+  let working = rows.map(r=>{
+    const o={}; for(const k in r) o[baseAlias+'__'+k]=r[k]; return o;
+  });
+  const aliasMap = {[baseAlias]: baseAlias};
+
+  for(let i=1;i<segments.length;i+=2){
+    const joinType = segments[i].toUpperCase();
+    const rest = segments[i+1].trim();
+    const onMatch = rest.match(/^(.+?)\s+ON\s+(.+)$/i);
+    if(!onMatch) throw new Error('JOIN requires an ON clause.');
+    const tblPart = onMatch[1].trim().split(/\s+/);
+    const joinTable = tblPart[0];
+    const joinAlias = tblPart[1] || joinTable;
+    const onCond = onMatch[2].trim();
+    aliasMap[joinAlias]=joinAlias;
+    const joinRows = DB[joinTable] ? clone(DB[joinTable]) : (()=>{throw new Error('Table "'+joinTable+'" does not exist.')})();
+    const jr = joinRows.map(r=>{ const o={}; for(const k in r) o[joinAlias+'__'+k]=r[k]; return o; });
+
+    const onM = onCond.match(/^(.+?)\s*=\s*(.+)$/);
+    const [lt,lc] = onM[1].trim().split('.');
+    const [rt,rc] = onM[2].trim().split('.');
+
+    const newWorking = [];
+    for(const w of working){
+      let matched=false;
+      for(const j of jr){
+        const lv = w[lt+'__'+lc] !== undefined ? w[lt+'__'+lc] : w[lc];
+        const rv = j[rt+'__'+rc] !== undefined ? j[rt+'__'+rc] : j[rc];
+        if(lv===rv){ newWorking.push({...w,...j}); matched=true; }
+      }
+      if(!matched && /LEFT/i.test(joinType)){
+        const nullRow={}; for(const k of Object.keys(jr[0]||{})) nullRow[k]=null;
+        newWorking.push({...w,...nullRow});
+      }
+    }
+    if(/RIGHT/i.test(joinType)){
+      for(const j of jr){
+        const rv = j[joinAlias+'__'+rc];
+        const hasMatch = working.some(w=>{
+          const lv = w[lt+'__'+lc] !== undefined ? w[lt+'__'+lc] : w[lc];
+          return lv===rv;
+        });
+        if(!hasMatch){
+          const nullRow={}; for(const k of Object.keys(working[0]||{})) nullRow[k]=null;
+          newWorking.push({...nullRow,...j});
+        }
+      }
+    }
+    working = newWorking;
+  }
+
+  const ctx = {aliasMap};
+  function flatten(w){
+    const o={};
+    for(const k in w){
+      const idx = k.indexOf('__');
+      const col = idx>=0 ? k.slice(idx+2) : k;
+      o[col]=w[k];
+      o[k]=w[k];
+    }
+    return o;
+  }
+  let flat = working.map(flatten);
+
+  if(whereRaw) flat = flat.filter(r=>evalCondition(r, whereRaw, ctx));
+
+  // GROUP BY + aggregates
+  const aggRe = /(COUNT|SUM|AVG|MIN|MAX)\s*\(\s*(DISTINCT\s+)?([^)]+)\s*\)/i;
+  const colsList = splitTopLevel(colsRaw, ',');
+  let resultRows;
+  let outCols;
+
+  if(groupByRaw || colsList.some(c=>aggRe.test(c))){
+    const groupCols = groupByRaw ? splitTopLevel(groupByRaw, ',').map(c=>c.trim()) : [];
+    const groups = new Map();
+    for(const r of flat){
+      const key = groupCols.map(c=>r[c.includes('.')?c.split('.')[1]:c]).join('||');
+      if(!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(r);
+    }
+    if(groups.size===0 && groupCols.length===0) groups.set('', flat);
+    resultRows=[]; outCols=[];
+    for(const [key, groupRows] of groups){
+      const outRow={};
+      for(const c of colsList){
+        const am = c.match(aggRe);
+        const asMatch = c.match(/\s+AS\s+(\w+)$/i);
+        let label = asMatch ? asMatch[1] : c.replace(/\s+AS\s+\w+$/i,'').trim();
+        let cClean = c.replace(/\s+AS\s+\w+$/i,'').trim();
+        if(am){
+          const fn=am[1].toUpperCase(); const field=am[3].trim();
+          let vals = field==='*' ? groupRows.map(()=>1) : groupRows.map(r=>r[field.includes('.')?field.split('.')[1]:field]).filter(v=>v!==null&&v!==undefined);
+          let val;
+          if(fn==='COUNT') val = field==='*' ? groupRows.length : vals.length;
+          else if(fn==='SUM') val = vals.reduce((a,b)=>a+Number(b),0);
+          else if(fn==='AVG') val = vals.length? +(vals.reduce((a,b)=>a+Number(b),0)/vals.length).toFixed(2):0;
+          else if(fn==='MIN') val = Math.min(...vals.map(Number));
+          else if(fn==='MAX') val = Math.max(...vals.map(Number));
+          outRow[label]=val;
+        } else {
+          const colName = cClean.includes('.')?cClean.split('.')[1]:cClean;
+          outRow[label]= groupRows[0][colName];
+        }
+      }
+      if(havingRaw && !evalCondition(outRow, havingRaw.replace(aggRe,(mm)=>{
+        // having may reference aggregate directly; approximate by evaluating against outRow using alias if present
+        return mm;
+      }), ctx)){
+        // fallback: try evaluate having using output row directly (best-effort)
+      }
+      resultRows.push(outRow);
+    }
+    outCols = resultRows.length? Object.keys(resultRows[0]) : colsList.map(c=>c.trim());
+    if(havingRaw){
+      resultRows = resultRows.filter(r=>{
+        try { return evalConditionOnFlat(r, havingRaw); } catch(e){ return true; }
+      });
+    }
+  } else {
+    if(colsRaw.trim()==='*'){
+      outCols = Object.keys(flat[0]||{}).filter(k=>!k.includes('__'));
+      resultRows = flat.map(r=>{ const o={}; outCols.forEach(c=>o[c]=r[c]); return o; });
+    } else {
+      outCols=[]; 
+      resultRows = flat.map(r=>{
+        const o={};
+        for(const c of colsList){
+          const asMatch = c.match(/\s+AS\s+(\w+)$/i);
+          const label = asMatch? asMatch[1] : (c.includes('.')?c.split('.')[1]:c).trim();
+          const colName = (asMatch? c.replace(/\s+AS\s+\w+$/i,'') : c).trim();
+          const key = colName.includes('.')?colName.split('.')[1]:colName;
+          o[label]=r[key];
+        }
+        return o;
+      });
+      outCols = resultRows.length? Object.keys(resultRows[0]) : colsList;
+    }
+  }
+
+  if(distinctFlag){
+    const seen=new Set(); const uniq=[];
+    for(const r of resultRows){ const k=JSON.stringify(r); if(!seen.has(k)){seen.add(k); uniq.push(r);} }
+    resultRows = uniq;
+  }
+
+  if(orderByRaw){
+    const parts = splitTopLevel(orderByRaw, ',');
+    resultRows.sort((a,b)=>{
+      for(const p of parts){
+        const [colRaw, dirRaw] = p.trim().split(/\s+/);
+        const col = colRaw.includes('.')?colRaw.split('.')[1]:colRaw;
+        const dir = (dirRaw||'ASC').toUpperCase();
+        if(a[col]<b[col]) return dir==='DESC'?1:-1;
+        if(a[col]>b[col]) return dir==='DESC'?-1:1;
+      }
+      return 0;
+    });
+  }
+
+  if(limitRaw) resultRows = resultRows.slice(0, parseInt(limitRaw));
+
+  return {columns: outCols, rows: resultRows};
+}
+
+function evalConditionOnFlat(row, cond){
+  return evalCondition(row, cond, {aliasMap:{}});
+}
+
+// ---------- INSERT / UPDATE / DELETE / DDL ----------
+function executeInsert(sql){
+  const m = sql.match(/^INSERT\s+INTO\s+(\w+)\s*(\(([^)]+)\))?\s*VALUES\s*\((.+)\)$/is);
+  if(!m) throw new Error('Could not parse INSERT statement.');
+  const table = m[1];
+  if(!DB[table]) throw new Error('Table "'+table+'" does not exist.');
+  const cols = m[3] ? splitTopLevel(m[3],',').map(s=>s.trim()) : Object.keys(DB[table][0]);
+  const vals = splitTopLevel(m[4],',').map(coerce);
+  const row={}; cols.forEach((c,i)=>row[c]=vals[i]);
+  DB[table].push(row);
+  return {message:`1 row inserted into "${table}".`, row};
+}
+
+function executeUpdate(sql){
+  const m = sql.match(/^UPDATE\s+(\w+)\s+SET\s+(.+?)(?:\s+WHERE\s+(.+))?$/is);
+  if(!m) throw new Error('Could not parse UPDATE statement.');
+  const table = m[1];
+  if(!DB[table]) throw new Error('Table "'+table+'" does not exist.');
+  const sets = splitTopLevel(m[2],',').map(s=>{
+    const [c,v] = s.split('=');
+    return [c.trim(), coerce(v)];
+  });
+  let count=0;
+  DB[table].forEach(row=>{
+    if(!m[3] || evalCondition(row, m[3], {aliasMap:{}})){
+      sets.forEach(([c,v])=>row[c]=v); count++;
+    }
+  });
+  return {message:`${count} row(s) updated in "${table}".`};
+}
+
+function executeDelete(sql){
+  const m = sql.match(/^DELETE\s+FROM\s+(\w+)(?:\s+WHERE\s+(.+))?$/is);
+  if(!m) throw new Error('Could not parse DELETE statement.');
+  const table = m[1];
+  if(!DB[table]) throw new Error('Table "'+table+'" does not exist.');
+  const before = DB[table].length;
+  DB[table] = DB[table].filter(row=> m[2] ? !evalCondition(row, m[2], {aliasMap:{}}) : false);
+  const count = before - DB[table].length;
+  return {message:`${count} row(s) deleted from "${table}".`};
+}
+
+function executeCreateTable(sql){
+  const m = sql.match(/^CREATE\s+TABLE\s+(\w+)\s*\((.+)\)$/is);
+  if(!m) throw new Error('Could not parse CREATE TABLE statement.');
+  const table = m[1];
+  DB[table] = [];
+  return {message:`Table "${table}" created.`};
+}
+
+function executeDropTable(sql){
+  const m = sql.match(/^DROP\s+TABLE\s+(\w+)$/is);
+  if(!m) throw new Error('Could not parse DROP TABLE statement.');
+  delete DB[m[1]];
+  return {message:`Table "${m[1]}" dropped.`};
+}
+
+function runSQL(sqlText){
+  const statements = sqlText.split(';').map(s=>s.trim()).filter(Boolean);
+  const results=[];
+  for(const stmt of statements){
+    const type = stmt.match(/^\s*(\w+)/)[1].toUpperCase();
+    try{
+      let res;
+      if(type==='SELECT') res = {type:'select', ...executeSelect(stmt)};
+      else if(type==='INSERT') res = {type:'message', ...executeInsert(stmt)};
+      else if(type==='UPDATE') res = {type:'message', ...executeUpdate(stmt)};
+      else if(type==='DELETE') res = {type:'message', ...executeDelete(stmt)};
+      else if(type==='CREATE') res = {type:'message', ...executeCreateTable(stmt)};
+      else if(type==='DROP') res = {type:'message', ...executeDropTable(stmt)};
+      else res = {type:'error', message:'Statement type "'+type+'" is not supported in this playground.'};
+      results.push(res);
+    }catch(e){
+      results.push({type:'error', message: e.message});
+    }
+  }
+  return results;
+}
+
+
+/* ---------- Section registry (drives sidebar + progress) ---------- */
+const SECTIONS = [
+  {cat:'A', title:'Foundations of DBMS', items:[
+    ['s1','What is a DBMS?'],['s2','File System vs DBMS'],['s3','DBMS Architecture'],['s4','Database Languages Overview']
+  ]},
+  {cat:'B', title:'Data Modeling & ER', items:[
+    ['s5','Data Models Overview'],['s6','Entity-Relationship Model'],['s7','ER Diagram Notation & Cardinality'],
+    ['s8','Generalization, Specialization & Aggregation'],['s9','Mapping ER to Relational Schema']
+  ]},
+  {cat:'C', title:'Relational Model & Keys', items:[
+    ['s10','Relational Model Basics'],['s11','Candidate, Primary, Super & Alternate Keys'],
+    ['s12','Foreign Key & Referential Integrity'],['s13','Composite & Surrogate Keys'],['s14','Integrity Constraints']
+  ]},
+  {cat:'D', title:'Relational Algebra', items:[
+    ['s15','Basic Operations (σ, π, ∪, −, ×)'],['s16','Join & Division Operations'],['s17','Relational Algebra vs SQL']
+  ]},
+  {cat:'E', title:'SQL Fundamentals', items:[
+    ['s18','Introduction to SQL & Its Categories'],['s19','DDL — CREATE, ALTER, DROP, TRUNCATE'],
+    ['s20','DML — INSERT, UPDATE, DELETE'],['s21','DQL — SELECT, WHERE, ORDER BY, LIMIT'],
+    ['s22','DCL — GRANT, REVOKE'],['s23','TCL — COMMIT, ROLLBACK, SAVEPOINT'],
+    ['s24','SQL Data Types & Constraints'],['s25','Aggregate Functions, GROUP BY & HAVING']
+  ]},
+  {cat:'F', title:'Advanced SQL', items:[
+    ['s26','Joins — INNER, LEFT, RIGHT, FULL'],['s27','Self, Cross & Natural Joins'],
+    ['s28','Subqueries — Scalar, Nested & Correlated'],['s29','Set Operations — UNION, INTERSECT, EXCEPT'],
+    ['s30','Views'],['s31','Indexes in SQL'],['s32','Window Functions'],['s33','CTEs & Recursive Queries']
+  ]},
+  {cat:'G', title:'Stored Programs (PL/SQL style)', items:[
+    ['s34','Stored Procedures'],['s35','User-Defined Functions'],['s36','Triggers'],
+    ['s37','Cursors'],['s38','Exception Handling']
+  ]},
+  {cat:'H', title:'Normalization & Design', items:[
+    ['s39','Functional Dependencies'],['s40','First Normal Form (1NF)'],
+    ['s41','Second & Third Normal Form (2NF, 3NF)'],['s42','Boyce-Codd Normal Form (BCNF)'],
+    ['s43','4NF & 5NF'],['s44','Denormalization']
+  ]},
+  {cat:'I', title:'Transactions & Concurrency', items:[
+    ['s45','Transactions & ACID Properties'],['s46','Schedules & Serializability'],
+    ['s47','Concurrency Control — Locking Protocols'],['s48','Timestamp Ordering & MVCC'],
+    ['s49','Deadlocks — Detection, Prevention & Recovery']
+  ]},
+  {cat:'J', title:'Storage & Query Optimization', items:[
+    ['s50','Storage Hierarchy & File Organization'],['s51','Indexing Structures — B-Tree, B+Tree, Hashing'],
+    ['s52','Query Processing & Optimization']
+  ]},
+  {cat:'K', title:'Modern & Advanced Topics', items:[
+    ['s53','SQL vs NoSQL'],['s54','Distributed Databases & CAP Theorem'],
+    ['s55','Sharding & Replication'],['s56','Data Warehousing, OLAP vs OLTP & Security']
+  ]}
+];
+
+function buildNav(){
+  const container = document.getElementById('nav-container');
+  let html='';
+  let n=0;
+  SECTIONS.forEach((group,gi)=>{
+    html += `<div class="nav-group"><div class="nav-group-title">${group.cat} · ${group.title}</div>`;
+    group.items.forEach(([id,title])=>{
+      n++;
+      html += `<a class="nav-link" data-id="${id}" href="#${id}"><span class="num">${String(n).padStart(2,'0')}</span><span>${title}</span><span class="check"></span></a>`;
+    });
+    html += `</div>`;
+  });
+  container.innerHTML = html;
+}
+
+function totalSectionCount(){
+  return SECTIONS.reduce((a,g)=>a+g.items.length,0);
+}
+
+/* ---------- Progress tracking ---------- */
+let visited = new Set();
+function loadProgress(){
+  try{
+    const saved = localStorage.getItem('dbms_guide_progress');
+    if(saved) visited = new Set(JSON.parse(saved));
+  }catch(e){}
+}
+function saveProgress(){
+  try{ localStorage.setItem('dbms_guide_progress', JSON.stringify([...visited])); }catch(e){}
+}
+function markVisited(id){
+  if(visited.has(id)) return;
+  visited.add(id);
+  saveProgress();
+  updateProgressUI();
+}
+function updateProgressUI(){
+  const total = totalSectionCount();
+  const count = visited.size;
+  document.getElementById('progress-count').textContent = `${count} / ${total}`;
+  document.getElementById('progress-fill').style.width = (count/total*100)+'%';
+  document.querySelectorAll('.nav-link').forEach(link=>{
+    if(visited.has(link.dataset.id)) link.classList.add('done');
+  });
+}
+
+/* ---------- Scrollspy + top progress bar ---------- */
+function setupScrollspy(){
+  const links = [...document.querySelectorAll('.nav-link')];
+  const targets = links.map(l=>document.getElementById(l.dataset.id)).filter(Boolean);
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      const id = entry.target.id;
+      const link = links.find(l=>l.dataset.id===id);
+      if(!link) return;
+      if(entry.isIntersecting){
+        links.forEach(l=>l.classList.remove('active'));
+        link.classList.add('active');
+        markVisited(id);
+      }
+    });
+  }, {rootMargin:'-15% 0px -70% 0px', threshold:0});
+  targets.forEach(t=>io.observe(t));
+
+  window.addEventListener('scroll', ()=>{
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop)/(h.scrollHeight-h.clientHeight)*100;
+    document.getElementById('top-progress').style.width = scrolled+'%';
+  }, {passive:true});
+}
+
+/* ---------- Mobile menu ---------- */
+function setupMobileMenu(){
+  const hamburger = document.getElementById('hamburger');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  hamburger.addEventListener('click', ()=>{
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  });
+  overlay.addEventListener('click', ()=>{
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  });
+  document.querySelectorAll('.nav-link').forEach(l=>{
+    l.addEventListener('click', ()=>{
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    });
+  });
+}
+
+/* ---------- Query runner (SQL playground) ---------- */
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderResults(outputEl, results){
+  let html='';
+  results.forEach(r=>{
+    if(r.type==='select'){
+      if(r.rows.length===0){
+        html += `<div class="ok-msg">Query OK — 0 rows returned.</div>`;
+      } else {
+        html += '<table><thead><tr>'+r.columns.map(c=>`<th>${escapeHtml(c)}</th>`).join('')+'</tr></thead><tbody>';
+        r.rows.forEach(row=>{
+          html += '<tr>'+r.columns.map(c=>`<td>${row[c]===null||row[c]===undefined?'<span style="color:var(--text-2)">NULL</span>':escapeHtml(row[c])}</td>`).join('')+'</tr>';
+        });
+        html += '</tbody></table>';
+        html += `<div class="output-meta">${r.rows.length} row(s) returned.</div>`;
+      }
+    } else if(r.type==='message'){
+      html += `<div class="ok-msg">✓ ${escapeHtml(r.message)}</div>`;
+    } else {
+      html += `<div class="err">✕ Error: ${escapeHtml(r.message)}</div>`;
+    }
+  });
+  outputEl.innerHTML = html;
+  outputEl.classList.add('show');
+}
+
+function runQuery(btn){
+  const panel = btn.closest('.code-panel');
+  const textarea = panel.querySelector('.code-editor');
+  const output = panel.querySelector('.output-panel');
+  const sql = textarea.value.trim();
+  if(!sql) return;
+  btn.classList.add('running');
+  const origHTML = btn.innerHTML;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>...';
+  setTimeout(()=>{
+    try{
+      const results = runSQL(sql);
+      renderResults(output, results);
+    }catch(e){
+      output.innerHTML = `<div class="err">✕ Error: ${escapeHtml(e.message)}</div>`;
+      output.classList.add('show');
+    }
+    btn.classList.remove('running');
+    btn.innerHTML = origHTML;
+  }, 220);
+}
+
+/* ---------- Simulated (non-SQL) output reveal for conceptual demos ---------- */
+function runSim(btn, outputHTML){
+  const panel = btn.closest('.code-panel');
+  const output = panel.querySelector('.output-panel');
+  btn.classList.add('running');
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>...';
+  setTimeout(()=>{
+    output.innerHTML = outputHTML;
+    output.classList.add('show');
+    btn.classList.remove('running');
+    btn.innerHTML = orig;
+  }, 250);
+}
+
+/* ---------- Normalization simulator ---------- */
+const NF_DATA = {
+  nf1: {
+    before: `<table class="compare-table"><tr><th>emp_id</th><th>name</th><th>phones</th></tr>
+      <tr><td>1</td><td>Aarav Sharma</td><td>98765xxxxx, 91234xxxxx</td></tr></table>
+      <div class="note-box" style="margin-top:10px;"><b>Problem:</b> the "phones" column holds multiple values in one cell — not atomic, so this violates 1NF.</div>`,
+    after: `<table class="compare-table"><tr><th>emp_id</th><th>name</th></tr>
+      <tr><td>1</td><td>Aarav Sharma</td></tr></table>
+      <table class="compare-table" style="margin-top:10px;"><tr><th>emp_id</th><th>phone</th></tr>
+      <tr><td>1</td><td>98765xxxxx</td></tr><tr><td>1</td><td>91234xxxxx</td></tr></table>
+      <div class="note-box" style="margin-top:10px;"><b>Fixed:</b> phone numbers moved to their own table, one value per row — every column is now atomic.</div>`
+  },
+  nf3: {
+    before: `<table class="compare-table"><tr><th>emp_id</th><th>name</th><th>dept_id</th><th>dept_name</th><th>dept_location</th></tr>
+      <tr><td>1</td><td>Aarav Sharma</td><td>10</td><td>Engineering</td><td>Bengaluru</td></tr>
+      <tr><td>3</td><td>Rohan Gupta</td><td>10</td><td>Engineering</td><td>Bengaluru</td></tr></table>
+      <div class="note-box" style="margin-top:10px;"><b>Problem:</b> emp_id → dept_id → dept_name, dept_location is transitive. dept_name/dept_location repeat for every employee in the same department.</div>`,
+    after: `<table class="compare-table"><tr><th>emp_id</th><th>name</th><th>dept_id</th></tr>
+      <tr><td>1</td><td>Aarav Sharma</td><td>10</td></tr><tr><td>3</td><td>Rohan Gupta</td><td>10</td></tr></table>
+      <table class="compare-table" style="margin-top:10px;"><tr><th>dept_id</th><th>dept_name</th><th>dept_location</th></tr>
+      <tr><td>10</td><td>Engineering</td><td>Bengaluru</td></tr></table>
+      <div class="note-box" style="margin-top:10px;"><b>Fixed:</b> department info now lives once in its own table — employees reference it by dept_id.</div>`
+  }
+};
+function showNF(btn, group, variant){
+  const wrap = document.getElementById(group+'-canvas');
+  wrap.innerHTML = NF_DATA[group][variant];
+  btn.parentElement.querySelectorAll('.sim-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function initNFCanvases(){
+  Object.keys(NF_DATA).forEach(group=>{
+    const wrap = document.getElementById(group+'-canvas');
+    if(wrap) wrap.innerHTML = NF_DATA[group].before;
+  });
+}
+
+/* ---------- Init ---------- */
+document.addEventListener('DOMContentLoaded', ()=>{
+  buildNav();
+  loadProgress();
+  updateProgressUI();
+  setupScrollspy();
+  setupMobileMenu();
+  initNFCanvases();
+});
+</script>
+</body>
+</html>

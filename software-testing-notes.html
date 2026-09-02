@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Testing & QA Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEEEE6;
+  --panel:#FBFBF7;
+  --ink:#14181A;
+  --ink-soft:#4B5450;
+  --line:#D6D2C4;
+  --pass:#1F7A4D;
+  --pass-bg:#E4F2E9;
+  --fail:#B3402F;
+  --fail-bg:#F7E6E2;
+  --pending:#B4790E;
+  --pending-bg:#F5EAD6;
+  --console-bg:#161F1B;
+  --console-ink:#DCEBE3;
+  --console-line:#2B3733;
+  --accent:#1F7A4D;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  line-height:1.55;
+  font-size:16px;
+}
+a{color:inherit;}
+::selection{background:var(--pass);color:#fff;}
+
+/* ---------- Layout shell ---------- */
+.shell{display:flex; min-height:100vh;}
+.sidebar{
+  width:280px; flex-shrink:0;
+  background:var(--console-bg);
+  color:var(--console-ink);
+  position:sticky; top:0; height:100vh; overflow-y:auto;
+  padding:22px 0 40px;
+  border-right:1px solid var(--console-line);
+}
+.sidebar::-webkit-scrollbar{width:8px;}
+.sidebar::-webkit-scrollbar-thumb{background:#33423C;border-radius:4px;}
+.side-head{
+  font-family:var(--mono); font-size:13px; padding:0 20px 16px;
+  border-bottom:1px solid var(--console-line); margin-bottom:14px;
+}
+.side-head .prompt{color:#6FCF97;}
+.side-head .path{color:var(--console-ink); opacity:.85;}
+.side-head .blink{display:inline-block;width:7px;height:14px;background:#6FCF97;vertical-align:-2px;animation:blink 1.1s steps(1) infinite;margin-left:2px;}
+@keyframes blink{50%{opacity:0;}}
+
+.nav-group{margin-bottom:6px;}
+.nav-group-label{
+  font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  color:#7C8A83; padding:10px 20px 6px;
+}
+.nav-link{
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:12.5px;
+  color:#C7D8CF; text-decoration:none;
+  padding:6px 20px 6px 26px;
+  border-left:2px solid transparent;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.nav-link:hover{color:#fff; background:#1D2925;}
+.nav-link.active{color:#6FCF97; border-left-color:#6FCF97; background:#1D2925;}
+.nav-link .dot{color:#4A5C54; font-size:10px;}
+
+.main{flex:1; min-width:0;}
+
+/* ---------- Hero ---------- */
+.hero{
+  padding:64px 56px 48px;
+  border-bottom:1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(31,122,77,0.05), transparent 60%),
+    var(--bg);
+  position:relative;
+}
+.hero .eyebrow{
+  font-family:var(--mono); font-size:12.5px; color:var(--pass);
+  letter-spacing:.06em; margin-bottom:14px; display:flex; gap:10px; align-items:center;
+}
+.hero .eyebrow::before{content:'$'; opacity:.6;}
+.hero h1{
+  font-family:var(--mono); font-weight:700; font-size:clamp(30px,4vw,50px);
+  margin:0 0 14px; letter-spacing:-.01em; max-width:16ch;
+}
+.hero p.lead{
+  font-size:18px; color:var(--ink-soft); max-width:62ch; margin:0 0 28px;
+}
+.run-stats{display:flex; flex-wrap:wrap; gap:12px;}
+.stat{
+  font-family:var(--mono); font-size:12.5px; padding:8px 14px;
+  border:1px solid var(--line); border-radius:6px; background:var(--panel);
+  display:flex; gap:8px; align-items:center;
+}
+.stat b{font-size:14px;}
+.stat.pass{color:var(--pass);}
+.stat.fail{color:var(--fail);}
+.stat.pending{color:var(--pending);}
+
+/* ---------- Section / topic cards ---------- */
+.content{padding:8px 56px 100px;}
+.category{margin-top:56px;}
+.category-title{
+  font-family:var(--mono); font-size:13px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ink-soft); padding-bottom:10px; margin-bottom:22px;
+  border-bottom:1px solid var(--line);
+  display:flex; justify-content:space-between; align-items:baseline;
+}
+.category-title span.count{color:#9AA39D; font-weight:400; text-transform:none; letter-spacing:0;}
+
+.topic{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:10px;
+  margin-bottom:22px;
+  overflow:hidden;
+  scroll-margin-top:20px;
+}
+.topic-bar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px;
+  padding:14px 22px;
+  background:#161F1B0d;
+  border-bottom:1px solid var(--line);
+  font-family:var(--mono);
+}
+.topic-bar .tname{display:flex; align-items:center; gap:12px; min-width:0;}
+.topic-bar .tid{color:#9AA39D; font-size:12px;}
+.topic-bar h3{margin:0; font-size:17px; font-weight:600; font-family:var(--sans); letter-spacing:0;}
+.badge{
+  font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.05em;
+  padding:4px 10px; border-radius:20px; flex-shrink:0;
+}
+.badge.pass{background:var(--pass-bg); color:var(--pass);}
+.badge.fail{background:var(--fail-bg); color:var(--fail);}
+.badge.pending{background:var(--pending-bg); color:var(--pending);}
+
+.topic-body{padding:22px 24px 26px;}
+.topic-body p{margin:0 0 14px; color:var(--ink); }
+.topic-body p.muted{color:var(--ink-soft);}
+
+.kv{
+  display:grid; grid-template-columns:auto 1fr; gap:6px 14px;
+  font-size:14.5px; margin:0 0 16px;
+}
+.kv dt{font-family:var(--mono); font-size:12px; color:var(--pass); align-self:start; padding-top:2px;}
+.kv dd{margin:0; color:var(--ink);}
+
+ul.points{margin:0 0 16px; padding-left:20px;}
+ul.points li{margin-bottom:6px;}
+ul.points li b{color:var(--ink);}
+
+.diagram-frame{
+  border:1px solid var(--console-line);
+  border-radius:8px;
+  background:var(--console-bg);
+  margin:18px 0;
+  overflow:hidden;
+}
+.diagram-topbar{
+  display:flex; align-items:center; gap:6px;
+  padding:9px 12px; border-bottom:1px solid var(--console-line);
+}
+.diagram-topbar .tdot{width:9px;height:9px;border-radius:50%;}
+.diagram-topbar .tdot.r{background:#C0554A;}
+.diagram-topbar .tdot.y{background:#C08A2E;}
+.diagram-topbar .tdot.g{background:#4E9E6E;}
+.diagram-topbar .flabel{font-family:var(--mono); font-size:11px; color:#7C8A83; margin-left:8px;}
+.diagram-frame svg{display:block; width:100%; height:auto;}
+
+.box-note{
+  border-left:3px solid var(--pending);
+  background:var(--pending-bg);
+  padding:12px 16px; border-radius:0 6px 6px 0;
+  font-size:14.5px; margin:16px 0;
+}
+.box-note b{font-family:var(--mono); color:var(--pending); display:block; font-size:12px; margin-bottom:4px; letter-spacing:.04em;}
+
+.problem{
+  border:1px dashed var(--line);
+  border-radius:8px;
+  padding:16px 18px;
+  margin-top:16px;
+  background:#F5F4EE;
+}
+.problem .plabel{font-family:var(--mono); font-size:12px; color:var(--fail); font-weight:600; margin-bottom:8px; display:block;}
+.problem .answer{margin-top:10px; padding-top:10px; border-top:1px solid var(--line);}
+.problem .answer .alabel{font-family:var(--mono); font-size:12px; color:var(--pass); font-weight:600; margin-bottom:6px; display:block;}
+
+table.cmp{width:100%; border-collapse:collapse; margin:14px 0; font-size:14px;}
+table.cmp th, table.cmp td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top;}
+table.cmp th{background:#161F1B; color:#DCEBE3; font-family:var(--mono); font-weight:500; font-size:12.5px;}
+table.cmp tr:nth-child(even) td{background:#F4F3ED;}
+
+code, .inline-code{
+  font-family:var(--mono); background:#161F1B; color:#B7E4C7;
+  padding:1px 6px; border-radius:4px; font-size:.88em;
+}
+
+/* Glossary */
+.glossary-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px;}
+.gterm{border:1px solid var(--line); border-radius:8px; padding:12px 14px; background:var(--panel);}
+.gterm .g-letter{font-family:var(--mono); color:var(--pass); font-size:12px; margin-right:4px;}
+.gterm h4{margin:0 0 6px; font-size:14.5px;}
+.gterm p{margin:0; font-size:13.5px; color:var(--ink-soft);}
+
+footer{
+  padding:36px 56px 60px; border-top:1px solid var(--line);
+  font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);
+}
+
+/* mobile nav toggle */
+.nav-toggle{display:none;}
+@media(max-width:960px){
+  .shell{flex-direction:column;}
+  .sidebar{
+    position:relative; height:auto; width:100%; max-height:56px; overflow:hidden;
+    transition:max-height .25s ease;
+  }
+  .sidebar.open{max-height:80vh; overflow-y:auto;}
+  .nav-toggle{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:0 20px; height:56px; cursor:pointer;
+    font-family:var(--mono); font-size:13px; color:#6FCF97;
+  }
+  .side-head{display:none;}
+  .hero, .content{padding-left:22px; padding-right:22px;}
+}
+@media(max-width:600px){
+  .kv{grid-template-columns:1fr;}
+  table.cmp{font-size:12.5px;}
+}
+</style>
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  /* SPVM3 Brand Footer Injection */
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+
+<script src="spvm3_certificate_system.js"></script>
+</head>
+<body>
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+    <button onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <button onclick="showSPVM3Certificate('software-testing')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate (80% Req)
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('software-testing'); });</script>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+
+<div class="shell">
+
+<nav class="sidebar" id="sidebar">
+  <div class="nav-toggle" id="navToggle">
+    <span>≡ test-suite / topics</span><span id="toggleIcon">＋</span>
+  </div>
+  <div class="side-head">
+    <span class="prompt">guest@qa-lab</span><span class="path">:~/software-testing$</span><span class="blink"></span>
+  </div>
+  <div id="navLinks">
+  <div class="nav-group">
+    <div class="nav-group-label">01 · Fundamentals</div>
+    <a class="nav-link" href="#what-is-testing"><span class="dot">›</span>What is Testing?</a>
+    <a class="nav-link" href="#sdlc"><span class="dot">›</span>SDLC</a>
+    <a class="nav-link" href="#stlc"><span class="dot">›</span>STLC</a>
+    <a class="nav-link" href="#verification-validation"><span class="dot">›</span>Verification vs Validation</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">02 · Development Models</div>
+    <a class="nav-link" href="#waterfall"><span class="dot">›</span>Waterfall Model</a>
+    <a class="nav-link" href="#v-model"><span class="dot">›</span>V-Model</a>
+    <a class="nav-link" href="#agile-model"><span class="dot">›</span>Agile Model</a>
+    <a class="nav-link" href="#spiral-model"><span class="dot">›</span>Spiral Model</a>
+    <a class="nav-link" href="#iterative-model"><span class="dot">›</span>Iterative Model</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">03 · Levels of Testing</div>
+    <a class="nav-link" href="#unit-testing"><span class="dot">›</span>Unit Testing</a>
+    <a class="nav-link" href="#integration-testing"><span class="dot">›</span>Integration Testing</a>
+    <a class="nav-link" href="#system-testing"><span class="dot">›</span>System Testing</a>
+    <a class="nav-link" href="#acceptance-testing"><span class="dot">›</span>Acceptance Testing</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">04 · Testing Types</div>
+    <a class="nav-link" href="#functional-testing"><span class="dot">›</span>Functional Testing</a>
+    <a class="nav-link" href="#non-functional-testing"><span class="dot">›</span>Non-Functional Testing</a>
+    <a class="nav-link" href="#regression-testing"><span class="dot">›</span>Regression Testing</a>
+    <a class="nav-link" href="#smoke-sanity"><span class="dot">›</span>Smoke vs Sanity</a>
+    <a class="nav-link" href="#retesting-vs-regression"><span class="dot">›</span>Re-testing vs Regression</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">05 · Testing Approaches</div>
+    <a class="nav-link" href="#black-box"><span class="dot">›</span>Black Box Testing</a>
+    <a class="nav-link" href="#white-box"><span class="dot">›</span>White Box Testing</a>
+    <a class="nav-link" href="#grey-box"><span class="dot">›</span>Grey Box Testing</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">06 · Test Design Techniques</div>
+    <a class="nav-link" href="#equivalence-partitioning"><span class="dot">›</span>Equivalence Partitioning</a>
+    <a class="nav-link" href="#bva"><span class="dot">›</span>Boundary Value Analysis</a>
+    <a class="nav-link" href="#decision-table"><span class="dot">›</span>Decision Table Testing</a>
+    <a class="nav-link" href="#state-transition"><span class="dot">›</span>State Transition Testing</a>
+    <a class="nav-link" href="#use-case-testing"><span class="dot">›</span>Use Case Testing</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">07 · Non-Functional Deep Dive</div>
+    <a class="nav-link" href="#performance-testing"><span class="dot">›</span>Performance Testing</a>
+    <a class="nav-link" href="#load-stress-volume"><span class="dot">›</span>Load / Stress / Volume</a>
+    <a class="nav-link" href="#security-testing"><span class="dot">›</span>Security Testing</a>
+    <a class="nav-link" href="#usability-testing"><span class="dot">›</span>Usability Testing</a>
+    <a class="nav-link" href="#compatibility-testing"><span class="dot">›</span>Compatibility Testing</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">08 · Test Management</div>
+    <a class="nav-link" href="#test-plan"><span class="dot">›</span>Test Plan</a>
+    <a class="nav-link" href="#test-strategy"><span class="dot">›</span>Test Strategy</a>
+    <a class="nav-link" href="#test-case-scenario"><span class="dot">›</span>Test Case &amp; Scenario</a>
+    <a class="nav-link" href="#rtm"><span class="dot">›</span>Traceability Matrix</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">09 · Defect Management</div>
+    <a class="nav-link" href="#bug-life-cycle"><span class="dot">›</span>Bug Life Cycle</a>
+    <a class="nav-link" href="#severity-priority"><span class="dot">›</span>Severity vs Priority</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">10 · Automation</div>
+    <a class="nav-link" href="#manual-vs-automation"><span class="dot">›</span>Manual vs Automation</a>
+    <a class="nav-link" href="#automation-frameworks"><span class="dot">›</span>Automation Frameworks</a>
+    <a class="nav-link" href="#selenium-basics"><span class="dot">›</span>Selenium Basics</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">11 · Agile Testing</div>
+    <a class="nav-link" href="#agile-testing-quadrants"><span class="dot">›</span>Agile Testing Quadrants</a>
+    <a class="nav-link" href="#tdd"><span class="dot">›</span>TDD</a>
+    <a class="nav-link" href="#bdd"><span class="dot">›</span>BDD</a>
+    <a class="nav-link" href="#sprint-testing"><span class="dot">›</span>Sprint Testing</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">12 · Metrics &amp; Tools</div>
+    <a class="nav-link" href="#test-metrics"><span class="dot">›</span>Test Metrics</a>
+    <a class="nav-link" href="#testing-tools"><span class="dot">›</span>Testing Tools</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">13 · Practice</div>
+    <a class="nav-link" href="#practice-problems"><span class="dot">›</span>Practice Problems</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-group-label">14 · Reference</div>
+    <a class="nav-link" href="#glossary"><span class="dot">›</span>Glossary A–Z</a>
+  </div>
+<!--NAV_MARKER--></div>
+</nav>
+
+<div class="main">
+
+  <header class="hero">
+    <div class="eyebrow">run --suite=software-testing-and-engineering --coverage=A-Z</div>
+    <h1>Software Testing &amp; Engineering</h1>
+    <p class="lead">A single-page field reference covering software testing and software engineering concepts end to end — lifecycle models, testing levels and types, design techniques, defect management, automation, and Agile testing — with diagrams and worked problems.</p>
+    <div class="run-stats">
+      <div class="stat pass">● <b>47</b>&nbsp;topics</div>
+      <div class="stat pending">● <b>10</b>&nbsp;diagrams</div>
+      <div class="stat fail">● <b>6</b>&nbsp;practice problems</div>
+      <div class="stat">◆ <b>A–Z</b>&nbsp;glossary</div>
+    </div>
+  </header>
+
+  <div class="content" id="content">
+    
+    <section class="category" id="cat-fundamentals">
+      <div class="category-title">01 · Fundamentals <span class="count">4 topics</span></div>
+
+      <article class="topic" id="what-is-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-01</span><h3>What is Software Testing?</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Software testing is the process of evaluating a system or its components to find whether it satisfies the specified requirements. In simple terms, it is the activity of executing a program with the intent of finding defects before the end user does.</p>
+          <ul class="points">
+            <li><b>Goal:</b> verify the software works as expected and validate that it meets the user's real need.</li>
+            <li><b>Testing is not just "finding bugs"</b> — it also builds confidence in quality, reduces risk, and checks performance, security and usability.</li>
+            <li><b>Software Engineering</b> is the broader discipline: applying engineering principles (planning, design, construction, testing, maintenance) to build reliable software systems. Testing is one phase inside this larger engineering process.</li>
+          </ul>
+          <div class="box-note"><b>Key idea</b>Testing can show the presence of defects, but it can never prove their absence — this is why testing is about risk reduction, not 100% guarantee.</div>
+        </div>
+      </article>
+
+      <article class="topic" id="sdlc">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-02</span><h3>SDLC — Software Development Life Cycle</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>SDLC is the structured sequence of phases a software product passes through, from the idea stage to retirement. It gives engineering teams a predictable, repeatable process for building software.</p>
+          <div class="diagram-frame">
+            <div class="diagram-topbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="flabel">diagram — sdlc-cycle.svg</span></div>
+            <svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#4E9E6E"/>
+                </marker>
+              </defs>
+              <ellipse cx="360" cy="190" rx="230" ry="120" fill="none" stroke="#2B3733" stroke-width="1.5" stroke-dasharray="4 5"/>
+              <!-- connectors -->
+              <path d="M420,68 A230,120 0 0,1 570,140" fill="none" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a1)"/>
+              <path d="M585,150 A230,120 0 0,1 585,235" fill="none" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a1)"/>
+              <path d="M570,245 A230,120 0 0,1 425,312" fill="none" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a1)"/>
+              <path d="M295,312 A230,120 0 0,1 150,245" fill="none" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a1)"/>
+              <path d="M135,235 A230,120 0 0,1 135,150" fill="none" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a1)"/>
+              <path d="M150,140 A230,120 0 0,1 300,68" fill="none" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a1)"/>
+              <!-- nodes -->
+              <g font-family="IBM Plex Mono, monospace" font-size="12.5" text-anchor="middle">
+                <g><rect x="290" y="38" width="140" height="46" rx="7" fill="#1F7A4D" stroke="#6FCF97"/><text x="360" y="66" fill="#0F1613" font-weight="600">Requirement</text></g>
+                <g><rect x="515" y="103" width="140" height="46" rx="7" fill="#20302A" stroke="#4E9E6E"/><text x="585" y="131" fill="#DCEBE3">Design</text></g>
+                <g><rect x="515" y="233" width="140" height="46" rx="7" fill="#20302A" stroke="#4E9E6E"/><text x="585" y="261" fill="#DCEBE3">Implementation</text></g>
+                <g><rect x="290" y="298" width="140" height="46" rx="7" fill="#20302A" stroke="#4E9E6E"/><text x="360" y="326" fill="#DCEBE3">Testing</text></g>
+                <g><rect x="65" y="233" width="140" height="46" rx="7" fill="#20302A" stroke="#4E9E6E"/><text x="135" y="261" fill="#DCEBE3">Deployment</text></g>
+                <g><rect x="65" y="103" width="140" height="46" rx="7" fill="#20302A" stroke="#4E9E6E"/><text x="135" y="131" fill="#DCEBE3">Maintenance</text></g>
+              </g>
+            </svg>
+          </div>
+          <dl class="kv">
+            <dt>01 Requirement</dt><dd>Gather &amp; document what the business/user needs (BRS, SRS documents).</dd>
+            <dt>02 Design</dt><dd>Turn requirements into architecture — HLD (High Level Design) and LLD (Low Level Design).</dd>
+            <dt>03 Implementation</dt><dd>Developers write the actual code based on the design.</dd>
+            <dt>04 Testing</dt><dd>QA verifies the build against requirements and logs defects.</dd>
+            <dt>05 Deployment</dt><dd>The verified build is released to production / end users.</dd>
+            <dt>06 Maintenance</dt><dd>Bug fixes, patches, and enhancements after release feed back into new requirements.</dd>
+          </dl>
+          <p class="muted">Common SDLC models include Waterfall, V-Model, Iterative, Spiral and Agile — covered in Category 02.</p>
+        </div>
+      </article>
+
+      <article class="topic" id="stlc">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-03</span><h3>STLC — Software Testing Life Cycle</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>STLC is the sub-cycle inside SDLC that defines the specific, sequential phases carried out purely to test the software. Unlike SDLC, STLC begins as soon as requirements are available — testing does not wait for code to be complete.</p>
+          <div class="diagram-frame">
+            <div class="diagram-topbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="flabel">diagram — stlc-phases.svg</span></div>
+            <svg viewBox="0 0 760 190" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#4E9E6E"/>
+                </marker>
+              </defs>
+              <g font-family="IBM Plex Mono, monospace" font-size="11.5" text-anchor="middle">
+                <!-- 6 boxes in a row -->
+                <rect x="10" y="60" width="112" height="60" rx="7" fill="#1F7A4D" stroke="#6FCF97"/><text x="66" y="86" fill="#0F1613" font-weight="600">Requirement</text><text x="66" y="102" fill="#0F1613" font-weight="600">Analysis</text>
+                <line x1="122" y1="90" x2="146" y2="90" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a2)"/>
+                <rect x="148" y="60" width="112" height="60" rx="7" fill="#20302A" stroke="#4E9E6E"/><text x="204" y="86" fill="#DCEBE3">Test</text><text x="204" y="102" fill="#DCEBE3">Planning</text>
+                <line x1="260" y1="90" x2="284" y2="90" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a2)"/>
+                <rect x="286" y="60" width="112" height="60" rx="7" fill="#20302A" stroke="#4E9E6E"/><text x="342" y="86" fill="#DCEBE3">Test Case</text><text x="342" y="102" fill="#DCEBE3">Development</text>
+                <line x1="398" y1="90" x2="422" y2="90" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a2)"/>
+                <rect x="424" y="60" width="112" height="60" rx="7" fill="#20302A" stroke="#4E9E6E"/><text x="480" y="86" fill="#DCEBE3">Environment</text><text x="480" y="102" fill="#DCEBE3">Setup</text>
+                <line x1="536" y1="90" x2="560" y2="90" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a2)"/>
+                <rect x="562" y="60" width="112" height="60" rx="7" fill="#20302A" stroke="#4E9E6E"/><text x="618" y="86" fill="#DCEBE3">Test</text><text x="618" y="102" fill="#DCEBE3">Execution</text>
+                <line x1="674" y1="90" x2="698" y2="90" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a2)"/>
+                <rect x="700" y="60" width="112" height="60" rx="7" fill="#20302A" stroke="#4E9E6E" transform="translate(-52,0)"/><text x="708" y="86" fill="#DCEBE3">Test</text><text x="708" y="102" fill="#DCEBE3">Closure</text>
+              </g>
+            </svg>
+          </div>
+          <ul class="points">
+            <li><b>Requirement Analysis:</b> QA studies requirements to identify what's testable and raises queries.</li>
+            <li><b>Test Planning:</b> Test lead defines scope, approach, resources, schedule — output is the Test Plan.</li>
+            <li><b>Test Case Development:</b> Testers write test cases, test scripts, and prepare test data.</li>
+            <li><b>Environment Setup:</b> The test lab / server / device configuration is prepared and smoke-checked.</li>
+            <li><b>Test Execution:</b> Test cases are run, actual vs expected results compared, defects logged.</li>
+            <li><b>Test Closure:</b> Team evaluates exit criteria, prepares the test summary report and captures lessons learned.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="verification-validation">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-04</span><h3>Verification vs Validation</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Verification asks <i>"Are we building the product right?"</i> Validation asks <i>"Are we building the right product?"</i> Both are needed for quality software.</p>
+          <table class="cmp">
+            <tr><th>Aspect</th><th>Verification</th><th>Validation</th></tr>
+            <tr><td>Focus</td><td>Process — checking documents, design, code</td><td>Product — checking the actual working software</td></tr>
+            <tr><td>Method</td><td>Reviews, walkthroughs, inspections (static)</td><td>Executing the software (dynamic)</td></tr>
+            <tr><td>Question</td><td>Is it built correctly per spec?</td><td>Does it meet the user's actual need?</td></tr>
+            <tr><td>Performed by</td><td>QA team, peer reviewers</td><td>Testers, end users (UAT)</td></tr>
+            <tr><td>Example</td><td>Reviewing an SRS document</td><td>Running the login module and checking it works</td></tr>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-models">
+      <div class="category-title">02 · Development Models <span class="count">5 topics</span></div>
+
+      <article class="topic" id="waterfall">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-05</span><h3>Waterfall Model</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>The oldest SDLC model — each phase must fully complete before the next one starts, flowing downward like a waterfall. Testing happens only after coding is fully done.</p>
+          <div class="diagram-frame">
+            <div class="diagram-topbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="flabel">diagram — waterfall.svg</span></div>
+            <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+              <g font-family="IBM Plex Mono, monospace" font-size="12" fill="#DCEBE3">
+                <rect x="10" y="10" width="130" height="42" rx="6" fill="#1F7A4D" stroke="#6FCF97"/><text x="75" y="35" text-anchor="middle" fill="#0F1613" font-weight="600">Requirements</text>
+                <path d="M75,52 L75,66 L200,66" stroke="#4E9E6E" fill="none" stroke-width="2"/>
+                <rect x="150" y="66" width="110" height="42" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="205" y="91" text-anchor="middle">Design</text>
+                <path d="M205,108 L205,122 L330,122" stroke="#4E9E6E" fill="none" stroke-width="2"/>
+                <rect x="280" y="122" width="110" height="42" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="335" y="147" text-anchor="middle">Coding</text>
+                <path d="M335,164 L335,178 L460,178" stroke="#4E9E6E" fill="none" stroke-width="2"/>
+                <rect x="410" y="178" width="110" height="42" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="465" y="203" text-anchor="middle">Testing</text>
+                <path d="M465,220 L465,234 L590,234" stroke="#4E9E6E" fill="none" stroke-width="2"/>
+                <rect x="540" y="200" width="150" height="42" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="615" y="225" text-anchor="middle">Deployment</text>
+              </g>
+            </svg>
+          </div>
+          <ul class="points">
+            <li><b>Best for:</b> small projects with fixed, well-understood requirements.</li>
+            <li><b>Weakness:</b> defects found late are expensive to fix; no going back once a phase closes.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="v-model">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-06</span><h3>V-Model (Verification &amp; Validation Model)</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>An extension of Waterfall where every development phase on the left has a matching testing phase on the right, forming a "V". Test planning starts in parallel with development, not after.</p>
+          <div class="diagram-frame">
+            <div class="diagram-topbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="flabel">diagram — v-model.svg</span></div>
+            <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+              <g font-family="IBM Plex Mono, monospace" font-size="11.5">
+                <path d="M60,40 L340,240 L620,40" stroke="#2B3733" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/>
+                <!-- left side dev -->
+                <rect x="10" y="20" width="140" height="40" rx="6" fill="#1F7A4D" stroke="#6FCF97"/><text x="80" y="45" text-anchor="middle" fill="#0F1613" font-weight="600">Requirements</text>
+                <rect x="45" y="75" width="140" height="40" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="115" y="100" text-anchor="middle" fill="#DCEBE3">System Design</text>
+                <rect x="90" y="130" width="140" height="40" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="160" y="155" text-anchor="middle" fill="#DCEBE3">Architecture</text>
+                <rect x="145" y="185" width="140" height="40" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="215" y="210" text-anchor="middle" fill="#DCEBE3">Module Design</text>
+                <rect x="270" y="220" width="140" height="40" rx="6" fill="#4E9E6E" stroke="#6FCF97"/><text x="340" y="245" text-anchor="middle" fill="#0F1613" font-weight="600">Coding</text>
+                <!-- right side test -->
+                <rect x="395" y="185" width="150" height="40" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="470" y="210" text-anchor="middle" fill="#DCEBE3">Unit Testing</text>
+                <rect x="465" y="130" width="150" height="40" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="540" y="155" text-anchor="middle" fill="#DCEBE3">Integration Testing</text>
+                <rect x="510" y="75" width="150" height="40" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="585" y="100" text-anchor="middle" fill="#DCEBE3">System Testing</text>
+                <rect x="545" y="20" width="150" height="40" rx="6" fill="#1F7A4D" stroke="#6FCF97"/><text x="620" y="45" text-anchor="middle" fill="#0F1613" font-weight="600">Acceptance Testing</text>
+              </g>
+            </svg>
+          </div>
+          <ul class="points">
+            <li>Each dev phase maps 1:1 to a test level: Requirements ↔ Acceptance Testing, System Design ↔ System Testing, Architecture ↔ Integration Testing, Module Design ↔ Unit Testing.</li>
+            <li><b>Advantage:</b> defects are caught earlier since test design starts alongside development. <b>Disadvantage:</b> still rigid — hard to accommodate late requirement changes.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="agile-model">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-07</span><h3>Agile Model</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Software is built incrementally in short cycles called <b>Sprints</b> (usually 1–4 weeks). Each sprint delivers a working, tested slice of the product, and requirements can evolve based on feedback.</p>
+          <ul class="points">
+            <li><b>Core values:</b> individuals &amp; interactions, working software, customer collaboration, responding to change.</li>
+            <li>Testing is continuous and embedded in every sprint, not a separate late phase — this is called <b>Agile Testing</b> (see Category 11).</li>
+            <li>Common frameworks: <b>Scrum</b> (sprints, daily stand-up, sprint review/retro) and <b>Kanban</b> (continuous flow, WIP limits).</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="spiral-model">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-08</span><h3>Spiral Model</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Combines iterative development with the risk-driven approach of Waterfall. Each "loop" of the spiral repeats four steps: <b>Planning → Risk Analysis → Engineering → Evaluation</b>, gradually growing the product.</p>
+          <ul class="points">
+            <li><b>Best for:</b> large, complex, high-risk projects where requirements are unclear.</li>
+            <li>Heavy emphasis on risk analysis at every loop before committing more budget.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="iterative-model">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-09</span><h3>Iterative Model</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>The system is built in repeated cycles (iterations), each producing a working version with more features than the last, rather than trying to fully define requirements up front.</p>
+          <ul class="points">
+            <li>Each iteration includes its own mini requirement → design → code → test loop.</li>
+            <li>Reduces risk versus Waterfall because problems surface early, in iteration 1 or 2, not at the very end.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-levels">
+      <div class="category-title">03 · Levels of Testing <span class="count">4 topics</span></div>
+
+      <article class="topic" id="unit-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-10</span><h3>Unit Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <div class="diagram-frame">
+            <div class="diagram-topbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="flabel">diagram — testing-pyramid.svg</span></div>
+            <svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+              <g font-family="IBM Plex Mono, monospace" font-size="13" text-anchor="middle">
+                <polygon points="300,20 380,90 220,90" fill="#1F7A4D" stroke="#6FCF97"/>
+                <text x="300" y="60" fill="#0F1613" font-weight="600">UI / E2E</text>
+                <polygon points="220,90 380,90 430,160 170,160" fill="#2F4A3D" stroke="#4E9E6E"/>
+                <text x="300" y="130" fill="#DCEBE3">Integration Tests</text>
+                <polygon points="170,160 430,160 480,230 120,230" fill="#20302A" stroke="#4E9E6E"/>
+                <text x="300" y="200" fill="#DCEBE3">Unit Tests</text>
+                <text x="300" y="252" fill="#7C8A83" font-size="11">more tests, cheaper &amp; faster — bottom of pyramid</text>
+              </g>
+            </svg>
+          </div>
+          <p>Unit testing verifies the smallest testable part of an application — usually a single function, method, or class — in isolation from the rest of the system. It is typically written and run by <b>developers</b> using frameworks like JUnit, NUnit, or PyTest.</p>
+          <ul class="points">
+            <li>Fast to run, cheap to maintain, and forms the base of the testing pyramid — the majority of automated tests should live here.</li>
+            <li>Dependencies are usually replaced with <b>mocks/stubs</b> so the unit is tested in true isolation.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="integration-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-11</span><h3>Integration Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Tests the interfaces and data flow between two or more integrated modules or services — e.g. does the "Order" module correctly call the "Payment" module?</p>
+          <ul class="points">
+            <li><b>Big Bang:</b> integrate all modules at once and test together.</li>
+            <li><b>Top-Down:</b> test from top-level modules downward, using <b>stubs</b> for lower modules not yet built.</li>
+            <li><b>Bottom-Up:</b> test from lower-level modules upward, using <b>drivers</b> to simulate higher modules.</li>
+            <li><b>Sandwich/Hybrid:</b> combination of Top-Down and Bottom-Up.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="system-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-12</span><h3>System Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>The complete, fully-integrated application is tested end-to-end against the full set of requirements, in an environment that mirrors production. It is a <b>black box</b> level test — performed by an independent QA team, not the developers.</p>
+          <ul class="points">
+            <li>Covers functional flows plus non-functional aspects: performance, security, usability, compatibility.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="acceptance-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-13</span><h3>Acceptance Testing (UAT)</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>The final level of testing, done to confirm the system is ready for delivery and meets business needs. <b>User Acceptance Testing (UAT)</b> is performed by actual end users or clients, not testers.</p>
+          <ul class="points">
+            <li><b>Alpha Testing:</b> done in-house, by internal staff, before release to external users.</li>
+            <li><b>Beta Testing:</b> done by real customers in their own environment, before the final public release.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-types">
+      <div class="category-title">04 · Testing Types <span class="count">5 topics</span></div>
+
+      <article class="topic" id="functional-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-14</span><h3>Functional Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Checks <i>what</i> the system does — verifying each function against the functional requirement specification, by feeding input and checking the output.</p>
+          <ul class="points">
+            <li>Sub-types: unit, integration, system, smoke, sanity, regression, and UAT — all check functional behaviour.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="non-functional-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-15</span><h3>Non-Functional Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Checks <i>how well</i> the system performs — not the business logic itself but its quality attributes.</p>
+          <ul class="points">
+            <li>Includes performance, load, stress, security, usability, compatibility, and reliability testing — detailed in Category 07.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="regression-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-16</span><h3>Regression Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Re-running existing test cases after a code change (bug fix, enhancement, or configuration change) to confirm that the change hasn't broken anything that used to work.</p>
+          <ul class="points">
+            <li>A prime candidate for automation, since the same suite is repeated over and over across builds.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="smoke-sanity">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-17</span><h3>Smoke Testing vs Sanity Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <table class="cmp">
+            <tr><th>Aspect</th><th>Smoke Testing</th><th>Sanity Testing</th></tr>
+            <tr><td>Purpose</td><td>Is the build stable enough to test at all?</td><td>Does a specific fix/feature work as expected?</td></tr>
+            <tr><td>Scope</td><td>Broad and shallow — covers major flows</td><td>Narrow and deep — focuses on one area</td></tr>
+            <tr><td>When</td><td>Immediately after a new build is deployed</td><td>After minor fixes / small changes, before deep regression</td></tr>
+            <tr><td>Scripted?</td><td>Usually scripted / documented</td><td>Usually unscripted, exploratory</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="topic" id="retesting-vs-regression">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-18</span><h3>Re-testing vs Regression Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <table class="cmp">
+            <tr><th>Aspect</th><th>Re-testing</th><th>Regression Testing</th></tr>
+            <tr><td>Goal</td><td>Confirm a specific reported bug is actually fixed</td><td>Confirm the fix didn't break anything else</td></tr>
+            <tr><td>Test cases used</td><td>The exact failed test case, re-run</td><td>A broader existing suite around the change</td></tr>
+            <tr><td>Priority</td><td>Higher — done first</td><td>Done after re-testing passes</td></tr>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-approaches">
+      <div class="category-title">05 · Testing Approaches <span class="count">3 topics</span></div>
+
+      <article class="topic" id="black-box">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-19</span><h3>Black Box Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <div class="diagram-frame">
+            <div class="diagram-topbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="flabel">diagram — box-testing.svg</span></div>
+            <svg viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
+              <g font-family="IBM Plex Mono, monospace" font-size="12.5" text-anchor="middle">
+                <circle cx="230" cy="110" r="95" fill="#1F7A4D" fill-opacity="0.55" stroke="#6FCF97"/>
+                <circle cx="370" cy="110" r="95" fill="#2F4A3D" fill-opacity="0.55" stroke="#4E9E6E"/>
+                <text x="175" y="110" fill="#DCEBE3">Black Box</text>
+                <text x="175" y="128" fill="#B7CBC0" font-size="10.5">no code knowledge</text>
+                <text x="425" y="110" fill="#DCEBE3">White Box</text>
+                <text x="425" y="128" fill="#B7CBC0" font-size="10.5">full code knowledge</text>
+                <text x="300" y="110" fill="#0F1613" font-weight="700">Grey Box</text>
+                <text x="300" y="128" fill="#123" font-size="10.5">partial knowledge</text>
+              </g>
+            </svg>
+          </div>
+          <p>Testing based purely on inputs and outputs, without any knowledge of the internal code or logic. The tester treats the application as a "black box".</p>
+          <ul class="points">
+            <li>Used at the System and Acceptance testing levels; performed by independent QA testers.</li>
+            <li>Techniques used: equivalence partitioning, boundary value analysis, decision tables (see Category 06).</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="white-box">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-20</span><h3>White Box Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Testing with full visibility into the internal code, logic, and structure. Also called clear box, glass box or structural testing. Typically performed by developers.</p>
+          <ul class="points">
+            <li>Common techniques: <b>statement coverage</b> (every line executed), <b>branch coverage</b> (every if/else path taken), <b>path coverage</b> (every possible route through the code).</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="grey-box">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-21</span><h3>Grey Box Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>A hybrid: the tester has partial knowledge of the internals (e.g. database schema, API contracts) but tests mainly from the outside, like a user. Common in integration and security testing.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-design">
+      <div class="category-title">06 · Test Design Techniques <span class="count">5 topics</span></div>
+
+      <article class="topic" id="equivalence-partitioning">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-22</span><h3>Equivalence Partitioning (EP)</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Divides input data into groups ("partitions") that are expected to be treated the same way by the system. Instead of testing every possible value, you test <b>one representative value per partition</b>.</p>
+          <div class="problem">
+            <span class="plabel">EXAMPLE — Age field accepts 18 to 60</span>
+            Partitions: Invalid (&lt; 18) · Valid (18–60) · Invalid (&gt; 60)<br>
+            Representative test values: <code>10</code> (invalid-low), <code>35</code> (valid), <code>75</code> (invalid-high)
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="bva">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-23</span><h3>Boundary Value Analysis (BVA)</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Defects cluster at the <b>edges</b> of input ranges, not the middle — so BVA tests values exactly on, just below, and just above each boundary.</p>
+          <div class="diagram-frame">
+            <div class="diagram-topbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="flabel">diagram — bva-numberline.svg</span></div>
+            <svg viewBox="0 0 640 130" xmlns="http://www.w3.org/2000/svg">
+              <g font-family="IBM Plex Mono, monospace" font-size="12">
+                <line x1="40" y1="65" x2="600" y2="65" stroke="#4E9E6E" stroke-width="2"/>
+                <rect x="220" y="55" width="200" height="20" fill="#1F7A4D" fill-opacity="0.5"/>
+                <g text-anchor="middle" fill="#DCEBE3">
+                  <circle cx="80" cy="65" r="4" fill="#B3402F"/><text x="80" y="45">17</text><text x="80" y="95" fill="#7C8A83" font-size="10">invalid</text>
+                  <circle cx="220" cy="65" r="4" fill="#6FCF97"/><text x="220" y="45">18</text><text x="220" y="95" fill="#7C8A83" font-size="10">min boundary</text>
+                  <circle cx="320" cy="65" r="4" fill="#6FCF97"/><text x="320" y="45">35</text><text x="320" y="95" fill="#7C8A83" font-size="10">mid valid</text>
+                  <circle cx="420" cy="65" r="4" fill="#6FCF97"/><text x="420" y="45">60</text><text x="420" y="95" fill="#7C8A83" font-size="10">max boundary</text>
+                  <circle cx="560" cy="65" r="4" fill="#B3402F"/><text x="560" y="45">61</text><text x="560" y="95" fill="#7C8A83" font-size="10">invalid</text>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <p class="muted">For range 18–60, BVA test set: <code>17, 18, 19, 35, 59, 60, 61</code> — EP and BVA are almost always used together.</p>
+        </div>
+      </article>
+
+      <article class="topic" id="decision-table">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-24</span><h3>Decision Table Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Used when the system's behaviour depends on a <b>combination of conditions</b>. Every combination of inputs (conditions) is mapped to its expected output (action) in a table.</p>
+          <div class="problem">
+            <span class="plabel">EXAMPLE — Login: valid username AND valid password → grant access</span>
+            <table class="cmp">
+              <tr><th>Rule</th><th>Valid Username?</th><th>Valid Password?</th><th>Result</th></tr>
+              <tr><td>R1</td><td>Y</td><td>Y</td><td>Access granted</td></tr>
+              <tr><td>R2</td><td>Y</td><td>N</td><td>Error: wrong password</td></tr>
+              <tr><td>R3</td><td>N</td><td>Y</td><td>Error: wrong username</td></tr>
+              <tr><td>R4</td><td>N</td><td>N</td><td>Error: invalid credentials</td></tr>
+            </table>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="state-transition">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-25</span><h3>State Transition Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Used when a system behaves differently based on its <b>current state and history</b> — useful for workflows, login attempts, order status, etc.</p>
+          <div class="diagram-frame">
+            <div class="diagram-topbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="flabel">diagram — atm-pin-states.svg</span></div>
+            <svg viewBox="0 0 660 160" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#4E9E6E"/>
+                </marker>
+              </defs>
+              <g font-family="IBM Plex Mono, monospace" font-size="11.5" text-anchor="middle">
+                <circle cx="70" cy="80" r="42" fill="#20302A" stroke="#4E9E6E"/><text x="70" y="84" fill="#DCEBE3">Idle</text>
+                <line x1="112" y1="80" x2="188" y2="80" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a3)"/><text x="150" y="70" fill="#7C8A83" font-size="10">card inserted</text>
+                <circle cx="230" cy="80" r="42" fill="#20302A" stroke="#4E9E6E"/><text x="230" y="84" fill="#DCEBE3">PIN Entry</text>
+                <line x1="272" y1="80" x2="348" y2="80" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a3)"/><text x="310" y="70" fill="#7C8A83" font-size="10">correct PIN</text>
+                <circle cx="390" cy="80" r="42" fill="#1F7A4D" stroke="#6FCF97"/><text x="390" y="84" fill="#0F1613" font-weight="600">Authorized</text>
+                <path d="M230,122 C230,150 130,150 90,118" stroke="#B3402F" stroke-width="2" fill="none" marker-end="url(#a3)"/><text x="165" y="152" fill="#B3402F" font-size="10">3x wrong PIN</text>
+                <circle cx="60" cy="80" r="0" opacity="0"/>
+                <circle cx="70" cy="80" r="42" fill="none"/>
+                <circle cx="560" cy="80" r="42" fill="#20302A" stroke="#B3402F"/><text x="560" y="76" fill="#DCEBE3">Card</text><text x="560" y="90" fill="#DCEBE3">Blocked</text>
+                <path d="M230,38 C280,10 500,10 545,42" stroke="#B3402F" stroke-width="2" fill="none" marker-end="url(#a3)"/>
+              </g>
+            </svg>
+          </div>
+          <p class="muted">Test cases are derived from every valid and invalid <b>state transition</b>: Idle→PIN Entry, PIN Entry→Authorized, PIN Entry→Card Blocked (after 3 wrong attempts), etc.</p>
+        </div>
+      </article>
+
+      <article class="topic" id="use-case-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-26</span><h3>Use Case Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Test cases are derived from real-world use cases describing how an actor (user) interacts with the system to achieve a goal, including the main flow and alternate/exception flows.</p>
+          <ul class="points">
+            <li>Example use case: "Customer places an order" → main flow (browse → add to cart → checkout → pay), alternate flow (item out of stock), exception flow (payment fails).</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-nonfunctional">
+      <div class="category-title">07 · Non-Functional Deep Dive <span class="count">5 topics</span></div>
+
+      <article class="topic" id="performance-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-27</span><h3>Performance Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Evaluates speed, responsiveness, and stability of a system under a given workload — measuring metrics like response time, throughput, and resource usage (CPU/memory).</p>
+        </div>
+      </article>
+
+      <article class="topic" id="load-stress-volume">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-28</span><h3>Load, Stress &amp; Volume Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <table class="cmp">
+            <tr><th>Type</th><th>What it checks</th></tr>
+            <tr><td>Load Testing</td><td>Behaviour under expected, normal-to-peak user load (e.g. 1,000 concurrent users)</td></tr>
+            <tr><td>Stress Testing</td><td>Behaviour beyond normal capacity, to find the breaking point and how gracefully it fails</td></tr>
+            <tr><td>Volume Testing</td><td>Behaviour when the database/system is flooded with a huge volume of data</td></tr>
+            <tr><td>Spike Testing</td><td>Behaviour under a sudden, sharp increase/decrease in load</td></tr>
+            <tr><td>Soak/Endurance Testing</td><td>Behaviour under sustained load over a long duration, to catch memory leaks</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="topic" id="security-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-29</span><h3>Security Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Uncovers vulnerabilities that could lead to loss of data, revenue, or trust. Checks confidentiality, integrity, authentication, authorization, and non-repudiation.</p>
+          <ul class="points">
+            <li>Common checks: SQL injection, cross-site scripting (XSS), broken authentication, insecure data storage, penetration testing.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="usability-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-30</span><h3>Usability Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Checks how easy, intuitive, and user-friendly the application is — usually observed with real users completing real tasks, measuring learnability, efficiency, and error rate.</p>
+        </div>
+      </article>
+
+      <article class="topic" id="compatibility-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-31</span><h3>Compatibility Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Confirms the software behaves consistently across different browsers, operating systems, devices, screen sizes, and network conditions.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-management">
+      <div class="category-title">08 · Test Management <span class="count">4 topics</span></div>
+
+      <article class="topic" id="test-plan">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-32</span><h3>Test Plan</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>A formal document describing the scope, approach, resources, and schedule of testing activities for a project. It is written once, at the start of a project or release.</p>
+          <ul class="points">
+            <li>Typical contents: objectives, scope (in/out), test approach, entry/exit criteria, resources, environment, risks, deliverables, schedule.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="test-strategy">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-33</span><h3>Test Strategy</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>A high-level, organization-wide document describing the general testing approach — testing types to use, tools, standards. It's more stable and reusable than a Test Plan, which is project-specific.</p>
+        </div>
+      </article>
+
+      <article class="topic" id="test-case-scenario">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-34</span><h3>Test Case vs Test Scenario</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <table class="cmp">
+            <tr><th>Aspect</th><th>Test Scenario</th><th>Test Case</th></tr>
+            <tr><td>Level</td><td>High level — "what to test"</td><td>Detailed — "how to test"</td></tr>
+            <tr><td>Example</td><td>Verify login functionality</td><td>Enter valid username + valid password → click Login → expect dashboard page</td></tr>
+            <tr><td>Contents</td><td>One-line statement</td><td>Steps, test data, expected result, actual result, status</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="topic" id="rtm">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-35</span><h3>Requirement Traceability Matrix (RTM)</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>A grid that maps each requirement to its corresponding test case(s), ensuring nothing is missed and every requirement has test coverage — critical for audits and impact analysis.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-defect">
+      <div class="category-title">09 · Defect Management <span class="count">2 topics</span></div>
+
+      <article class="topic" id="bug-life-cycle">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-36</span><h3>Bug / Defect Life Cycle</h3></div>
+          <span class="badge fail">FAIL → PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Every defect moves through a defined set of states from discovery to closure, so the whole team can track its status.</p>
+          <div class="diagram-frame">
+            <div class="diagram-topbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="flabel">diagram — defect-lifecycle.svg</span></div>
+            <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <marker id="a4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#4E9E6E"/>
+                </marker>
+                <marker id="a5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 z" fill="#B3402F"/>
+                </marker>
+              </defs>
+              <g font-family="IBM Plex Mono, monospace" font-size="11.5" text-anchor="middle">
+                <rect x="10" y="20" width="100" height="42" rx="6" fill="#B3402F" stroke="#E08A7B"/><text x="60" y="46" fill="#fff">New</text>
+                <line x1="110" y1="41" x2="150" y2="41" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a4)"/>
+                <rect x="152" y="20" width="100" height="42" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="202" y="46" fill="#DCEBE3">Assigned</text>
+                <line x1="252" y1="41" x2="292" y2="41" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a4)"/>
+                <rect x="294" y="20" width="100" height="42" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="344" y="46" fill="#DCEBE3">Open</text>
+                <line x1="394" y1="41" x2="434" y2="41" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a4)"/>
+                <rect x="436" y="20" width="100" height="42" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="486" y="46" fill="#DCEBE3">Fixed</text>
+                <line x1="536" y1="41" x2="576" y2="41" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a4)"/>
+                <rect x="578" y="20" width="100" height="42" rx="6" fill="#20302A" stroke="#4E9E6E"/><text x="628" y="46" fill="#DCEBE3">Retest</text>
+
+                <line x1="628" y1="62" x2="628" y2="100" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a4)"/>
+                <rect x="578" y="102" width="100" height="42" rx="6" fill="#1F7A4D" stroke="#6FCF97"/><text x="628" y="128" fill="#0F1613" font-weight="600">Verified</text>
+                <line x1="578" y1="123" x2="486" y2="123" stroke="#4E9E6E" stroke-width="2" marker-end="url(#a4)"/>
+                <rect x="386" y="102" width="100" height="42" rx="6" fill="#1F7A4D" stroke="#6FCF97"/><text x="436" y="128" fill="#0F1613" font-weight="600">Closed</text>
+
+                <path d="M628,102 C628,80 500,180 400,180" stroke="#B3402F" stroke-width="2" fill="none" marker-end="url(#a5)"/>
+                <rect x="200" y="160" width="100" height="42" rx="6" fill="#20302A" stroke="#B3402F"/><text x="250" y="186" fill="#DCEBE3">Reopened</text>
+                <text x="480" y="200" fill="#B3402F" font-size="10.5">not fixed</text>
+                <path d="M200,181 C130,181 90,120 60,62" stroke="#B3402F" stroke-width="2" fill="none" marker-end="url(#a5)"/>
+
+                <rect x="10" y="102" width="100" height="42" rx="6" fill="#20302A" stroke="#B4790E"/><text x="60" y="128" fill="#DCEBE3">Rejected</text>
+                <path d="M110,123 C130,123 150,90 150,62" stroke="#B4790E" stroke-width="2" fill="none" marker-end="url(#a4)"/>
+                <text x="60" y="100" fill="#B4790E" font-size="10" text-anchor="start">not a bug</text>
+              </g>
+            </svg>
+          </div>
+          <dl class="kv">
+            <dt>New</dt><dd>Defect logged for the first time by the tester.</dd>
+            <dt>Assigned</dt><dd>Test/dev lead assigns it to a developer.</dd>
+            <dt>Open</dt><dd>Developer starts analyzing/fixing the defect.</dd>
+            <dt>Fixed</dt><dd>Developer has applied a code fix.</dd>
+            <dt>Retest</dt><dd>Tester re-runs the originally failing test case.</dd>
+            <dt>Verified / Closed</dt><dd>Fix confirmed working — defect is closed.</dd>
+            <dt>Reopened</dt><dd>Fix didn't work — sent back to Assigned/Open.</dd>
+            <dt>Rejected</dt><dd>Reported behaviour is not actually a bug (as-designed / duplicate).</dd>
+          </dl>
+        </div>
+      </article>
+
+      <article class="topic" id="severity-priority">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-37</span><h3>Severity vs Priority</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <table class="cmp">
+            <tr><th>Aspect</th><th>Severity</th><th>Priority</th></tr>
+            <tr><td>Meaning</td><td>How badly the defect impacts the application's functioning</td><td>How urgently it needs to be fixed, from a business point of view</td></tr>
+            <tr><td>Set by</td><td>Tester</td><td>Product manager / test lead (often with dev input)</td></tr>
+            <tr><td>Example</td><td>App crashes on launch — <b>High severity</b></td><td>Company logo is wrong color — <b>High priority</b>, low severity (visible to all users, easy fix)</td></tr>
+          </table>
+          <p class="muted">A bug can be high severity + low priority, or low severity + high priority — the two are independent axes.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-automation">
+      <div class="category-title">10 · Automation <span class="count">3 topics</span></div>
+
+      <article class="topic" id="manual-vs-automation">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-38</span><h3>Manual vs Automation Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <table class="cmp">
+            <tr><th>Aspect</th><th>Manual Testing</th><th>Automation Testing</th></tr>
+            <tr><td>Execution</td><td>By a human, step by step</td><td>By scripts/tools, unattended</td></tr>
+            <tr><td>Speed &amp; reuse</td><td>Slower, one-time per run</td><td>Fast, reusable across builds</td></tr>
+            <tr><td>Best for</td><td>Exploratory, usability, ad-hoc testing, new/changing features</td><td>Regression, repetitive, data-driven, high-volume tests</td></tr>
+            <tr><td>Upfront cost</td><td>Low</td><td>Higher (script development)</td></tr>
+          </table>
+        </div>
+      </article>
+
+      <article class="topic" id="automation-frameworks">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-39</span><h3>Automation Frameworks</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <ul class="points">
+            <li><b>Linear/Record-Playback:</b> simplest, records user actions directly — hard to maintain.</li>
+            <li><b>Modular:</b> breaks the app into independent, reusable test modules/functions.</li>
+            <li><b>Data-Driven:</b> test logic is separated from test data, which is fed from external files (CSV/Excel).</li>
+            <li><b>Keyword-Driven:</b> actions are represented as keywords (e.g. "Click", "Type") readable by non-programmers.</li>
+            <li><b>Hybrid:</b> combines data-driven and keyword-driven approaches.</li>
+            <li><b>BDD Framework:</b> tests written in plain English (Given/When/Then) using tools like Cucumber.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="selenium-basics">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-40</span><h3>Selenium Basics</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Selenium is the most widely used open-source framework for automating web browsers, supporting Java, Python, C#, and JavaScript.</p>
+          <ul class="points">
+            <li><b>WebDriver:</b> core component that sends commands directly to the browser.</li>
+            <li><b>Locators:</b> ID, Name, Class, XPath, CSS Selector — used to find page elements.</li>
+            <li><b>Selenium Grid:</b> runs tests in parallel across multiple machines/browsers.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-agile">
+      <div class="category-title">11 · Agile Testing <span class="count">4 topics</span></div>
+
+      <article class="topic" id="agile-testing-quadrants">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-41</span><h3>Agile Testing Quadrants</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>A model (Brian Marick) that maps testing activities across two axes: <b>business-facing vs technology-facing</b>, and <b>supporting the team vs critiquing the product</b>.</p>
+          <div class="diagram-frame">
+            <div class="diagram-topbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span><span class="flabel">diagram — agile-quadrants.svg</span></div>
+            <svg viewBox="0 0 500 340" xmlns="http://www.w3.org/2000/svg">
+              <g font-family="IBM Plex Mono, monospace" font-size="11.5">
+                <line x1="250" y1="10" x2="250" y2="330" stroke="#2B3733" stroke-width="1.5"/>
+                <line x1="10" y1="170" x2="490" y2="170" stroke="#2B3733" stroke-width="1.5"/>
+                <rect x="15" y="15" width="225" height="145" rx="6" fill="#20302A" stroke="#4E9E6E"/>
+                <text x="30" y="38" fill="#DCEBE3" font-weight="600">Q2 — Business-facing</text>
+                <text x="30" y="58" fill="#B7CBC0">Supports the team</text>
+                <text x="30" y="80" fill="#DCEBE3">Functional tests,</text>
+                <text x="30" y="98" fill="#DCEBE3">story tests, prototypes,</text>
+                <text x="30" y="116" fill="#DCEBE3">simulations</text>
+
+                <rect x="260" y="15" width="225" height="145" rx="6" fill="#20302A" stroke="#4E9E6E"/>
+                <text x="275" y="38" fill="#DCEBE3" font-weight="600">Q3 — Business-facing</text>
+                <text x="275" y="58" fill="#B7CBC0">Critiques the product</text>
+                <text x="275" y="80" fill="#DCEBE3">Exploratory testing,</text>
+                <text x="275" y="98" fill="#DCEBE3">usability testing,</text>
+                <text x="275" y="116" fill="#DCEBE3">UAT, beta testing</text>
+
+                <rect x="15" y="175" width="225" height="150" rx="6" fill="#1F7A4D" stroke="#6FCF97"/>
+                <text x="30" y="198" fill="#0F1613" font-weight="700">Q1 — Tech-facing</text>
+                <text x="30" y="218" fill="#123" font-weight="600">Supports the team</text>
+                <text x="30" y="240" fill="#0F1613">Unit tests,</text>
+                <text x="30" y="258" fill="#0F1613">component tests</text>
+
+                <rect x="260" y="175" width="225" height="150" rx="6" fill="#1F7A4D" stroke="#6FCF97"/>
+                <text x="275" y="198" fill="#0F1613" font-weight="700">Q4 — Tech-facing</text>
+                <text x="275" y="218" fill="#123" font-weight="600">Critiques the product</text>
+                <text x="275" y="240" fill="#0F1613">Performance, security,</text>
+                <text x="275" y="258" fill="#0F1613">load testing</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="tdd">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-42</span><h3>TDD — Test-Driven Development</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Developers write an (initially failing) automated test <b>before</b> writing the actual code, then write just enough code to pass it.</p>
+          <p class="muted">Cycle: <code>Red</code> (write a failing test) → <code>Green</code> (write minimal code to pass) → <code>Refactor</code> (clean up code, keep tests green).</p>
+        </div>
+      </article>
+
+      <article class="topic" id="bdd">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-43</span><h3>BDD — Behaviour-Driven Development</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Extends TDD by writing scenarios in plain, structured English so business, dev, and QA share one understanding, using the <b>Given / When / Then</b> format (Gherkin syntax, tool: Cucumber).</p>
+          <div class="problem">
+            <span class="plabel">EXAMPLE — Gherkin scenario</span>
+            <code>Given</code> the user is on the login page<br>
+            <code>When</code> they enter valid credentials and click Login<br>
+            <code>Then</code> the dashboard page should be displayed
+          </div>
+        </div>
+      </article>
+
+      <article class="topic" id="sprint-testing">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-44</span><h3>Sprint Testing</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <p>Testing activity within a single Agile sprint: test cases are written and executed against each user story as soon as it's "dev complete," rather than waiting until the whole release is done.</p>
+          <ul class="points">
+            <li>A story is only marked <b>"Done"</b> once it meets the team's Definition of Done — which includes passing tests.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-metrics">
+      <div class="category-title">12 · Metrics &amp; Tools <span class="count">2 topics</span></div>
+
+      <article class="topic" id="test-metrics">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-45</span><h3>Test Metrics &amp; KPIs</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <ul class="points">
+            <li><b>Test Case Execution %:</b> (executed / total test cases) × 100</li>
+            <li><b>Defect Density:</b> defects found ÷ size of module (e.g. per KLOC)</li>
+            <li><b>Defect Removal Efficiency (DRE):</b> defects found before release ÷ total defects (before + after release)</li>
+            <li><b>Pass %:</b> (passed test cases / executed test cases) × 100</li>
+            <li><b>Defect Leakage:</b> defects missed by QA and found in production</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="topic" id="testing-tools">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-46</span><h3>Common Testing Tools</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <table class="cmp">
+            <tr><th>Category</th><th>Tools</th></tr>
+            <tr><td>Test/defect management</td><td>JIRA, TestRail, Zephyr, qTest</td></tr>
+            <tr><td>Web/UI automation</td><td>Selenium, Playwright, Cypress</td></tr>
+            <tr><td>API testing</td><td>Postman, REST Assured, SoapUI</td></tr>
+            <tr><td>Performance testing</td><td>JMeter, LoadRunner, Gatling</td></tr>
+            <tr><td>Mobile automation</td><td>Appium, Espresso, XCUITest</td></tr>
+            <tr><td>CI/CD</td><td>Jenkins, GitHub Actions, GitLab CI</td></tr>
+            <tr><td>BDD</td><td>Cucumber, SpecFlow, Behave</td></tr>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-practice">
+      <div class="category-title">13 · Practice Problems <span class="count">6 worked problems</span></div>
+
+      <article class="topic" id="practice-problems">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">TC-47</span><h3>Worked Problems</h3></div>
+          <span class="badge pending">RUN ME</span>
+        </div>
+        <div class="topic-body">
+
+          <div class="problem">
+            <span class="plabel">PROBLEM 1 — Equivalence Partitioning + BVA</span>
+            A text field accepts a password of length 8 to 12 characters. List the test cases using EP and BVA.
+            <div class="answer">
+              <span class="alabel">ANSWER</span>
+              EP: invalid-short (e.g. length 4), valid (e.g. length 10), invalid-long (e.g. length 16).<br>
+              BVA: length <code>7</code> (invalid), <code>8</code> (min valid), <code>9</code> (valid), <code>11</code> (valid), <code>12</code> (max valid), <code>13</code> (invalid).
+            </div>
+          </div>
+
+          <div class="problem">
+            <span class="plabel">PROBLEM 2 — Severity &amp; Priority</span>
+            The word "Sucess" is misspelled on a rarely-visited internal admin page. Assign severity and priority, with reasoning.
+            <div class="answer">
+              <span class="alabel">ANSWER</span>
+              Low severity (doesn't break functionality) and low priority (rarely seen, internal page) — safe to fix in a later release.
+            </div>
+          </div>
+
+          <div class="problem">
+            <span class="plabel">PROBLEM 3 — Test Case Writing</span>
+            Write one test case to verify a "Forgot Password" link.
+            <div class="answer">
+              <span class="alabel">ANSWER</span>
+              <b>Steps:</b> 1) Go to login page 2) Click "Forgot Password" 3) Enter a registered email 4) Click Submit.<br>
+              <b>Expected result:</b> A password-reset email is sent and a confirmation message is shown on screen.
+            </div>
+          </div>
+
+          <div class="problem">
+            <span class="plabel">PROBLEM 4 — Bug Life Cycle</span>
+            A tester marks a defect "Fixed is not working" after retesting. What status should it move to next?
+            <div class="answer">
+              <span class="alabel">ANSWER</span>
+              <code>Reopened</code> — it goes back to the developer (Assigned/Open) instead of Verified/Closed.
+            </div>
+          </div>
+
+          <div class="problem">
+            <span class="plabel">PROBLEM 5 — Black Box vs White Box</span>
+            A tester checks branch coverage of an "if-else" block using the source code. Which testing approach is this?
+            <div class="answer">
+              <span class="alabel">ANSWER</span>
+              White Box Testing — it requires internal code knowledge and measures structural coverage.
+            </div>
+          </div>
+
+          <div class="problem">
+            <span class="plabel">PROBLEM 6 — SDLC vs STLC</span>
+            True or False: STLC can only begin after coding is 100% complete.
+            <div class="answer">
+              <span class="alabel">ANSWER</span>
+              <b>False.</b> STLC's Requirement Analysis and Test Planning phases start as soon as requirements are finalized — well before coding ends.
+            </div>
+          </div>
+
+        </div>
+      </article>
+    </section>
+
+    <section class="category" id="cat-glossary">
+      <div class="category-title">14 · Glossary <span class="count">A–Z</span></div>
+
+      <article class="topic" id="glossary">
+        <div class="topic-bar">
+          <div class="tname"><span class="tid">REF-01</span><h3>Terms A to Z</h3></div>
+          <span class="badge pass">PASS</span>
+        </div>
+        <div class="topic-body">
+          <div class="glossary-grid">
+            <div class="gterm"><h4><span class="g-letter">A</span>Acceptance Testing</h4><p>Formal testing to confirm the system meets business/user needs, done before release.</p></div>
+            <div class="gterm"><h4><span class="g-letter">B</span>Black Box Testing</h4><p>Testing without knowledge of internal code, based only on inputs and outputs.</p></div>
+            <div class="gterm"><h4><span class="g-letter">C</span>Code Coverage</h4><p>The percentage of source code executed by a test suite (statement, branch, path).</p></div>
+            <div class="gterm"><h4><span class="g-letter">D</span>Defect</h4><p>A flaw in software that causes it to behave in an unintended way; also called a bug.</p></div>
+            <div class="gterm"><h4><span class="g-letter">E</span>Equivalence Partitioning</h4><p>Dividing input data into groups expected to be handled the same way by the system.</p></div>
+            <div class="gterm"><h4><span class="g-letter">F</span>Functional Testing</h4><p>Testing that verifies each function of the software against its requirement.</p></div>
+            <div class="gterm"><h4><span class="g-letter">G</span>Grey Box Testing</h4><p>Testing with partial knowledge of internal structure, combining black and white box.</p></div>
+            <div class="gterm"><h4><span class="g-letter">H</span>Hotfix</h4><p>An urgent, unplanned fix pushed directly to production to resolve a critical defect.</p></div>
+            <div class="gterm"><h4><span class="g-letter">I</span>Integration Testing</h4><p>Testing the interfaces and interaction between two or more integrated modules.</p></div>
+            <div class="gterm"><h4><span class="g-letter">J</span>JIRA</h4><p>A widely used tool for tracking defects, user stories, and test management.</p></div>
+            <div class="gterm"><h4><span class="g-letter">K</span>Keyword-Driven Testing</h4><p>An automation framework where test actions are represented as readable keywords.</p></div>
+            <div class="gterm"><h4><span class="g-letter">L</span>Load Testing</h4><p>Testing system behaviour under expected, real-world levels of concurrent usage.</p></div>
+            <div class="gterm"><h4><span class="g-letter">M</span>Mock Object</h4><p>A fake object that simulates the behaviour of a real dependency during unit testing.</p></div>
+            <div class="gterm"><h4><span class="g-letter">N</span>Negative Testing</h4><p>Testing the system with invalid, unexpected, or malformed input to confirm graceful handling.</p></div>
+            <div class="gterm"><h4><span class="g-letter">O</span>Orthogonal Array Testing</h4><p>A technique that tests all pairwise input combinations with a minimal number of test cases.</p></div>
+            <div class="gterm"><h4><span class="g-letter">P</span>Priority</h4><p>How urgently a defect should be fixed, from a business standpoint.</p></div>
+            <div class="gterm"><h4><span class="g-letter">Q</span>Quality Assurance (QA)</h4><p>The process-focused discipline of preventing defects by improving how software is built.</p></div>
+            <div class="gterm"><h4><span class="g-letter">R</span>Regression Testing</h4><p>Re-running existing tests to confirm a recent change hasn't broken existing functionality.</p></div>
+            <div class="gterm"><h4><span class="g-letter">S</span>Smoke Testing</h4><p>A quick check that core functionality works before deeper testing begins.</p></div>
+            <div class="gterm"><h4><span class="g-letter">T</span>Test Case</h4><p>A detailed set of steps, data, and expected results used to verify a specific behaviour.</p></div>
+            <div class="gterm"><h4><span class="g-letter">U</span>Unit Testing</h4><p>Testing the smallest testable piece of code — a function, method, or class — in isolation.</p></div>
+            <div class="gterm"><h4><span class="g-letter">V</span>Verification</h4><p>Confirming the product is being built correctly, according to specification.</p></div>
+            <div class="gterm"><h4><span class="g-letter">W</span>White Box Testing</h4><p>Testing with full knowledge of the internal code, logic, and structure.</p></div>
+            <div class="gterm"><h4><span class="g-letter">X</span>XSS (Cross-Site Scripting)</h4><p>A security vulnerability where malicious scripts are injected into trusted web pages.</p></div>
+            <div class="gterm"><h4><span class="g-letter">Y</span>Y2K Testing</h4><p>Historic compliance testing to confirm systems correctly handled the year-2000 date rollover.</p></div>
+            <div class="gterm"><h4><span class="g-letter">Z</span>Zero-Day Vulnerability</h4><p>A previously unknown security flaw exploited before a fix is available.</p></div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <footer>
+    <div>// end of suite — software-testing-and-engineering.notes</div>
+    <div style="margin-top:6px;opacity:.7;">Built as a static reference. No external test data collected.</div>
+  </footer>
+</div>
+</div>
+
+<script>
+document.getElementById('navToggle').addEventListener('click',function(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('toggleIcon').textContent =
+    document.getElementById('sidebar').classList.contains('open') ? '−' : '＋';
+});
+
+const links = Array.from(document.querySelectorAll('.nav-link'));
+const targets = links.map(l => document.getElementById(l.getAttribute('href').slice(1))).filter(Boolean);
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      const id = entry.target.id;
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+targets.forEach(t => io.observe(t));
+</script>
+</body>
+</html>

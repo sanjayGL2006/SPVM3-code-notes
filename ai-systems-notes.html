@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Systems, Agents & LLM Architectures Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="spvm3_certificate_system.js"></script>
+<style>
+  :root{
+    --bp-0:#081826;
+    --bp-1:#0e2740;
+    --bp-2:#153352;
+    --bp-3:#1c4066;
+    --line:#2c5f7c;
+    --line-soft:#1e4360;
+    --ink:#eaf2f8;
+    --ink-dim:#9fb8cc;
+    --cyan:#7fe0d8;
+    --cyan-bright:#a6f3ec;
+    --amber:#ffb703;
+    --amber-dim:#c98f10;
+    --coral:#ff8a65;
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'IBM Plex Sans', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:
+      linear-gradient(var(--bp-0),var(--bp-0)),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, var(--line-soft) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, var(--line-soft) 40px);
+    background-blend-mode:normal;
+    background-color:var(--bp-0);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.6;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:inherit;}
+  ::selection{background:var(--amber); color:var(--bp-0);}
+
+  .shell{
+    display:grid;
+    grid-template-columns:280px 1fr;
+    max-width:1400px;
+    margin:0 auto;
+  }
+
+  .sidenav{
+    position:sticky; top:60px; align-self:start; height:calc(100vh - 60px);
+    padding:28px 20px 28px 28px;
+    border-right:1px solid var(--line);
+    overflow-y:auto;
+  }
+  .sidenav .brand{
+    font-family:var(--font-mono);
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--cyan);
+    border:1px solid var(--line);
+    padding:8px 10px;
+    display:inline-block;
+    margin-bottom:6px;
+  }
+  .sidenav h1{
+    font-family:var(--font-display);
+    font-size:20px; font-weight:600;
+    margin:10px 0 4px;
+    line-height:1.25;
+  }
+  .sidenav .sub{
+    font-family:var(--font-mono); font-size:11px; color:var(--ink-dim);
+    margin-bottom:26px; display:block;
+  }
+  .navgroup{margin-bottom:22px;}
+  .navgroup .navlabel{
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--amber-dim); margin-bottom:8px; display:block;
+  }
+  .navgroup ul{list-style:none;}
+  .navgroup li a{
+    display:block; font-size:13.5px; color:var(--ink-dim);
+    padding:6px 0 6px 14px; border-left:1px solid var(--line-soft);
+    text-decoration:none; transition:.15s;
+  }
+  .navgroup li a:hover, .navgroup li a:focus-visible{
+    color:var(--cyan-bright); border-left-color:var(--cyan);
+    outline:none;
+  }
+
+  main{padding:0 0 120px 0; min-width:0;}
+
+  .hero{
+    padding:90px 64px 70px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+  .hero .designator{
+    font-family:var(--font-mono); font-size:12px; color:var(--cyan);
+    letter-spacing:.16em; text-transform:uppercase;
+    display:flex; align-items:center; gap:10px; margin-bottom:22px;
+  }
+  .hero .designator::before{
+    content:''; width:26px; height:1px; background:var(--cyan);
+  }
+  .hero h1{
+    font-family:var(--font-display); font-weight:700;
+    font-size:clamp(34px, 5vw, 58px);
+    line-height:1.05; max-width:18ch; margin-bottom:22px;
+    letter-spacing:-.01em;
+  }
+  .hero h1 .accent{color:var(--amber);}
+  .hero p.lede{
+    font-size:17px; color:var(--ink-dim); max-width:62ch; margin-bottom:34px;
+  }
+  .hero .specs{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:0; border:1px solid var(--line); max-width:760px;
+  }
+  .hero .specs div{
+    padding:14px 16px; border-right:1px solid var(--line);
+  }
+  .hero .specs div:last-child{border-right:none;}
+  .hero .specs .k{font-family:var(--font-mono); font-size:10px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:4px;}
+  .hero .specs .v{font-family:var(--font-mono); font-size:14px; color:var(--cyan-bright);}
+
+  .section{
+    padding:70px 64px;
+    border-bottom:1px solid var(--line);
+  }
+  .section-head{
+    display:flex; align-items:baseline; gap:18px; margin-bottom:14px;
+    flex-wrap:wrap;
+  }
+  .section-tag{
+    font-family:var(--font-mono); font-size:12px; color:var(--amber);
+    border:1px solid var(--amber-dim); padding:3px 9px;
+  }
+  .section h2{
+    font-family:var(--font-display); font-weight:600;
+    font-size:clamp(26px,3vw,36px);
+  }
+  .section .deck{
+    color:var(--ink-dim); max-width:75ch; margin:14px 0 40px; font-size:15.5px;
+  }
+  .section .deck strong{color:var(--ink); font-weight:600;}
+
+  h3.subhead{
+    font-family:var(--font-display); font-size:20px; font-weight:600;
+    margin:44px 0 14px; padding-top:10px; border-top:1px dashed var(--line);
+    color:var(--cyan-bright);
+  }
+  h3.subhead:first-of-type{border-top:none; padding-top:0;}
+
+  p{margin-bottom:14px; max-width:78ch; color:var(--ink);}
+
+  .deflabel{
+    font-family:var(--font-mono); font-size:11px; color:var(--amber);
+    text-transform:uppercase; letter-spacing:.1em; margin-right:8px;
+  }
+
+  ul.blueprint-list{list-style:none; margin:16px 0 20px; max-width:78ch;}
+  ul.blueprint-list li{
+    position:relative; padding-left:22px; margin-bottom:10px; color:var(--ink);
+  }
+  ul.blueprint-list li::before{
+    content:'▸'; position:absolute; left:0; color:var(--cyan);
+  }
+
+  .schematic-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(340px,1fr));
+    gap:24px; margin-top:10px;
+  }
+  .schem-card{
+    border:1px solid var(--line);
+    background:var(--bp-1);
+    position:relative;
+    padding:22px 22px 24px;
+  }
+  .schem-card h4{
+    font-family:var(--font-display); font-size:19px; font-weight:600; margin-bottom:10px;
+    color:var(--ink);
+  }
+  .schem-card p{font-size:14px; color:var(--ink-dim); margin-bottom:14px;}
+
+  .model-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+    gap:20px; margin:10px 0 10px;
+  }
+  .model-card{
+    background:var(--bp-2); border-left:3px solid var(--cyan);
+    padding:20px 22px;
+  }
+  .model-card .tag{
+    font-family:var(--font-mono); font-size:22px; font-weight:700; color:var(--amber);
+    letter-spacing:.02em; display:block; margin-bottom:4px;
+  }
+  .model-card .full{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--ink-dim);
+    text-transform:uppercase; letter-spacing:.05em; display:block; margin-bottom:12px;
+  }
+
+  table.spec-table{
+    width:100%; border-collapse:collapse; margin:20px 0 30px;
+    font-size:14px;
+  }
+  table.spec-table th, table.spec-table td{
+    border:1px solid var(--line); padding:11px 14px; text-align:left;
+  }
+  table.spec-table th{
+    background:var(--bp-2); font-family:var(--font-mono); font-size:11.5px;
+    text-transform:uppercase; letter-spacing:.06em; color:var(--cyan);
+  }
+  table.spec-table td{color:var(--ink-dim);}
+  table.spec-table td strong{color:var(--ink);}
+
+  pre{
+    background:var(--bp-0); border:1px solid var(--line);
+    padding:18px 20px; overflow-x:auto; margin:16px 0 26px;
+    font-family:var(--font-mono); font-size:12.6px; line-height:1.6;
+    color:var(--cyan-bright);
+  }
+
+  @media (max-width:900px){
+    .shell{grid-template-columns:1fr;}
+    .sidenav{position:relative; height:auto;}
+    .hero, .section{padding-left:24px; padding-right:24px;}
+  }
+</style>
+
+<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
+<style id="spvm3-theme-sync">
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  
+  :root {
+    --spvm3-primary: #6366f1;
+    --spvm3-cyan: #06b6d4;
+    --spvm3-dark: #0b0f19;
+    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
+    --spvm3-border: rgba(99, 102, 241, 0.25);
+  }
+
+  ::selection {
+    background: #6366f1 !important;
+    color: #ffffff !important;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0b0f19;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+  }
+
+  .spvm3-global-footer {
+    background: #0b0f19;
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 0.9rem;
+    margin-top: 60px;
+  }
+  .spvm3-global-footer strong {
+    color: #f1f5f9;
+  }
+</style>
+</head>
+<body>
+
+<!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
+<div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
+  <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+    <a href="index.html" style="display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; padding: 8px 18px; border-radius: 10px; text-decoration: none; font-weight: 800; font-size: 0.95rem; box-shadow: 0 4px 14px rgba(99,102,241,0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="font-size: 1.1rem;">⚡</span>
+      <span>SPVM3 Tech Solution</span>
+    </a>
+    <span style="font-size: 0.85rem; background: rgba(99,102,241,0.15); color: #818cf8; border: 1px solid rgba(99,102,241,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 600;" class="tv-subject-label">💻 All Computer Based Notes</span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <button onclick="showSPVM3Certificate('ai-systems')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #ffffff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 12px rgba(245,158,11,0.35); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🎓 Get Certificate
+    </button>
+    <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 320px; font-weight: 500;">
+      <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All 21 Notes)</option>
+      <option value="verify-certificate.html" style="background:#0f172a; color:#fff;">🔍 Verify Certificate Portal</option>
+      <option value="ai-systems-notes.html" style="background:#0f172a; color:#fff;">🤖 AI Systems & LLM Agents Notes</option>
+      <option value="blockchain-notes.html" style="background:#0f172a; color:#fff;">⛓️ Blockchain & Cryptography Notes</option>
+      <option value="data-structures-notes.html" style="background:#0f172a; color:#fff;">🧩 Data Structures & Algorithms (DSA)</option>
+      <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
+      <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
+      <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
+      <option value="react-field-manual.html" style="background:#0f172a; color:#fff;">📘 React Field Manual</option>
+      <option value="electron-js-notes.html" style="background:#0f172a; color:#fff;">💻 Electron.js Desktop Notes</option>
+      <option value="php-notes.html" style="background:#0f172a; color:#fff;">🐘 PHP Complete Notes</option>
+      <option value="python_notes.html" style="background:#0f172a; color:#fff;">🐍 Python A–Z Master Notes</option>
+      <option value="C-Programming-Complete-Notes.html" style="background:#0f172a; color:#fff;">🔤 C Programming Complete Notes</option>
+      <option value="cpp-notes.html" style="background:#0f172a; color:#fff;">⚡ C++ Interactive Notes</option>
+      <option value="java-notes.html" style="background:#0f172a; color:#fff;">☕ Java Brewed Complete Notes</option>
+      <option value="DBMS-and-SQL-Complete-Reference.html" style="background:#0f172a; color:#fff;">🗄️ DBMS & SQL Complete Reference</option>
+      <option value="operating-systems-complete-notes.html" style="background:#0f172a; color:#fff;">🖥️ Operating Systems Notes</option>
+      <option value="fundamentals-of-computers-notes.html" style="background:#0f172a; color:#fff;">🕹️ Fundamentals of Computers Notes</option>
+      <option value="software-testing-notes.html" style="background:#0f172a; color:#fff;">🧪 Software Testing & QA Notes</option>
+      <option value="git-clone-guide.html" style="background:#0f172a; color:#fff;">🌿 Git & Version Control Guide</option>
+      <option value="docker-notes.html" style="background:#0f172a; color:#fff;">🐳 Docker Interactive Guide</option>
+      <option value="kubernetes-a-to-z-guide.html" style="background:#0f172a; color:#fff;">☸️ Kubernetes A to Z Guide</option>
+      <option value="deep-learning-notes.html" style="background:#0f172a; color:#fff;">🧠 Deep Learning & AI Notes</option>
+    </select>
+  </div>
+</div>
+<!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
+
+<div class="shell">
+  <nav class="sidenav" id="sidenav">
+    <span class="brand">SPVM3 AI SYSTEMS</span>
+    <h1>AI Systems &<br>LLM Agents</h1>
+    <span class="sub">Autonomous Agents · LLM Architectures</span>
+
+    <div class="navgroup">
+      <span class="navlabel">01 — Agent Types</span>
+      <ul>
+        <li><a href="#agent-reflex">Simple Reflex Agent</a></li>
+        <li><a href="#agent-model">Model-Based Agent</a></li>
+        <li><a href="#agent-goal">Goal-Based Agent</a></li>
+        <li><a href="#agent-utility">Utility-Based Agent</a></li>
+        <li><a href="#agent-learning">Learning Agent</a></li>
+        <li><a href="#agent-multi">Multi-Agent System</a></li>
+        <li><a href="#agent-hier">Hierarchical Agent</a></li>
+      </ul>
+    </div>
+    <div class="navgroup">
+      <span class="navlabel">02 — Model Classes</span>
+      <ul>
+        <li><a href="#models-overview">LLM / VLM / SLM / MLM / LCM</a></li>
+      </ul>
+    </div>
+    <div class="navgroup">
+      <span class="navlabel">03 — Core Domains</span>
+      <ul>
+        <li><a href="#genai">Generative AI</a></li>
+        <li><a href="#agentic-ai">Agentic AI</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main id="main-content">
+    <section class="hero">
+      <div class="designator">SPVM3 Technical Field Guide — AI Systems</div>
+      <h1>Autonomous AI <span class="accent">Agents</span>,<br>Models &amp; Architectures.</h1>
+      <p class="lede">Comprehensive field guide to autonomous AI system classifications — from reflex agents to multi-agent swarm systems, and Large Language Models to Large Concept Models.</p>
+      <div class="specs">
+        <div><span class="k">Course Duration</span><span class="v">2.0 Hours (60 Min Units)</span></div>
+        <div><span class="k">Agent Classes</span><span class="v">07 Documented</span></div>
+        <div><span class="k">Model Classes</span><span class="v">08 Architectures</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="agents">
+      <div class="section-head">
+        <span class="section-tag">01</span>
+        <h2>7 Types of Intelligent Agents</h2>
+      </div>
+      <p class="deck">In AI, an <strong>agent</strong> perceives its environment through sensors and acts upon it through actuators. What separates the seven classes is how much the agent remembers, plans, and improves.</p>
+
+      <h3 class="subhead" id="agent-reflex">1. Simple Reflex Agent</h3>
+      <div class="schem-card">
+        <h4>Simple Reflex Agent</h4>
+        <p><span class="deflabel">Definition</span>Selects an action based <strong>only on the current percept</strong>, ignoring percept history, using condition–action rules ("if condition, then action").</p>
+      </div>
+
+      <h3 class="subhead" id="agent-model">2. Model-Based Reflex Agent</h3>
+      <div class="schem-card">
+        <h4>Model-Based Reflex Agent</h4>
+        <p><span class="deflabel">Definition</span>Maintains an <strong>internal state/model</strong> representing unobserved parts of the world, combining current percepts with world memory.</p>
+      </div>
+
+      <h3 class="subhead" id="agent-goal">3. Goal-Based Agent</h3>
+      <div class="schem-card">
+        <h4>Goal-Based Agent</h4>
+        <p><span class="deflabel">Definition</span>Chooses actions by considering <strong>future consequences</strong> against an explicit goal, using search or planning algorithms.</p>
+      </div>
+
+      <h3 class="subhead" id="agent-utility">4. Utility-Based Agent</h3>
+      <div class="schem-card">
+        <h4>Utility-Based Agent</h4>
+        <p><span class="deflabel">Definition</span>Picks action sequences that <strong>maximize a utility function</strong> (trade-off score for speed vs. cost vs. safety).</p>
+      </div>
+
+      <h3 class="subhead" id="agent-learning">5. Learning Agent</h3>
+      <div class="schem-card">
+        <h4>Learning Agent</h4>
+        <p><span class="deflabel">Definition</span>Improves performance over time using Performance Element, Critic, Learning Element, and Problem Generator.</p>
+      </div>
+
+      <h3 class="subhead" id="agent-multi">6. Multi-Agent System (MAS)</h3>
+      <div class="schem-card">
+        <h4>Multi-Agent System</h4>
+        <p><span class="deflabel">Definition</span>Two or more autonomous agents cooperating or competing in a shared environment (e.g. CrewAI, AutoGen).</p>
+      </div>
+
+      <h3 class="subhead" id="agent-hier">7. Hierarchical Agent</h3>
+      <div class="schem-card">
+        <h4>Hierarchical Agent</h4>
+        <p><span class="deflabel">Definition</span>Organizes decision-making into strategic manager, tactical planner, and execution reflex layers.</p>
+      </div>
+    </section>
+
+    <section class="section" id="models-overview">
+      <div class="section-head">
+        <span class="section-tag">02</span>
+        <h2>Model Classes — LLM, VLM, SLM, MLM, LCM</h2>
+      </div>
+
+      <div class="model-grid">
+        <div class="model-card">
+          <span class="tag">LLM</span>
+          <span class="full">Large Language Model</span>
+          <p>Transformer-based decoder models trained on massive text corpora (e.g. GPT-4, Claude, LLaMA 3).</p>
+        </div>
+        <div class="model-card">
+          <span class="tag">VLM</span>
+          <span class="full">Vision-Language Model</span>
+          <p>Jointly processes images and text in a shared embedding space (e.g. CLIP, LLaVA, GPT-4V).</p>
+        </div>
+        <div class="model-card">
+          <span class="tag">SLM</span>
+          <span class="full">Small Language Model</span>
+          <p>Compact models (1B–8B params) optimized for edge & on-device efficiency (e.g. Phi-3, Gemma).</p>
+        </div>
+        <div class="model-card">
+          <span class="tag">MLM</span>
+          <span class="full">Masked Language Model</span>
+          <p>Fill-in-the-blank bidirectional representation models (e.g. BERT, RoBERTa).</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="spvm3-global-footer">
+  <p><strong>SPVM3 Tech Solution</strong> — All Computer Based Notes & Software Engineering Library.</p>
+  <p style="margin-top: 6px; font-size: 0.8rem; opacity: 0.8;">Complete Reference Field Notes • Built for Professional Learning</p>
+</footer>
+</body>
+</html>
