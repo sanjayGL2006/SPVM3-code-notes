@@ -270,16 +270,76 @@ function isStudentLoggedIn() {
   return email && email.includes('@');
 }
 
+function markCourseCompleted(subjectId) {
+  if (!subjectId) return null;
+  const records = getCompletedCertData();
+  if (!records[subjectId]) {
+    const now = new Date();
+    const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const certId = `SPVM3-CERT-${now.getFullYear()}-${randomSuffix}`;
+    records[subjectId] = {
+      completed: true,
+      completedDate: now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      completedTime: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }),
+      certId: certId,
+      subjectId: subjectId
+    };
+    localStorage.setItem('spvm3_cert_records', JSON.stringify(records));
+  }
+
+  // Ensure progress is recorded as at least 100% when marked completed
+  const curProg = parseInt(localStorage.getItem(`spvm3_progress_${subjectId}`) || '0', 10);
+  if (curProg < 100) {
+    localStorage.setItem(`spvm3_progress_${subjectId}`, '100');
+  }
+
+  // Keep techvault_completed array in sync
+  try {
+    let completed = JSON.parse(localStorage.getItem('techvault_completed') || '[]');
+    if (!completed.includes(subjectId)) {
+      completed.push(subjectId);
+      localStorage.setItem('techvault_completed', JSON.stringify(completed));
+    }
+  } catch (e) {
+    console.error('Error updating techvault_completed:', e);
+  }
+
+  return records[subjectId];
+}
+
+function unmarkCourseCompleted(subjectId) {
+  if (!subjectId) return;
+  const records = getCompletedCertData();
+  if (records[subjectId]) {
+    delete records[subjectId];
+    localStorage.setItem('spvm3_cert_records', JSON.stringify(records));
+  }
+  try {
+    let completed = JSON.parse(localStorage.getItem('techvault_completed') || '[]');
+    completed = completed.filter(id => id !== subjectId);
+    localStorage.setItem('techvault_completed', JSON.stringify(completed));
+  } catch (e) {
+    console.error('Error updating techvault_completed:', e);
+  }
+}
+
 // -----------------------------------------------------------------------------
 // COURSE READING & COMPLETION PROGRESS TRACKER (80% UNLOCK RULE)
 // -----------------------------------------------------------------------------
 function getCourseProgress(subjectId) {
   const storedProgress = localStorage.getItem(`spvm3_progress_${subjectId}`);
-  if (storedProgress) {
-    return Math.min(100, Math.max(0, parseInt(storedProgress, 10)));
+  if (storedProgress !== null && storedProgress !== undefined) {
+    return Math.min(100, Math.max(0, parseInt(storedProgress, 10) || 0));
   }
-  // Default fallback for legacy visitors
-  return 85; 
+  // Check if course was previously marked completed in hub or cert records
+  try {
+    const certRecords = getCompletedCertData();
+    if (certRecords[subjectId]) return 100;
+    const completed = JSON.parse(localStorage.getItem('techvault_completed') || '[]');
+    if (completed.includes(subjectId)) return 100;
+  } catch (e) {}
+
+  return 0; 
 }
 
 function setCourseProgress(subjectId, percent) {
@@ -291,10 +351,9 @@ function setCourseProgress(subjectId, percent) {
   if (updated >= 80 && isStudentLoggedIn()) {
     const certRecords = getCompletedCertData();
     if (!certRecords[subjectId]) {
-      markCourseCompleted(subjectId);
-      const certData = certRecords[subjectId] || {};
+      const certData = markCourseCompleted(subjectId);
       const subject = SPVM3_SUBJECTS_MASTER.find(s => s.id === subjectId);
-      if (subject && certData.certId) {
+      if (subject && certData && certData.certId) {
         // Auto send certificate to student's Gmail (1-2 minutes queue)
         sendSPVM3CertificateEmailSilent(subjectId, certData.certId);
       }
@@ -352,7 +411,20 @@ function updateTopProgressBarUI(percent) {
 // -----------------------------------------------------------------------------
 // LOGIN MODAL SYSTEM
 // -----------------------------------------------------------------------------
+// Global callback storage to support functions with closures
+window._spvm3LoginSuccessCallback = null;
+
 function showSPVM3LoginModal(onSuccessCallback) {
+  if (onSuccessCallback) {
+    window._spvm3LoginSuccessCallback = onSuccessCallback;
+  }
+
+  // If user is already logged in, show Account management modal instead of empty login
+  if (isStudentLoggedIn() && !onSuccessCallback) {
+    showSPVM3AccountModal();
+    return;
+  }
+
   let loginModal = document.getElementById('spvm3-login-modal');
   if (!loginModal) {
     loginModal = document.createElement('div');
@@ -375,22 +447,22 @@ function showSPVM3LoginModal(onSuccessCallback) {
         <h2 style="font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-bottom: 6px;">Login to SPVM3 Learning Space</h2>
         <p style="font-size: 0.88rem; color: #94a3b8; margin-bottom: 24px;">Enter your Gmail address to unlock computer courses, track progress, and automatically receive your official ISO-certified Certificate!</p>
 
-        <form onsubmit="handleSPVM3LoginSubmit(event, ${onSuccessCallback ? `'${onSuccessCallback}'` : 'null'})" style="display: flex; flex-direction: column; gap: 16px; text-align: left;">
+        <form id="spvm3LoginForm" onsubmit="handleSPVM3LoginSubmit(event)" style="display: flex; flex-direction: column; gap: 16px; text-align: left;">
           <div>
             <label style="font-size: 0.82rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 6px;">👤 Full Student Name:</label>
-            <input type="text" id="loginNameInput" value="${currentName}" placeholder="e.g. Sanjay GL" required style="width: 100%; background: #0b0f19; border: 1px solid #6366f1; color: #ffffff; padding: 12px 16px; border-radius: 10px; font-weight: 600; outline: none;">
+            <input type="text" id="loginNameInput" value="${currentName}" placeholder="e.g. Sanjay GL" required style="width: 100%; background: #0b0f19; border: 1px solid #6366f1; color: #ffffff; padding: 12px 16px; border-radius: 10px; font-weight: 600; outline: none; box-sizing: border-box;">
           </div>
 
           <div>
             <label style="font-size: 0.82rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 6px;">📧 Gmail Address (For Automatic Certificate Delivery):</label>
-            <input type="email" id="loginEmailInput" value="${currentEmail}" placeholder="e.g. spvm3techsolution@gmail.com" required style="width: 100%; background: #0b0f19; border: 1px solid #06b6d4; color: #38bdf8; padding: 12px 16px; border-radius: 10px; font-weight: 600; outline: none;">
+            <input type="email" id="loginEmailInput" value="${currentEmail}" placeholder="e.g. sanjaygl3006@gmail.com" required style="width: 100%; background: #0b0f19; border: 1px solid #06b6d4; color: #38bdf8; padding: 12px 16px; border-radius: 10px; font-weight: 600; outline: none; box-sizing: border-box;">
           </div>
 
           <div style="background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3); padding: 12px; border-radius: 10px; font-size: 0.78rem; color: #94a3b8;">
-            ℹ️ <strong>Auto-Message Notice:</strong> Upon logging in, a welcome message will be sent to your Gmail in 2-3 minutes. Complete <strong>80% of any course</strong> to automatically unlock and receive your Certificate!
+            ℹ️ <strong>Auto-Message Notice:</strong> Upon logging in, a welcome email will be sent to your Gmail in 2-3 minutes. Complete <strong>80% of any course</strong> to automatically unlock and receive your Certificate!
           </div>
 
-          <button type="submit" style="background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; border: none; padding: 14px; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 16px rgba(99,102,241,0.4); transition: transform 0.2s;">
+          <button type="submit" id="spvm3LoginSubmitBtn" style="background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; border: none; padding: 14px; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 16px rgba(99,102,241,0.4); transition: transform 0.2s;">
             🚀 Login & Open Learning Space
           </button>
         </form>
@@ -401,10 +473,14 @@ function showSPVM3LoginModal(onSuccessCallback) {
   injectSPVM3CertStyles();
 }
 
-function handleSPVM3LoginSubmit(e, callbackName) {
+function handleSPVM3LoginSubmit(e) {
   if (e) e.preventDefault();
-  const name = document.getElementById('loginNameInput').value.trim();
-  const email = document.getElementById('loginEmailInput').value.trim();
+  const nameEl = document.getElementById('loginNameInput');
+  const emailEl = document.getElementById('loginEmailInput');
+  if (!nameEl || !emailEl) return;
+
+  const name = nameEl.value.trim();
+  const email = emailEl.value.trim().toLowerCase();
 
   if (!name || !email || !email.includes('@')) {
     alert("⚠️ Please enter a valid name and Gmail address!");
@@ -423,22 +499,143 @@ function handleSPVM3LoginSubmit(e, callbackName) {
   })
   .then(res => res.json())
   .then(data => {
-    console.log("Login registered in database. Auto welcome email scheduled.");
+    console.log("Login registered in database:", data);
   })
   .catch(err => {
-    console.log("Local server offline; session stored in localStorage.");
+    console.log("Local server offline; session active in localStorage.");
   });
 
-  alert(`✅ Welcome ${name}!\n\nYour session is active (${email}). A welcome email will be sent to your Gmail in 2-3 minutes.\n\nEnjoy learning! Complete 80% of any course to unlock your Certificate.`);
+  // Update all header buttons dynamically to show logged in state
+  updateSPVM3GlobalHeaderAuth();
 
-  if (callbackName && typeof window[callbackName] === 'function') {
-    window[callbackName]();
+  alert(`✅ Welcome ${name}!\n\nYour session is active (${email}). A welcome email will be sent to your Gmail.\n\nComplete 80% of any course to automatically receive your Certificate.`);
+
+  // Execute callback if queued
+  const cb = window._spvm3LoginSuccessCallback;
+  window._spvm3LoginSuccessCallback = null;
+  if (typeof cb === 'function') {
+    cb();
+  } else if (typeof cb === 'string' && typeof window[cb] === 'function') {
+    window[cb]();
   }
 }
 
 function closeSPVM3LoginModal() {
   const loginModal = document.getElementById('spvm3-login-modal');
   if (loginModal) loginModal.innerHTML = '';
+}
+
+// -----------------------------------------------------------------------------
+// USER ACCOUNT & PROFILE MODAL
+// -----------------------------------------------------------------------------
+function showSPVM3AccountModal() {
+  let modalEl = document.getElementById('spvm3-account-modal');
+  if (!modalEl) {
+    modalEl = document.createElement('div');
+    modalEl.id = 'spvm3-account-modal';
+    document.body.appendChild(modalEl);
+  }
+
+  const name = getStudentName() || 'Student';
+  const email = getStudentEmail() || 'Not logged in';
+  const initial = (name[0] || 'S').toUpperCase();
+  const records = getCompletedCertData();
+  const completedCount = Object.keys(records).length;
+
+  modalEl.innerHTML = `
+    <div class="spvm3-cert-overlay" style="z-index: 100005;">
+      <div class="spvm3-cert-dialog" style="max-width: 500px; background: #0d1322; border: 2px solid #6366f1; border-radius: 20px; padding: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); color: #f1f5f9; text-align: center;">
+        <button class="spvm3-cert-close" onclick="closeSPVM3AccountModal()">&times;</button>
+
+        <div style="width: 76px; height: 76px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #06b6d4); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 800; color: #ffffff; margin: 0 auto 16px; box-shadow: 0 0 20px rgba(99,102,241,0.4);">
+          ${initial}
+        </div>
+
+        <h2 style="font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-bottom: 4px;">${name}</h2>
+        <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; margin-bottom: 20px;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+          <span>Logged In & Verified</span>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(99,102,241,0.3); border-radius: 14px; padding: 18px; text-align: left; margin-bottom: 24px;">
+          <div style="font-size: 0.78rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px;">Registered Gmail Address:</div>
+          <div style="font-size: 1rem; color: #38bdf8; font-weight: 700; word-break: break-all;">${email}</div>
+          <div style="margin-top: 14px; font-size: 0.78rem; color: #94a3b8; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px;">Academic Progress:</div>
+          <div style="font-size: 0.95rem; color: #fbbf24; font-weight: 700;">🏆 ${completedCount} / 21 Courses Certified (80%+)</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <a href="verify-certificate.html" style="background: rgba(99,102,241,0.2); color: #818cf8; border: 1px solid #6366f1; padding: 12px; border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 0.92rem; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            🔍 Open Certificate Verification Portal
+          </a>
+          <button onclick="closeSPVM3AccountModal(); showSPVM3LoginModal();" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid #06b6d4; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer;">
+            ✏️ Switch Account / Update Details
+          </button>
+          <button onclick="logoutSPVM3Student()" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 12px; border-radius: 10px; font-weight: 700; font-size: 0.92rem; cursor: pointer;">
+            🚪 Log Out
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  injectSPVM3CertStyles();
+}
+
+function closeSPVM3AccountModal() {
+  const modalEl = document.getElementById('spvm3-account-modal');
+  if (modalEl) modalEl.innerHTML = '';
+}
+
+function logoutSPVM3Student() {
+  localStorage.removeItem('spvm3_student_name');
+  localStorage.removeItem('spvm3_student_email');
+  closeSPVM3AccountModal();
+  updateSPVM3GlobalHeaderAuth();
+  alert("👋 You have been logged out successfully.");
+}
+
+// -----------------------------------------------------------------------------
+// DYNAMIC GLOBAL HEADER AUTH SYNC
+// -----------------------------------------------------------------------------
+function updateSPVM3GlobalHeaderAuth() {
+  const loggedIn = isStudentLoggedIn();
+  const studentName = getStudentName() || 'Student';
+
+  // Find all account/login buttons across any header in the page
+  const buttons = document.querySelectorAll('#spvm3-header-login-btn, .spvm3-login-btn, button[onclick*="showSPVM3LoginModal"], button[onclick*="showSPVM3AccountModal"]');
+
+  buttons.forEach(btn => {
+    if (loggedIn) {
+      btn.innerHTML = `
+        <span style="display: inline-flex; align-items: center; gap: 8px;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+          <span>👤 ${studentName}</span>
+        </span>
+      `;
+      btn.title = `Logged in as ${getStudentEmail()} — Click to view profile / logout`;
+      btn.style.border = '1px solid #10b981';
+      btn.style.color = '#34d399';
+      btn.style.background = 'rgba(16, 185, 129, 0.15)';
+      btn.setAttribute('onclick', 'showSPVM3AccountModal()');
+    } else {
+      btn.innerHTML = `🔑 Account / Login`;
+      btn.title = 'Click to log in to SPVM3 Learning Space';
+      btn.style.border = '1px solid #6366f1';
+      btn.style.color = '#38bdf8';
+      btn.style.background = 'rgba(99, 102, 241, 0.2)';
+      btn.setAttribute('onclick', 'showSPVM3LoginModal()');
+    }
+  });
+}
+
+// Auto-run header auth sync as soon as DOM loads
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateSPVM3GlobalHeaderAuth);
+  } else {
+    updateSPVM3GlobalHeaderAuth();
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -505,7 +702,7 @@ function closeSPVM3LockedModal() {
 function showSPVM3Certificate(subjectId) {
   // 1. Check Login
   if (!isStudentLoggedIn()) {
-    showSPVM3LoginModal();
+    showSPVM3LoginModal(() => showSPVM3Certificate(subjectId));
     return;
   }
 
@@ -854,9 +1051,13 @@ function sendSPVM3CertificateEmail(subjectId, certId) {
   .then(data => {
     if (sendBtn) {
       sendBtn.disabled = false;
-      sendBtn.innerHTML = '✅ Certificate Sent!';
+      sendBtn.innerHTML = '✅ Certificate Registered!';
     }
-    alert(`🎉 Certificate successfully sent to ${studentEmail}!\n\nCheck your email inbox for your welcome message and certificate link.`);
+    if (data.has_smtp_password) {
+      alert(`🎉 Official Certificate email dispatched to ${studentEmail}!\n\nCheck your Gmail inbox for your welcome message and certificate link.`);
+    } else {
+      alert(`✅ Official Certificate registered in database!\n\n📜 Certificate ID: ${certId}\n👤 Student: ${studentName}\n📧 Recipient: ${studentEmail}\n\nℹ️ Note: Live email transmission across the internet requires your 16-character Gmail App Password in 'spvm3_smtp_config.json'. You can verify or download your certificate directly anytime!`);
+    }
   })
   .catch(err => {
     // Fallback if local backend server is not currently running
@@ -1072,4 +1273,39 @@ function injectSPVM3CertStyles() {
     }
   `;
   document.head.appendChild(styleEl);
+}
+
+// Expose functions globally on window for inline HTML onclick/onchange handlers
+if (typeof window !== 'undefined') {
+  window.SPVM3_SUBJECTS_MASTER = SPVM3_SUBJECTS_MASTER;
+  window.calcCourseHours = calcCourseHours;
+  window.getCompletedCertData = getCompletedCertData;
+  window.getStudentName = getStudentName;
+  window.setStudentName = setStudentName;
+  window.getStudentEmail = getStudentEmail;
+  window.setStudentEmail = setStudentEmail;
+  window.isStudentLoggedIn = isStudentLoggedIn;
+  window.markCourseCompleted = markCourseCompleted;
+  window.unmarkCourseCompleted = unmarkCourseCompleted;
+  window.getCourseProgress = getCourseProgress;
+  window.setCourseProgress = setCourseProgress;
+  window.initAutoScrollProgressTracker = initAutoScrollProgressTracker;
+  window.updateTopProgressBarUI = updateTopProgressBarUI;
+  window.showSPVM3LoginModal = showSPVM3LoginModal;
+  window.closeSPVM3LoginModal = closeSPVM3LoginModal;
+  window.showSPVM3AccountModal = showSPVM3AccountModal;
+  window.closeSPVM3AccountModal = closeSPVM3AccountModal;
+  window.logoutSPVM3Student = logoutSPVM3Student;
+  window.updateSPVM3GlobalHeaderAuth = updateSPVM3GlobalHeaderAuth;
+  window.showSPVM3LockedModal = showSPVM3LockedModal;
+  window.closeSPVM3LockedModal = closeSPVM3LockedModal;
+  window.showSPVM3Certificate = showSPVM3Certificate;
+  window.closeSPVM3Certificate = closeSPVM3Certificate;
+  window.updateCertStudentName = updateCertStudentName;
+  window.downloadSPVM3Certificate = downloadSPVM3Certificate;
+  window.downloadSPVM3CertificateImage = downloadSPVM3CertificateImage;
+  window.downloadSPVM3CertificatePDF = downloadSPVM3CertificatePDF;
+  window.downloadSPVM3CertificateDoc = downloadSPVM3CertificateDoc;
+  window.sendSPVM3CertificateEmail = sendSPVM3CertificateEmail;
+  window.sendSPVM3CertificateEmailSilent = sendSPVM3CertificateEmailSilent;
 }

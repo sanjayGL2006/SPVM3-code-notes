@@ -451,8 +451,10 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--card-accent, var(--primary));
-  opacity: 0.85;
+  background: linear-gradient(90deg, var(--card-accent, var(--primary)), var(--card-accent-dark, var(--primary-light)));
+  opacity: 0.9;
+  box-shadow: 0 0 12px var(--card-accent, var(--primary));
+  transition: all 0.3s ease;
 }
 
 .note-card:hover {
@@ -460,6 +462,11 @@ body {
   border-color: var(--border-highlight);
   box-shadow: 0 20px 40px -15px var(--primary-glow);
   background: var(--bg-card-hover);
+}
+
+.note-card:hover::before {
+  opacity: 1;
+  height: 5px;
 }
 
 .card-top {
@@ -689,11 +696,18 @@ body {
     <div class="brand-text">SPVM3 Tech <span>Solution</span></div>
   </a>
 
-  <div class="nav-actions">
+  <div class="nav-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
     <div class="nav-badge">
       <span>💻</span>
-      <span>All Computer Based Notes (21 Subjects)</span>
+      <span>21 Master Subjects</span>
     </div>
+    <button class="spvm3-login-btn" id="spvm3-header-login-btn" onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      🔑 Account / Login
+    </button>
+    <a href="verify-certificate.html" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid #06b6d4; padding: 7px 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      <span>🔍</span>
+      <span>Verify Certs</span>
+    </a>
     <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme">
       🌙
     </button>
@@ -715,7 +729,7 @@ body {
   <section class="progress-card">
     <div class="progress-info">
       <h4>🎯 Your Study Completion Tracker</h4>
-      <p>Track your reading progress across all 18 subject field notes.</p>
+      <p>Track your reading progress across all 21 subject field notes.</p>
     </div>
     <div class="progress-bar-container">
       <div class="progress-bar-fill" id="globalProgressBar"></div>
@@ -726,7 +740,7 @@ body {
   <section class="controls-wrapper">
     <div class="search-box">
       <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" class="search-input" placeholder="Search subjects, topics (e.g. Flexbox, Docker, Pointers, SQL, Neural Networks)...">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search subjects, topics (e.g. Flexbox, Docker, Pointers, SQL, Neural Networks, DSA)...">
       <span class="shortcut-kbd">Press / to search</span>
     </div>
 
@@ -742,53 +756,67 @@ body {
 
   <section class="roadmaps-section">
     <div class="section-header">
-      <h2 class="section-title">🗺️ Guided Learning Paths</h2>
+      <h2 class="section-title">🗺️ Guided Learning Paths (All 21 Subjects)</h2>
     </div>
     <div class="roadmap-grid">
       <div class="roadmap-card">
         <span class="roadmap-badge" style="background: rgba(99,102,241,0.15); color: #818cf8;">Full Stack Web</span>
-        <h3>Frontend & Backend Mastery</h3>
-        <p>Master modern web development from HTML structure to desktop apps.</p>
+        <h3>Frontend & Desktop Mastery</h3>
+        <p>Master modern responsive interfaces, component state, backend integration, and desktop apps.</p>
         <div class="roadmap-steps">
           <a href="HTML-CSS-Complete-Notes.html" class="roadmap-step-pill">1. HTML/CSS</a>
-          <a href="js-notes.html" class="roadmap-step-pill">2. JS</a>
-          <a href="react-notes.html" class="roadmap-step-pill">3. React</a>
-          <a href="php-notes.html" class="roadmap-step-pill">4. PHP</a>
-          <a href="electron-js-notes.html" class="roadmap-step-pill">5. Electron</a>
+          <a href="js-notes.html" class="roadmap-step-pill">2. JavaScript</a>
+          <a href="react-notes.html" class="roadmap-step-pill">3. React.js</a>
+          <a href="react-field-manual.html" class="roadmap-step-pill">4. Field Manual</a>
+          <a href="php-notes.html" class="roadmap-step-pill">5. PHP</a>
+          <a href="electron-js-notes.html" class="roadmap-step-pill">6. Electron.js</a>
         </div>
       </div>
 
       <div class="roadmap-card">
         <span class="roadmap-badge" style="background: rgba(16,185,129,0.15); color: #34d399;">DevOps & Cloud</span>
-        <h3>Container & CI/CD Pipeline</h3>
-        <p>Learn version control, containerization, and cluster management.</p>
+        <h3>Container & Orchestration Pipeline</h3>
+        <p>Master distributed version control, immutable containers, and production Kubernetes clusters.</p>
         <div class="roadmap-steps">
-          <a href="git-clone-guide.html" class="roadmap-step-pill">1. Git</a>
-          <a href="docker-notes.html" class="roadmap-step-pill">2. Docker</a>
-          <a href="kubernetes-a-to-z-guide.html" class="roadmap-step-pill">3. Kubernetes</a>
+          <a href="git-clone-guide.html" class="roadmap-step-pill">1. Git & GitHub</a>
+          <a href="docker-notes.html" class="roadmap-step-pill">2. Docker Engine</a>
+          <a href="kubernetes-a-to-z-guide.html" class="roadmap-step-pill">3. Kubernetes (K8s)</a>
         </div>
       </div>
 
       <div class="roadmap-card">
-        <span class="roadmap-badge" style="background: rgba(245,158,11,0.15); color: #fbbf24;">Core CS & Systems</span>
-        <h3>Computer Science Fundamentals</h3>
-        <p>Build low-level understanding of hardware, memory, OS, and C/C++.</p>
+        <span class="roadmap-badge" style="background: rgba(245,158,11,0.15); color: #fbbf24;">Core CS & Architecture</span>
+        <h3>Computer Science & Systems Engineering</h3>
+        <p>Build hardware-level understanding: CPU architecture, memory addresses, pointers, and kernels.</p>
         <div class="roadmap-steps">
-          <a href="fundamentals-of-computers-notes.html" class="roadmap-step-pill">1. Hardware</a>
-          <a href="C-Programming-Complete-Notes.html" class="roadmap-step-pill">2. C Lang</a>
-          <a href="cpp-notes.html" class="roadmap-step-pill">3. C++</a>
-          <a href="operating-systems-complete-notes.html" class="roadmap-step-pill">4. OS</a>
+          <a href="fundamentals-of-computers-notes.html" class="roadmap-step-pill">1. Hardware & Logic</a>
+          <a href="C-Programming-Complete-Notes.html" class="roadmap-step-pill">2. C Programming</a>
+          <a href="cpp-notes.html" class="roadmap-step-pill">3. C++ OOP/STL</a>
+          <a href="operating-systems-complete-notes.html" class="roadmap-step-pill">4. OS Internals</a>
+          <a href="java-notes.html" class="roadmap-step-pill">5. Java & JVM</a>
         </div>
       </div>
 
       <div class="roadmap-card">
-        <span class="roadmap-badge" style="background: rgba(244,63,94,0.15); color: #fb7185;">AI & Data Science</span>
-        <h3>Python, Databases & Deep Learning</h3>
-        <p>From relational SQL queries to neural network architectures.</p>
+        <span class="roadmap-badge" style="background: rgba(6,182,212,0.15); color: #22d3ee;">Algorithms & Data</span>
+        <h3>DSA, Databases & Blockchain</h3>
+        <p>From algorithmic complexity to relational ACID transactions and decentralized ledgers.</p>
         <div class="roadmap-steps">
-          <a href="python_notes.html" class="roadmap-step-pill">1. Python</a>
+          <a href="data-structures-notes.html" class="roadmap-step-pill">1. DSA Structures</a>
           <a href="DBMS-and-SQL-Complete-Reference.html" class="roadmap-step-pill">2. DBMS & SQL</a>
-          <a href="deep-learning-notes.html" class="roadmap-step-pill">3. Deep Learning</a>
+          <a href="blockchain-notes.html" class="roadmap-step-pill">3. Blockchain & Crypto</a>
+        </div>
+      </div>
+
+      <div class="roadmap-card">
+        <span class="roadmap-badge" style="background: rgba(244,63,94,0.15); color: #fb7185;">AI & Intelligence</span>
+        <h3>Machine Learning, LLM Agents & QA</h3>
+        <p>Python foundations, deep neural networks, autonomous ReAct agents, and engineering test quality.</p>
+        <div class="roadmap-steps">
+          <a href="python_notes.html" class="roadmap-step-pill">1. Python A–Z</a>
+          <a href="deep-learning-notes.html" class="roadmap-step-pill">2. Deep Learning</a>
+          <a href="ai-systems-notes.html" class="roadmap-step-pill">3. AI Systems & Agents</a>
+          <a href="software-testing-notes.html" class="roadmap-step-pill">4. QA & Testing</a>
         </div>
       </div>
     </div>

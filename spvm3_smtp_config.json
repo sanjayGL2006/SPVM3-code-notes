@@ -1,0 +1,8 @@
+{
+  "smtp_host": "smtp.gmail.com",
+  "smtp_port": 587,
+  "smtp_user": "spvm3techsolution@gmail.com",
+  "smtp_pass": "",
+  "sender_email": "spvm3techsolution@gmail.com",
+  "sender_name": "Sanjay GL — SPVM3 Tech Solution"
+}

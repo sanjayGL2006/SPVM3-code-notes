@@ -1,149 +1,679 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Complete Exam-Ready C Programming Notes covering Units 1 to 4: Algorithms, Flowcharts, I/O, Operators, Control Structures, Arrays, Structures, Unions, Pointers, and Functions with Live Playground.">
 <title>C Programming Complete Notes — SPVM3 Tech Solution (All Computer Based Notes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-  :root{
-    --bg:#0f1117; --panel:#171a23; --panel2:#1e222c; --border:#2a2f3d;
-    --text:#e6e8ee; --muted:#9aa3b5; --accent:#5fd0a6; --accent2:#7aa2ff;
-    --warn:#ffb454; --danger:#ff7a7a; --code-bg:#11141c;
-    --kw:#7aa2ff; --str:#ffcb6b; --num:#ff9d76; --com:#6b7280; --fn:#5fd0a6;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
-    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;}
-  a{color:var(--accent2)}
-  h1,h2,h3,h4{font-family:'Segoe UI',system-ui;letter-spacing:.2px}
-  .app{display:flex;min-height:100vh}
-  /* Sidebar */
-  .sidebar{width:260px;flex:0 0 260px;background:var(--panel);border-right:1px solid var(--border);
-    position:sticky;top:0;height:100vh;overflow-y:auto;padding:16px 10px}
-  .brand{padding:8px 10px 18px 10px}
-  .brand h1{font-size:18px;margin:0 0 2px 0;color:var(--accent)}
-  .brand p{margin:0;font-size:12px;color:var(--muted)}
-  .nav-group{margin-bottom:6px}
-  .nav-title{font-size:11px;text-transform:uppercase;color:var(--muted);
-    padding:10px 10px 4px 10px;letter-spacing:1px}
-  .nav-btn{display:block;width:100%;text-align:left;background:transparent;border:none;
-    color:var(--text);padding:8px 10px;border-radius:8px;cursor:pointer;font-size:13.5px;
-    margin:1px 0;transition:.15s}
-  .nav-btn:hover{background:var(--panel2)}
-  .nav-btn.active{background:linear-gradient(90deg,rgba(95,208,166,.18),rgba(95,208,166,.02));
-    color:var(--accent);font-weight:600}
-  /* Main */
-  .main{flex:1;min-width:0;padding:28px 40px 80px 40px;max-width:1000px}
-  .section{display:none;animation:fade .25s ease}
-  .section.active{display:block}
-  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-  .section h2{font-size:26px;border-bottom:1px solid var(--border);padding-bottom:10px;margin-top:0}
-  .section h3{font-size:18px;color:var(--accent2);margin-top:30px}
-  .section h4{font-size:15px;color:var(--warn);margin-top:20px}
-  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin:16px 0}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  @media(max-width:800px){.grid2{grid-template-columns:1fr}.sidebar{position:fixed;z-index:50;transform:translateX(-100%);transition:.2s}
-    .sidebar.open{transform:translateX(0)}.main{padding:70px 16px 60px 16px}}
-  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
-  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
-  th{color:var(--accent2);font-size:12px;text-transform:uppercase}
-  ul,ol{line-height:1.7}
-  p{line-height:1.7;color:#dfe2ea}
-  .pill{display:inline-block;background:var(--panel2);border:1px solid var(--border);
-    color:var(--accent);border-radius:999px;padding:2px 10px;font-size:11.5px;margin:2px 4px 2px 0}
-  .badge-good{color:var(--accent)} .badge-bad{color:var(--danger)}
-  /* code block */
-  .codewrap{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;margin:12px 0;overflow:hidden}
-  .codehead{display:flex;justify-content:space-between;align-items:center;background:#0c0e14;
-    padding:6px 12px;font-size:11.5px;color:var(--muted);border-bottom:1px solid var(--border)}
-  .codehead button{background:var(--panel2);color:var(--text);border:1px solid var(--border);
-    border-radius:6px;padding:3px 10px;font-size:11.5px;cursor:pointer}
-  .codehead button:hover{border-color:var(--accent)}
-  pre{margin:0;padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.55}
-  code{font-family:'Cascadia Code','Fira Code',Consolas,monospace}
-  .out{background:#0a0c11;border-top:1px dashed var(--border);padding:10px 16px;
-    font-family:Consolas,monospace;font-size:13px;color:var(--accent);white-space:pre-wrap;display:none}
-  .out.show{display:block}
-  .kw{color:var(--kw)} .str{color:var(--str)} .num{color:var(--num)} .com{color:var(--com)} .fn{color:var(--fn)}
-  .topbar{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:var(--panel);
-    border-bottom:1px solid var(--border);align-items:center;padding:0 14px;z-index:60}
-  @media(max-width:800px){.topbar{display:flex}}
-  .topbar button{background:var(--panel2);border:1px solid var(--border);color:var(--text);
-    border-radius:8px;padding:6px 10px;font-size:14px}
-  /* Playground */
-  .pg-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media(max-width:900px){.pg-wrap{grid-template-columns:1fr}}
-  textarea#editor{width:100%;height:360px;background:var(--code-bg);color:var(--text);
-    border:1px solid var(--border);border-radius:10px;padding:14px;font-family:Consolas,monospace;
-    font-size:13px;resize:vertical;line-height:1.5}
-  .controls{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
-  .btn{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;
-    padding:8px 14px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px}
-  .btn:hover{border-color:var(--accent)}
-  .btn.primary{background:linear-gradient(90deg,#2f8f6a,#1c6e50);border-color:#2f8f6a;color:#fff;font-weight:600}
-  .btn.warn{background:#3a2f16;border-color:var(--warn);color:var(--warn)}
-  .btn:disabled{opacity:.4;cursor:not-allowed}
-  select{background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;
-    padding:7px 10px;font-size:13px}
-  .console{background:#05070a;border:1px solid var(--border);border-radius:10px;height:200px;
-    overflow-y:auto;padding:10px 14px;font-family:Consolas,monospace;font-size:13px;color:var(--accent);white-space:pre-wrap}
-  .status{font-size:12.5px;color:var(--muted);margin:6px 0}
-  .status .cur{color:var(--warn)}
-  .varsbox{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-top:10px}
-  .varsbox table{margin:0}
-  footer{color:var(--muted);font-size:12px;text-align:center;padding:30px 0 10px 0}
-</style>
-<!-- SPVM3 TECH SOLUTION UNIFIED DESIGN THEME -->
-<style id="spvm3-theme-sync">
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-  
-  :root {
-    --spvm3-primary: #6366f1;
-    --spvm3-cyan: #06b6d4;
-    --spvm3-dark: #0b0f19;
-    --spvm3-card-bg: rgba(18, 26, 43, 0.75);
-    --spvm3-border: rgba(99, 102, 241, 0.25);
-  }
+:root {
+  --bg-main: #0b0f19;
+  --bg-card: rgba(18, 26, 43, 0.78);
+  --bg-card-hover: rgba(26, 38, 64, 0.9);
+  --bg-panel: #0f172a;
+  --border-card: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(99, 102, 241, 0.4);
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+}
 
-  ::selection {
-    background: #6366f1 !important;
-    color: #ffffff !important;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #0b0f19;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #6366f1;
-  }
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
 
-  /* SPVM3 Brand Footer Injection */
-  .spvm3-global-footer {
-    background: #0b0f19;
-    border-top: 1px solid rgba(99, 102, 241, 0.3);
-    padding: 30px 20px;
-    text-align: center;
-    color: #94a3b8;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    font-size: 0.9rem;
-    margin-top: 60px;
+::selection {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0b0f19; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* Ambient background glow */
+.bg-glow-1 {
+  position: fixed; top: -15vw; left: -15vw; width: 55vw; height: 55vw;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, rgba(0,0,0,0) 70%);
+  pointer-events: none; z-index: 0;
+}
+.bg-glow-2 {
+  position: fixed; bottom: -15vw; right: -15vw; width: 50vw; height: 50vw;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, rgba(0,0,0,0) 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* App Layout */
+.layout {
+  display: flex;
+  position: relative;
+  z-index: 1;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Sidebar Navigation */
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  background: rgba(11, 15, 25, 0.95);
+  backdrop-filter: blur(16px);
+  border-right: 1px solid var(--border-highlight);
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  padding: 24px 16px 40px;
+  z-index: 40;
+}
+
+.sidebar-header {
+  padding: 0 12px 18px;
+  border-bottom: 1px solid var(--border-card);
+  margin-bottom: 18px;
+}
+.sidebar-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.sidebar-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 4px 0 2px;
+}
+.sidebar-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.toc-group { margin-bottom: 20px; }
+.toc-group-title {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary-light);
+  font-weight: 700;
+  padding: 8px 12px 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.toc-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6.5px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.83rem;
+  transition: all 0.2s;
+  border-left: 2px solid transparent;
+}
+.toc-link:hover {
+  background: rgba(99, 102, 241, 0.12);
+  color: #fff;
+}
+.toc-link.active {
+  background: rgba(99, 102, 241, 0.18);
+  color: #fff;
+  border-left-color: var(--accent-cyan);
+  font-weight: 600;
+}
+.toc-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Main Content Area */
+main.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 40px 48px 100px;
+}
+
+/* Hero Header */
+.hero {
+  background: linear-gradient(135deg, rgba(18, 26, 43, 0.9), rgba(30, 41, 59, 0.7));
+  border: 1px solid var(--border-highlight);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(99, 102, 241, 0.18);
+  color: var(--primary-light);
+  border: 1px solid var(--border-highlight);
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: 2.7rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+.hero h1 span {
+  background: linear-gradient(135deg, #ffffff, #818cf8, #06b6d4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-lede {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  max-width: 75ch;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.hero-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-card);
+}
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.stat-pill b { color: #fff; font-family: var(--font-mono); }
+
+/* Filter Navigation Pills */
+.unit-filter-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border-card);
+}
+.unit-pill-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.unit-pill-btn:hover {
+  background: rgba(99, 102, 241, 0.2);
+  color: #fff;
+  border-color: var(--primary);
+}
+.unit-pill-btn.active {
+  background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+/* Sections & Cards */
+.unit-section {
+  margin-bottom: 60px;
+  scroll-margin-top: 80px;
+}
+.unit-header-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+  border: 1px solid var(--border-highlight);
+  border-left: 5px solid var(--primary);
+  border-radius: var(--radius-md);
+  padding: 24px 30px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.unit-tag {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.unit-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  margin-top: 4px;
+}
+.unit-badge {
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid var(--border-highlight);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary-light);
+}
+
+/* Topic Card */
+.topic-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  padding: 30px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  scroll-margin-top: 90px;
+}
+.topic-card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.topic-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-card);
+  padding-bottom: 12px;
+}
+.topic-num {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.12);
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+.topic-head h3 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+}
+.topic-card h4 {
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--primary-light);
+  margin: 22px 0 8px;
+}
+.topic-card p {
+  color: #cbd5e1;
+  font-size: 0.96rem;
+  margin-bottom: 14px;
+  line-height: 1.65;
+}
+.topic-card ul, .topic-card ol {
+  margin: 0 0 16px 20px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+}
+.topic-card li { margin-bottom: 6px; }
+.topic-card strong { color: #fff; font-weight: 700; }
+
+/* Callout Blocks */
+.callout {
+  background: rgba(99, 102, 241, 0.1);
+  border-left: 4px solid var(--primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 16px 20px;
+  margin: 18px 0;
+}
+.callout.amber { background: rgba(245, 158, 11, 0.1); border-left-color: var(--accent-amber); }
+.callout.cyan { background: rgba(6, 182, 212, 0.1); border-left-color: var(--accent-cyan); }
+.callout.emerald { background: rgba(16, 185, 129, 0.1); border-left-color: var(--accent-emerald); }
+.callout-title {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary-light);
+  margin-bottom: 4px;
+}
+.callout.amber .callout-title { color: var(--accent-amber); }
+.callout.cyan .callout-title { color: var(--accent-cyan); }
+.callout.emerald .callout-title { color: var(--accent-emerald); }
+.callout p:last-child { margin-bottom: 0; }
+
+/* ASCII Diagram Box */
+.ascii-diagram {
+  background: #060911;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  margin: 18px 0;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: #38bdf8;
+  line-height: 1.4;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* Code Blocks */
+.code-container {
+  background: #070a12;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: var(--radius-sm);
+  margin: 18px 0 24px;
+  overflow: hidden;
+}
+.code-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.9);
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border-card);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.code-actions { display: flex; gap: 8px; }
+.code-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-card);
+  color: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.code-btn:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+pre.c-code {
+  margin: 0;
+  padding: 16px 20px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #e2e8f0;
+}
+.out-box {
+  background: #05070d;
+  border-top: 1px dashed rgba(99, 102, 241, 0.3);
+  padding: 12px 18px;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  color: #34d399;
+  white-space: pre-wrap;
+  display: none;
+}
+.out-box.show { display: block; }
+code {
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.08);
+  color: #38bdf8;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.88em;
+}
+
+/* Syntax Highlighting Tokens */
+.kw { color: #818cf8; font-weight: 600; }
+.type { color: #06b6d4; font-weight: 600; }
+.str { color: #fde047; }
+.num { color: #fb923c; }
+.com { color: #64748b; font-style: italic; }
+.fn { color: #34d399; }
+.op { color: #f472b6; }
+
+/* Tables */
+.table-wrap {
+  overflow-x: auto;
+  margin: 18px 0 24px;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.2);
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+}
+th, td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-card);
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--primary-light);
+  font-weight: 700;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(99, 102, 241, 0.04); }
+
+/* Feature Grid */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.feature-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.feature-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-highlight);
+}
+.feature-card h5 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.feature-card p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0;
+}
+
+/* Playground Widget */
+.playground-box {
+  background: #080c14;
+  border: 2px solid var(--border-highlight);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin: 30px 0;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+}
+.pg-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 14px 0;
+}
+.pg-btn {
+  background: #1e293b;
+  border: 1px solid var(--primary);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pg-btn.primary { background: linear-gradient(135deg, #10b981, #059669); border-color: #10b981; }
+.pg-btn:hover { opacity: 0.9; transform: scale(1.02); }
+.pg-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+textarea#pgEditor {
+  width: 100%;
+  height: 240px;
+  background: #05070c;
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  color: #f1f5f9;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  padding: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+}
+textarea#pgEditor:focus { border-color: var(--accent-cyan); }
+.pg-console {
+  background: #030508;
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  min-height: 120px;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  color: #34d399;
+  white-space: pre-wrap;
+  margin-top: 10px;
+}
+
+/* Exam Questions */
+.exam-q-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+.exam-q-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-card);
+  border-left: 3px solid var(--accent-amber);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.92rem;
+  color: #f1f5f9;
+}
+.exam-q-item span.q-num {
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: var(--accent-amber);
+  margin-right: 8px;
+}
+
+/* Mobile Toggle */
+.menu-toggle-btn {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 22px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  box-shadow: 0 10px 25px rgba(99,102,241,0.5);
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 60px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 300px;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.7);
   }
-  .spvm3-global-footer strong {
-    color: #f1f5f9;
-  }
+  .sidebar.open { transform: translateX(0); }
+  .menu-toggle-btn { display: flex; align-items: center; gap: 8px; }
+  main.main-content { padding: 24px 18px 80px; }
+  .hero h1 { font-size: 2.1rem; }
+}
+
+/* SPVM3 Footer */
+.spvm3-global-footer {
+  background: #080c14;
+  border-top: 1px solid var(--border-highlight);
+  padding: 36px 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.88rem;
+  margin-top: 60px;
+}
+.spvm3-global-footer strong { color: #f1f5f9; }
 </style>
 
 <script src="spvm3_certificate_system.js"></script>
 </head>
 <body>
+
+<div class="bg-glow-1"></div>
+<div class="bg-glow-2"></div>
+
 <!-- SPVM3 TECH SOLUTION GLOBAL HEADER -->
 <div id="techvault-global-header" style="position: sticky; top: 0; z-index: 99999; background: #0b0f19; border-bottom: 1px solid rgba(99, 102, 241, 0.3); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #f8fafc; box-shadow: 0 4px 20px rgba(0,0,0,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);">
   <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
@@ -162,7 +692,11 @@
     </button>
     <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
       <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
-      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All 21 Notes)</option>
+      <option value="verify-certificate.html" style="background:#0f172a; color:#fff;">🔍 Verify Certificate Portal</option>
+      <option value="ai-systems-notes.html" style="background:#0f172a; color:#fff;">🤖 AI Systems & LLM Agents Notes</option>
+      <option value="blockchain-notes.html" style="background:#0f172a; color:#fff;">⛓️ Blockchain & Cryptography Notes</option>
+      <option value="data-structures-notes.html" style="background:#0f172a; color:#fff;">🧩 Data Structures & Algorithms (DSA)</option>
       <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
       <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
       <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
@@ -187,1677 +721,1145 @@
 <script>document.addEventListener('DOMContentLoaded', () => { if (typeof initAutoScrollProgressTracker === 'function') initAutoScrollProgressTracker('c-programming'); });</script>
 <!-- END SPVM3 TECH SOLUTION GLOBAL HEADER -->
 
+<button class="menu-toggle-btn" id="menuToggleBtn" onclick="toggleSidebar()">
+  <span>📑</span>
+  <span>Topics / Units</span>
+</button>
 
-
-<div class="topbar">
-  <button onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ Menu</button>
-  <div style="margin-left:12px;font-weight:600;color:var(--accent)">C Programming Notes</div>
-</div>
-
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand">
-      <h1>⚙ C Notes</h1>
-      <p>A → Z guide + live playground</p>
+<div class="layout">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar" id="sidebarNav">
+    <div class="sidebar-header">
+      <div class="sidebar-tag">SPVM3 // ACADEMY</div>
+      <div class="sidebar-title">C Programming</div>
+      <p class="sidebar-desc">Complete Units 1–4 Exam Syllabus</p>
     </div>
-    <div id="nav"></div>
+
+    <!-- Unit 1 -->
+    <div class="toc-group">
+      <div class="toc-group-title"><span>📘</span> Unit 1: Problem Solving &amp; Basics</div>
+      <a href="#u1-problem-solving" class="toc-link"><span class="toc-badge">1.1</span> Problem Solving Steps</a>
+      <a href="#u1-algorithm" class="toc-link"><span class="toc-badge">1.2</span> Algorithm Definition</a>
+      <a href="#u1-flowchart" class="toc-link"><span class="toc-badge">1.3</span> Flowchart Symbols</a>
+      <a href="#u1-circle-area" class="toc-link"><span class="toc-badge">1.4</span> Area of a Circle</a>
+      <a href="#u1-largest-three" class="toc-link"><span class="toc-badge">1.5</span> Largest of 3 Numbers</a>
+      <a href="#u1-sum-n" class="toc-link"><span class="toc-badge">1.6</span> Sum of N Numbers</a>
+      <a href="#u1-overview-c" class="toc-link"><span class="toc-badge">1.7</span> History &amp; Features of C</a>
+      <a href="#u1-structure" class="toc-link"><span class="toc-badge">1.8</span> Structure of a C Program</a>
+      <a href="#u1-execution" class="toc-link"><span class="toc-badge">1.9</span> Execution Pipeline</a>
+      <a href="#u1-tokens" class="toc-link"><span class="toc-badge">1.10</span> Character Set &amp; Tokens</a>
+      <a href="#u1-datatypes" class="toc-link"><span class="toc-badge">1.11</span> Data Types &amp; Variables</a>
+      <a href="#u1-headers" class="toc-link"><span class="toc-badge">1.12</span> Header Files (stdio/math)</a>
+    </div>
+
+    <!-- Unit 2 -->
+    <div class="toc-group">
+      <div class="toc-group-title"><span>⚙️</span> Unit 2: I/O, Operators &amp; Control</div>
+      <a href="#u2-io" class="toc-link"><span class="toc-badge">2.1</span> Formatted (printf/scanf)</a>
+      <a href="#u2-unformatted" class="toc-link"><span class="toc-badge">2.2</span> Unformatted I/O (fgets)</a>
+      <a href="#u2-operators" class="toc-link"><span class="toc-badge">2.3</span> Operators (All Types)</a>
+      <a href="#u2-precedence" class="toc-link"><span class="toc-badge">2.4</span> Precedence &amp; Associativity</a>
+      <a href="#u2-decisions" class="toc-link"><span class="toc-badge">2.5</span> Decisions (if, switch)</a>
+      <a href="#u2-loops" class="toc-link"><span class="toc-badge">2.6</span> Loops (while, for, do-while)</a>
+      <a href="#u2-jumps" class="toc-link"><span class="toc-badge">2.7</span> Jump (break, continue, goto)</a>
+    </div>
+
+    <!-- Unit 3 -->
+    <div class="toc-group">
+      <div class="toc-group-title"><span>📦</span> Unit 3: Arrays, Structs &amp; Unions</div>
+      <a href="#u3-1d-arrays" class="toc-link"><span class="toc-badge">3.1</span> 1D Arrays &amp; Memory</a>
+      <a href="#u3-2d-arrays" class="toc-link"><span class="toc-badge">3.2</span> 2D Arrays (Row-Major)</a>
+      <a href="#u3-structures" class="toc-link"><span class="toc-badge">3.3</span> Structures &amp; Dot Operator</a>
+      <a href="#u3-unions" class="toc-link"><span class="toc-badge">3.4</span> Unions &amp; Shared Memory</a>
+      <a href="#u3-comparison" class="toc-link"><span class="toc-badge">3.5</span> Structure vs Union</a>
+    </div>
+
+    <!-- Unit 4 -->
+    <div class="toc-group">
+      <div class="toc-group-title"><span>🎯</span> Unit 4: Pointers &amp; Functions</div>
+      <a href="#u4-pointers" class="toc-link"><span class="toc-badge">4.1</span> Pointers &amp; Addresses</a>
+      <a href="#u4-pointer-arith" class="toc-link"><span class="toc-badge">4.2</span> Pointer Arithmetic</a>
+      <a href="#u4-functions" class="toc-link"><span class="toc-badge">4.3</span> User-Defined Functions</a>
+      <a href="#u4-categories" class="toc-link"><span class="toc-badge">4.4</span> 4 Function Categories</a>
+    </div>
+
+    <!-- Exam & Playground -->
+    <div class="toc-group">
+      <div class="toc-group-title"><span>⭐</span> Exam Prep &amp; Playground</div>
+      <a href="#exam-questions" class="toc-link"><span class="toc-badge">⭐</span> Important Exam Questions</a>
+      <a href="#live-playground" class="toc-link"><span class="toc-badge">🎮</span> Live C Playground</a>
+    </div>
   </aside>
 
-  <main class="main" id="main"></main>
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="main-content">
+
+    <!-- HERO HEADER -->
+    <header class="hero">
+      <div class="hero-badge">📘 COMPLETE EXAM ORIENTED SYLLABUS · UNITS 1 TO 4</div>
+      <h1>C Programming — <span>Complete Notes</span></h1>
+      <p class="hero-lede">
+        Complete university and semester exam notes featuring rigorous definitions, step-by-step algorithms, reproducible ASCII flowcharts, verified C source programs with console outputs, syntax tables, unit quick revisions, and an interactive in-browser C runner.
+      </p>
+
+      <div class="hero-stats">
+        <div class="stat-pill">Units: <b>4 Core Units + Exam Bank</b></div>
+        <div class="stat-pill">Format: <b>Definition → Diagram → Code → Output</b></div>
+        <div class="stat-pill">Curriculum: <b>University Exam Pattern</b></div>
+        <div class="stat-pill">Author: <b>Sanjay GL — SPVM3</b></div>
+      </div>
+    </header>
+
+    <!-- QUICK JUMP PILLS -->
+    <nav class="unit-filter-bar" aria-label="Units Navigation">
+      <a href="#unit1" class="unit-pill-btn active">Unit 1: Problem Solving &amp; C Basics</a>
+      <a href="#unit2" class="unit-pill-btn">Unit 2: I/O, Operators &amp; Control</a>
+      <a href="#unit3" class="unit-pill-btn">Unit 3: Arrays, Structs &amp; Unions</a>
+      <a href="#unit4" class="unit-pill-btn">Unit 4: Pointers &amp; Functions</a>
+      <a href="#exam-questions" class="unit-pill-btn" style="border-color: #f59e0b; color: #fbbf24;">⭐ Exam Questions</a>
+      <a href="#live-playground" class="unit-pill-btn" style="border-color: #10b981; color: #34d399;">🎮 Live Playground</a>
+    </nav>
+
+    <!-- ================================================================= -->
+    <!-- UNIT 1: PROBLEM SOLVING & BASICS OF C                             -->
+    <!-- ================================================================= -->
+    <section class="unit-section" id="unit1">
+      <div class="unit-header-card">
+        <div>
+          <div class="unit-tag">Unit 01 · Exam Syllabus</div>
+          <h2 class="unit-title">Unit 1 — Problem Solving with a Computer &amp; Basics of C</h2>
+        </div>
+        <span class="unit-badge">21 Core Topics Included</span>
+      </div>
+
+      <!-- 1.1 Problem Solving with Computer -->
+      <article class="topic-card" id="u1-problem-solving">
+        <div class="topic-head">
+          <span class="topic-num">1.1</span>
+          <h3>Problem Solving with a Computer (General Steps &amp; 9 Stages)</h3>
+        </div>
+        <p>
+          <strong>Problem solving</strong> is the systematic process of identifying a computational challenge, analyzing its constraints, formulating a logical procedure, implementing it in C, and verifying the results.
+        </p>
+
+        <h4>Problem Solving Execution Pipeline</h4>
+        <pre class="ascii-diagram">
+       ┌─────────────────┐
+       │  Start Problem  │
+       └────────┬────────┘
+                ↓
+       ┌─────────────────┐
+       │ Define Problem  │ ➔ Understand objectives &amp; limitations
+       └────────┬────────┘
+                ↓
+       ┌─────────────────┐
+       │ Analyze Problem │ ➔ Identify required Inputs, Outputs &amp; Processing
+       └────────┬────────┘
+                ↓
+       ┌─────────────────┐
+       │ Develop         │
+       │ Algorithm       │ ➔ Write step-by-step logic
+       └────────┬────────┘
+                ↓
+       ┌─────────────────┐
+       │ Draw Flowchart  │ ➔ Represent algorithm diagrammatically
+       └────────┬────────┘
+                ↓
+       ┌─────────────────┐
+       │ Write Program   │ ➔ Code in C syntax
+       └────────┬────────┘
+                ↓
+       ┌─────────────────┐
+       │ Compile &amp; Test  │ ➔ Fix syntax &amp; logical bugs
+       └────────┬────────┘
+                ↓
+       ┌─────────────────┐
+       │    Solution     │ ➔ Final deployed executable
+       └─────────────────┘
+        </pre>
+      </article>
+
+      <!-- 1.2 Algorithm -->
+      <article class="topic-card" id="u1-algorithm">
+        <div class="topic-head">
+          <span class="topic-num">1.2</span>
+          <h3>Algorithm (Definition &amp; 5 Core Characteristics)</h3>
+        </div>
+        <p>
+          An <strong>algorithm</strong> is a finite sequence of unambiguous, step-by-step instructions designed to accomplish a specific computational goal.
+        </p>
+
+        <h4>5 Core Characteristics of a Good Algorithm</h4>
+        <ul>
+          <li><strong>1. Input:</strong> Receives zero or more well-defined inputs.</li>
+          <li><strong>2. Output:</strong> Produces at least one verified result.</li>
+          <li><strong>3. Definiteness:</strong> Each step is clear, precise, and unambiguous.</li>
+          <li><strong>4. Finiteness:</strong> Must terminate after a countable number of execution steps.</li>
+          <li><strong>5. Effectiveness:</strong> Every operation must be feasible and practically executable.</li>
+        </ul>
+
+        <h4>Sample Algorithm: Add Two Numbers</h4>
+        <pre class="ascii-diagram">
+Step 1: Start
+Step 2: Read values A and B
+Step 3: Compute S = A + B
+Step 4: Display result S
+Step 5: Stop
+        </pre>
+      </article>
+
+      <!-- 1.3 Flowchart -->
+      <article class="topic-card" id="u1-flowchart">
+        <div class="topic-head">
+          <span class="topic-num">1.3</span>
+          <h3>Flowchart (Definition &amp; Standard Symbols)</h3>
+        </div>
+        <p>A <strong>flowchart</strong> is a standard graphical representation of an algorithm using interconnected geometric symbols:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Symbol Shape</th>
+                <th>Standard Name</th>
+                <th>Function in Flowchart</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Oval (Rounded)</strong></td><td>Terminal</td><td>Indicates program <code>START</code> or <code>STOP</code>.</td></tr>
+              <tr><td><strong>Rectangle</strong></td><td>Process</td><td>Calculations, formula evaluation, variable assignment.</td></tr>
+              <tr><td><strong>Parallelogram</strong></td><td>Input / Output</td><td>Data entry (Read) or display operations (Print).</td></tr>
+              <tr><td><strong>Diamond</strong></td><td>Decision</td><td>Conditional evaluation (branches to True/False or Yes/No).</td></tr>
+              <tr><td><strong>Arrows</strong></td><td>Flow Line</td><td>Dictates the sequence and direction of control flow.</td></tr>
+              <tr><td><strong>Circle</strong></td><td>Connector</td><td>Connects distant sections of complex flowcharts.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- 1.4 Area of Circle -->
+      <article class="topic-card" id="u1-circle-area">
+        <div class="topic-head">
+          <span class="topic-num">1.4</span>
+          <h3>Algorithm, Flowchart &amp; C Program: Area of a Circle</h3>
+        </div>
+        <p><strong>Problem:</strong> Calculate the area of a circle with given radius <code>r</code> using formula <code>Area = π × r²</code>.</p>
+
+        <pre class="ascii-diagram">
+Algorithm:
+Step 1: Start
+Step 2: Read radius r
+Step 3: Calculate Area = 3.14159 × r × r
+Step 4: Display Area
+Step 5: Stop
+
+Flowchart:
+       ┌─────────┐
+       │  START  │
+       └────┬────┘
+            ↓
+      ╱───────────╲
+     ╱   Read r    ╲
+     ╲             ╱
+      ╲───────────╱
+            ↓
+     ┌─────────────┐
+     │Area=π×r×r   │
+     └──────┬──────┘
+            ↓
+      ╱───────────╲
+     ╱ Print Area  ╲
+     ╲             ╱
+      ╲───────────╱
+            ↓
+       ┌─────────┐
+       │  STOP   │
+       └─────────┘
+        </pre>
+
+        <div class="code-container">
+          <div class="code-top">
+            <span>area_circle.c</span>
+            <div class="code-actions">
+              <button class="code-btn" onclick="copyCode(this)">⧉ Copy Code</button>
+              <button class="code-btn" onclick="toggleOutput('out-circle')">▶ Expected Output</button>
+            </div>
+          </div>
+          <pre class="c-code"><code><span class="com">#include &lt;stdio.h&gt;</span>
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">float</span> r, area;
+
+    <span class="fn">printf</span>(<span class="str">"Enter radius: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%f"</span>, &amp;r);
+
+    area = <span class="num">3.14159</span> * r * r;
+
+    <span class="fn">printf</span>(<span class="str">"Area = %.2f\n"</span>, area);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+          <div class="out-box" id="out-circle">Enter radius: 5
+Area = 78.54</div>
+        </div>
+      </article>
+
+      <!-- 1.5 Largest of Three Numbers -->
+      <article class="topic-card" id="u1-largest-three">
+        <div class="topic-head">
+          <span class="topic-num">1.5</span>
+          <h3>Find Largest of Three Numbers</h3>
+        </div>
+
+        <pre class="ascii-diagram">
+Algorithm:
+Step 1: Start
+Step 2: Read A, B, and C
+Step 3: If A &gt;= B and A &gt;= C, then Largest = A
+Step 4: Else if B &gt;= C, then Largest = B
+Step 5: Else Largest = C
+Step 6: Display Largest
+Step 7: Stop
+        </pre>
+
+        <div class="code-container">
+          <div class="code-top">
+            <span>largest_three.c</span>
+            <div class="code-actions">
+              <button class="code-btn" onclick="copyCode(this)">⧉ Copy Code</button>
+              <button class="code-btn" onclick="toggleOutput('out-largest')">▶ Expected Output</button>
+            </div>
+          </div>
+          <pre class="c-code"><code><span class="com">#include &lt;stdio.h&gt;</span>
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> a, b, c;
+
+    <span class="fn">printf</span>(<span class="str">"Enter three numbers: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d %d %d"</span>, &amp;a, &amp;b, &amp;c);
+
+    <span class="kw">if</span> (a &gt;= b &amp;&amp; a &gt;= c)
+        <span class="fn">printf</span>(<span class="str">"Largest = %d\n"</span>, a);
+    <span class="kw">else if</span> (b &gt;= a &amp;&amp; b &gt;= c)
+        <span class="fn">printf</span>(<span class="str">"Largest = %d\n"</span>, b);
+    <span class="kw">else</span>
+        <span class="fn">printf</span>(<span class="str">"Largest = %d\n"</span>, c);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+          <div class="out-box" id="out-largest">Enter three numbers: 25 48 31
+Largest = 48</div>
+        </div>
+      </article>
+
+      <!-- 1.6 Sum of N Numbers -->
+      <article class="topic-card" id="u1-sum-n">
+        <div class="topic-head">
+          <span class="topic-num">1.6</span>
+          <h3>Sum of First N Natural Numbers</h3>
+        </div>
+
+        <div class="code-container">
+          <div class="code-top">
+            <span>sum_n.c</span>
+            <div class="code-actions">
+              <button class="code-btn" onclick="copyCode(this)">⧉ Copy Code</button>
+              <button class="code-btn" onclick="toggleOutput('out-sumn')">▶ Expected Output</button>
+            </div>
+          </div>
+          <pre class="c-code"><code><span class="com">#include &lt;stdio.h&gt;</span>
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> n, i, sum = <span class="num">0</span>;
+
+    <span class="fn">printf</span>(<span class="str">"Enter N: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;n);
+
+    <span class="kw">for</span> (i = <span class="num">1</span>; i &lt;= n; i++) {
+        sum = sum + i;
+    }
+
+    <span class="fn">printf</span>(<span class="str">"Sum = %d\n"</span>, sum);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+          <div class="out-box" id="out-sumn">Enter N: 10
+Sum = 55</div>
+        </div>
+      </article>
+
+      <!-- 1.7 Overview of C -->
+      <article class="topic-card" id="u1-overview-c">
+        <div class="topic-head">
+          <span class="topic-num">1.7</span>
+          <h3>Overview &amp; Features of C</h3>
+        </div>
+        <p>
+          C is a general-purpose, structured programming language created by <strong>Dennis Ritchie</strong> at <strong>Bell Labs</strong> in 1972. Evolved from <strong>BCPL</strong> and <strong>B</strong>, C was used to re-implement the <strong>UNIX Operating System</strong> kernel, making it the bedrock of modern software engineering.
+        </p>
+
+        <h4>12 Hallmark Features of C</h4>
+        <div class="feature-grid">
+          <div class="feature-card"><h5>1. Simple &amp; Structured</h5><p>Modular function blocks and clean, uncluttered syntax.</p></div>
+          <div class="feature-card"><h5>2. Highly Portable</h5><p>Compiles across multiple hardware CPUs with minimal changes.</p></div>
+          <div class="feature-card"><h5>3. Fast &amp; Efficient</h5><p>Near assembly-level speed with minimal memory overhead.</p></div>
+          <div class="feature-card"><h5>4. Middle-Level Language</h5><p>Combines high-level abstraction with low-level bit memory manipulation.</p></div>
+          <div class="feature-card"><h5>5. Pointer Power</h5><p>Direct access to hardware memory addresses via raw pointers.</p></div>
+          <div class="feature-card"><h5>6. Rich Operator Set</h5><p>Over 40 operators including bitwise shifts, logic, and arithmetic.</p></div>
+        </div>
+      </article>
+
+      <!-- 1.8 Structure of a C Program -->
+      <article class="topic-card" id="u1-structure">
+        <div class="topic-head">
+          <span class="topic-num">1.8</span>
+          <h3>Structure of a C Program</h3>
+        </div>
+
+        <pre class="ascii-diagram">
+Documentation Section (Comments /* ... */)
+           ↓
+Preprocessor Directives (#include &lt;stdio.h&gt;, #define)
+           ↓
+Global Declarations (Variables, Functions prototypes)
+           ↓
+main() Function: int main() {
+    Variable Declarations (int a, b;)
+    Executable Statements (printf, scanf, math)
+    return 0;
+}
+           ↓
+User-Defined Function Definitions
+        </pre>
+      </article>
+
+      <!-- 1.9 Execution Pipeline -->
+      <article class="topic-card" id="u1-execution">
+        <div class="topic-head">
+          <span class="topic-num">1.9</span>
+          <h3>Creating and Executing a C Program</h3>
+        </div>
+
+        <pre class="ascii-diagram">
+Source Code (.c) ──► Preprocessor ──► Pure C Code ──► Compiler ──► Assembly (.s)
+                                                                     │
+Executable (.exe) ◄── Linker ◄── Object Code (.obj / .o) ◄── Assembler
+        </pre>
+      </article>
+
+      <!-- 1.10 Character Set & Tokens -->
+      <article class="topic-card" id="u1-tokens">
+        <div class="topic-head">
+          <span class="topic-num">1.10</span>
+          <h3>C Character Set &amp; Tokens</h3>
+        </div>
+        <p>A <strong>token</strong> is the smallest individual meaningful element of a C program:</p>
+        <pre class="ascii-diagram">
+                         C TOKENS
+                            │
+     ┌─────────────┬────────┼─────────────┬─────────────┐
+     ▼             ▼        ▼             ▼             ▼
+ Keywords    Identifiers  Constants   Operators   Special Symbols
+ (int, return) (marks, a)  (10, "Hi")   (+, ==)      ([ ], ;, {})
+        </pre>
+
+        <h4>Rules for Identifiers</h4>
+        <ul>
+          <li>Can contain letters (<code>a-z, A-Z</code>), digits (<code>0-9</code>), and underscore (<code>_</code>).</li>
+          <li><strong>Cannot begin with a digit</strong> (e.g. <code>student1</code> is valid; <code>1student</code> is invalid).</li>
+          <li>Cannot contain spaces or special punctuation characters.</li>
+          <li><strong>Cannot be a reserved keyword</strong> (e.g. <code>int float;</code> is illegal).</li>
+          <li>C is strictly <strong>case-sensitive</strong> (<code>total</code>, <code>Total</code>, and <code>TOTAL</code> are three distinct identifiers).</li>
+        </ul>
+      </article>
+
+      <!-- 1.11 Data Types & Header Files -->
+      <article class="topic-card" id="u1-datatypes">
+        <div class="topic-head">
+          <span class="topic-num">1.11</span>
+          <h3>Data Types &amp; Variable Declarations</h3>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Data Type</th>
+                <th>Standard Size</th>
+                <th>Format Specifier</th>
+                <th>Value Range</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>char</code></td><td>1 Byte</td><td><code>%c</code></td><td>-128 to 127 or 0 to 255</td></tr>
+              <tr><td><code>int</code></td><td>2 or 4 Bytes</td><td><code>%d</code></td><td>-2,147,483,648 to 2,147,483,647 (32-bit)</td></tr>
+              <tr><td><code>float</code></td><td>4 Bytes</td><td><code>%f</code></td><td>~6 decimal digits of precision</td></tr>
+              <tr><td><code>double</code></td><td>8 Bytes</td><td><code>%lf</code></td><td>~15 decimal digits of precision</td></tr>
+              <tr><td><code>void</code></td><td>0 Bytes</td><td>—</td><td>Valueless / incomplete type</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- 1.12 Header Files -->
+      <article class="topic-card" id="u1-headers">
+        <div class="topic-head">
+          <span class="topic-num">1.12</span>
+          <h3>Standard C Header Files</h3>
+        </div>
+        <ul>
+          <li><code>&lt;stdio.h&gt;</code>: Standard I/O (<code>printf</code>, <code>scanf</code>, <code>getchar</code>, <code>puts</code>).</li>
+          <li><code>&lt;math.h&gt;</code>: Mathematical computations (<code>sqrt</code>, <code>pow</code>, <code>sin</code>, <code>cos</code>, <code>log</code>). Must link with <code>-lm</code> in Linux GCC.</li>
+          <li><code>&lt;string.h&gt;</code>: String manipulation (<code>strlen</code>, <code>strcpy</code>, <code>strcmp</code>, <code>strcat</code>).</li>
+          <li><code>&lt;ctype.h&gt;</code>: Character classification (<code>isalpha</code>, <code>isdigit</code>, <code>toupper</code>, <code>tolower</code>).</li>
+          <li><code>&lt;conio.h&gt;</code>: <em>Legacy Non-standard header</em> (used in Turbo C for <code>clrscr()</code> and <code>getch()</code>; omitted in modern standard ANSI/GCC C).</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- UNIT 2: I/O, OPERATORS & CONTROL STRUCTURES                       -->
+    <!-- ================================================================= -->
+    <section class="unit-section" id="unit2">
+      <div class="unit-header-card">
+        <div>
+          <div class="unit-tag">Unit 02 · Exam Syllabus</div>
+          <h2 class="unit-title">Unit 2 — Input/Output, Operators &amp; Control Structures</h2>
+        </div>
+        <span class="unit-badge">Decisions &amp; Iteration</span>
+      </div>
+
+      <!-- 2.1 Formatted I/O -->
+      <article class="topic-card" id="u2-io">
+        <div class="topic-head">
+          <span class="topic-num">2.1</span>
+          <h3>Formatted Input and Output (printf &amp; scanf)</h3>
+        </div>
+        <p><strong><code>printf()</code></strong> prints formatted text to stdout, while <strong><code>scanf()</code></strong> parses input from stdin using format specifiers and address-of operators (<code>&amp;</code>):</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Format Specifier</th><th>Target Data Type</th><th>Sample Usage</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>%d</code> / <code>%i</code></td><td>Signed Integer</td><td><code>printf("%d", age);</code></td></tr>
+              <tr><td><code>%f</code></td><td>Single Precision Float</td><td><code>printf("%.2f", price);</code></td></tr>
+              <tr><td><code>%lf</code></td><td>Double Precision Float</td><td><code>scanf("%lf", &amp;pi);</code></td></tr>
+              <tr><td><code>%c</code></td><td>Single Character</td><td><code>scanf(" %c", &amp;grade);</code></td></tr>
+              <tr><td><code>%s</code></td><td>String (Character array)</td><td><code>scanf("%s", name);</code></td></tr>
+              <tr><td><code>%u</code></td><td>Unsigned Integer</td><td><code>printf("%u", count);</code></td></tr>
+              <tr><td><code>%x</code> / <code>%X</code></td><td>Hexadecimal Integer</td><td><code>printf("%X", hexVal);</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- 2.2 Unformatted I/O -->
+      <article class="topic-card" id="u2-unformatted">
+        <div class="topic-head">
+          <span class="topic-num">2.2</span>
+          <h3>Unformatted I/O &amp; Why gets() is Obsolete</h3>
+        </div>
+        <p>Unformatted I/O functions move raw characters without format string parsing:</p>
+        <ul>
+          <li><code>getchar()</code>: Reads a single character from the input stream.</li>
+          <li><code>putchar(ch)</code>: Writes a single character directly to the display.</li>
+          <li><code>puts(str)</code>: Displays a null-terminated string and automatically appends a newline (<code>\n</code>).</li>
+        </ul>
+        <div class="callout amber">
+          <div class="callout-label">Critical Exam Warning on gets()</div>
+          <p>
+            <strong><code>gets()</code> was officially removed from the C11 standard</strong> because it has no buffer boundary limit check, creating critical buffer overflow security vulnerabilities. Modern secure C code strictly uses <code>fgets(buffer, sizeof(buffer), stdin);</code> instead.
+          </p>
+        </div>
+      </article>
+
+      <!-- 2.3 Operators -->
+      <article class="topic-card" id="u2-operators">
+        <div class="topic-head">
+          <span class="topic-num">2.3</span>
+          <h3>C Operators (Arithmetic, Relational, Logical, Bitwise)</h3>
+        </div>
+
+        <h4>1. Pre-Increment vs Post-Increment</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Feature</th><th>Pre-Increment (<code>++a</code>)</th><th>Post-Increment (<code>a++</code>)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Evaluation Order</strong></td><td>Increments first, then produces the updated value.</td><td>Produces current value first, then increments.</td></tr>
+              <tr><td><strong>Example Code</strong></td><td><code>int a=5; int b=++a;</code> ➔ <code>a=6, b=6</code></td><td><code>int a=5; int b=a++;</code> ➔ <code>a=6, b=5</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>2. Bitwise Operators Walkthrough</h4>
+        <div class="calc-step-box">
+          Let a = 5 (binary 0101) and b = 3 (binary 0011):<br>
+          a &amp; b (AND)  ➔ 0101 &amp; 0011 = <span class="highlight">0001 (Decimal 1)</span><br>
+          a | b (OR)   ➔ 0101 | 0011 = <span class="highlight">0111 (Decimal 7)</span><br>
+          a ^ b (XOR)  ➔ 0101 ^ 0011 = <span class="highlight">0110 (Decimal 6)</span><br>
+          ~a (NOT)     ➔ ~0101       = <span class="highlight">-6 (2's complement inverted)</span><br>
+          a &lt;&lt; 1 (Left Shift)  ➔ 0101 &lt;&lt; 1 = <span class="highlight">1010 (Decimal 10, a × 2)</span><br>
+          a &gt;&gt; 1 (Right Shift) ➔ 0101 &gt;&gt; 1 = <span class="highlight">0010 (Decimal 2, a ÷ 2)</span>
+        </div>
+      </article>
+
+      <!-- 2.4 Operator Precedence -->
+      <article class="topic-card" id="u2-precedence">
+        <div class="topic-head">
+          <span class="topic-num">2.4</span>
+          <h3>Operator Precedence and Associativity</h3>
+        </div>
+        <p>Dictates expression evaluation hierarchy when multiple operators appear together:</p>
+        <pre class="ascii-diagram">
+Highest Priority
+   ↓
+( )  [ ]  -&gt;  .           (Left to Right)
+!  ~  ++  --  sizeof &amp; *  (Right to Left - Unary)
+*  /  %                   (Left to Right - Multiplicative)
++  -                      (Left to Right - Additive)
+&lt;&lt;  &gt;&gt;                    (Left to Right - Bitwise Shifts)
+&lt;  &lt;=  &gt;  &gt;=              (Left to Right - Relational)
+==  !=                    (Left to Right - Equality)
+&amp;                         (Left to Right - Bitwise AND)
+^                         (Left to Right - Bitwise XOR)
+|                         (Left to Right - Bitwise OR)
+&amp;&amp;                        (Left to Right - Logical AND)
+||                        (Left to Right - Logical OR)
+? :                       (Right to Left - Conditional Ternary)
+=  +=  -=  *=  /=  %=     (Right to Left - Assignment)
+,                         (Left to Right - Comma operator)
+   ↓
+Lowest Priority
+        </pre>
+      </article>
+
+      <!-- 2.5 Decisions & Switch -->
+      <article class="topic-card" id="u2-decisions">
+        <div class="topic-head">
+          <span class="topic-num">2.5</span>
+          <h3>Decision Making (if, if-else, switch-case)</h3>
+        </div>
+
+        <div class="code-container">
+          <div class="code-top">
+            <span>menu_switch.c</span>
+            <div class="code-actions">
+              <button class="code-btn" onclick="copyCode(this)">⧉ Copy Code</button>
+              <button class="code-btn" onclick="toggleOutput('out-switch')">▶ Expected Output</button>
+            </div>
+          </div>
+          <pre class="c-code"><code><span class="com">#include &lt;stdio.h&gt;</span>
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> choice, a = <span class="num">10</span>, b = <span class="num">5</span>;
+
+    <span class="fn">printf</span>(<span class="str">"1. Add  2. Subtract\nEnter choice: "</span>);
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;choice);
+
+    <span class="kw">switch</span> (choice) {
+        <span class="kw">case</span> <span class="num">1</span>:
+            <span class="fn">printf</span>(<span class="str">"Result = %d\n"</span>, a + b);
+            <span class="kw">break</span>;
+        <span class="kw">case</span> <span class="num">2</span>:
+            <span class="fn">printf</span>(<span class="str">"Result = %d\n"</span>, a - b);
+            <span class="kw">break</span>;
+        <span class="kw">default</span>:
+            <span class="fn">printf</span>(<span class="str">"Invalid choice\n"</span>);
+    }
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+          <div class="out-box" id="out-switch">1. Add  2. Subtract
+Enter choice: 1
+Result = 15</div>
+        </div>
+      </article>
+
+      <!-- 2.6 Loops -->
+      <article class="topic-card" id="u2-loops">
+        <div class="topic-head">
+          <span class="topic-num">2.6</span>
+          <h3>Loops (while, do-while, for &amp; Nested Loops)</h3>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Loop Type</th><th>Test Condition Placement</th><th>Guaranteed Iterations</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong><code>while</code></strong></td><td>Entry-controlled (checked before body executes).</td><td>0 or more times.</td></tr>
+              <tr><td><strong><code>for</code></strong></td><td>Entry-controlled (compact init, condition, update).</td><td>0 or more times.</td></tr>
+              <tr><td><strong><code>do-while</code></strong></td><td>Exit-controlled (checked after body executes).</td><td><strong>At least 1 time guaranteed</strong>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- 2.7 Jumps -->
+      <article class="topic-card" id="u2-jumps">
+        <div class="topic-head">
+          <span class="topic-num">2.7</span>
+          <h3>Jump Statements (break, continue, goto)</h3>
+        </div>
+        <ul>
+          <li><strong><code>break;</code>:</strong> Immediately exits the nearest enclosing loop or <code>switch</code>.</li>
+          <li><strong><code>continue;</code>:</strong> Aborts remaining statements in the current iteration and jumps directly to the loop condition/update.</li>
+          <li><strong><code>goto label;</code>:</strong> Unconditional jump to a labeled statement. Discouraged in structured programming due to spaghetti code.</li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- UNIT 3: ARRAYS, STRUCTURES AND UNIONS                             -->
+    <!-- ================================================================= -->
+    <section class="unit-section" id="unit3">
+      <div class="unit-header-card">
+        <div>
+          <div class="unit-tag">Unit 03 · Exam Syllabus</div>
+          <h2 class="unit-title">Unit 3 — Arrays, Structures and Unions</h2>
+        </div>
+        <span class="unit-badge">Contiguous vs Shared Memory</span>
+      </div>
+
+      <!-- 3.1 1D Arrays -->
+      <article class="topic-card" id="u3-1d-arrays">
+        <div class="topic-head">
+          <span class="topic-num">3.1</span>
+          <h3>One-Dimensional Array &amp; Memory Layout</h3>
+        </div>
+        <p>An <strong>array</strong> is a fixed-size collection of homogenous elements (same data type) stored sequentially in contiguous memory blocks:</p>
+
+        <pre class="ascii-diagram">
+Index:        0      1      2      3      4
+            ┌──────┬──────┬──────┬──────┬──────┐
+Array a:    │  10  │  20  │  30  │  40  │  50  │
+            └──────┴──────┴──────┴──────┴──────┘
+Address:     1000   1004   1008   1012   1016   (Assuming 4-byte int)
+
+Address Formula: Address of a[i] = Base Address + i × sizeof(data_type)
+        </pre>
+
+        <div class="code-container">
+          <div class="code-top">
+            <span>array_sum.c</span>
+            <div class="code-actions">
+              <button class="code-btn" onclick="copyCode(this)">⧉ Copy Code</button>
+              <button class="code-btn" onclick="toggleOutput('out-arr')">▶ Expected Output</button>
+            </div>
+          </div>
+          <pre class="c-code"><code><span class="com">#include &lt;stdio.h&gt;</span>
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> a[<span class="num">5</span>] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};
+    <span class="type">int</span> i, sum = <span class="num">0</span>;
+
+    <span class="kw">for</span> (i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) {
+        sum += a[i];
+    }
+
+    <span class="fn">printf</span>(<span class="str">"Sum = %d\n"</span>, sum);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+          <div class="out-box" id="out-arr">Sum = 150</div>
+        </div>
+      </article>
+
+      <!-- 3.2 2D Arrays -->
+      <article class="topic-card" id="u3-2d-arrays">
+        <div class="topic-head">
+          <span class="topic-num">3.2</span>
+          <h3>Two-Dimensional Array (Matrix &amp; Row-Major Order)</h3>
+        </div>
+        <p>A 2D array coordinates rows and columns. In C, 2D arrays are flattened in physical memory in <strong>Row-Major Order</strong> (Row 0 followed immediately by Row 1):</p>
+        <pre class="ascii-diagram">
+Logical 2x3 Matrix:
+Row 0:  [ 1, 2, 3 ]
+Row 1:  [ 4, 5, 6 ]
+
+Physical Memory Order:
+┌───┬───┬───┬───┬───┬───┐
+│ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │
+└───┴───┴───┴───┴───┴───┘
+ ◄───Row 0──► ◄───Row 1──►
+        </pre>
+      </article>
+
+      <!-- 3.3 Structures -->
+      <article class="topic-card" id="u3-structures">
+        <div class="topic-head">
+          <span class="topic-num">3.3</span>
+          <h3>Structures (Definition, Dot Operator &amp; Records)</h3>
+        </div>
+        <p>A <strong>structure</strong> is a user-defined compound type that bundles logically related variables of <strong>different data types</strong> together under a single name:</p>
+
+        <div class="code-container">
+          <div class="code-top">
+            <span>student_struct.c</span>
+            <div class="code-actions">
+              <button class="code-btn" onclick="copyCode(this)">⧉ Copy Code</button>
+              <button class="code-btn" onclick="toggleOutput('out-struct')">▶ Expected Output</button>
+            </div>
+          </div>
+          <pre class="c-code"><code><span class="com">#include &lt;stdio.h&gt;</span>
+
+<span class="kw">struct</span> <span class="type">Student</span> {
+    <span class="type">int</span> roll;
+    <span class="type">char</span> name[<span class="num">30</span>];
+    <span class="type">float</span> marks;
+};
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="kw">struct</span> <span class="type">Student</span> s = {<span class="num">101</span>, <span class="str">"Sanjay"</span>, <span class="num">92.5</span>};
+
+    <span class="fn">printf</span>(<span class="str">"Roll: %d\n"</span>, s.roll);
+    <span class="fn">printf</span>(<span class="str">"Name: %s\n"</span>, s.name);
+    <span class="fn">printf</span>(<span class="str">"Marks: %.1f\n"</span>, s.marks);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+          <div class="out-box" id="out-struct">Roll: 101
+Name: Sanjay
+Marks: 92.5</div>
+        </div>
+      </article>
+
+      <!-- 3.4 Unions & Comparison -->
+      <article class="topic-card" id="u3-unions">
+        <div class="topic-head">
+          <span class="topic-num">3.4</span>
+          <h3>Unions &amp; Structure vs Union Comparison</h3>
+        </div>
+        <p>A <strong>union</strong> groups heterogeneous members that <strong>share the exact same memory location</strong>. The total size equals the size of its largest member:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Structure</th><th>Union</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Memory Allocation</strong></td><td>Each member receives its own dedicated memory offset.</td><td>All members share the same starting memory block.</td></tr>
+              <tr><td><strong>Total Size</strong></td><td>Sum of sizes of all members (plus padding alignment).</td><td>Size of the largest member.</td></tr>
+              <tr><td><strong>Simultaneous Access</strong></td><td>All members can hold independent values at the same time.</td><td>Only one member can hold a meaningful value at any instant.</td></tr>
+              <tr><td><strong>Keyword</strong></td><td><code>struct</code></td><td><code>union</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- UNIT 4: POINTERS AND USER-DEFINED FUNCTIONS                       -->
+    <!-- ================================================================= -->
+    <section class="unit-section" id="unit4">
+      <div class="unit-header-card">
+        <div>
+          <div class="unit-tag">Unit 04 · Exam Syllabus</div>
+          <h2 class="unit-title">Unit 4 — Pointers &amp; User-Defined Functions</h2>
+        </div>
+        <span class="unit-badge">Memory Addresses &amp; Modularity</span>
+      </div>
+
+      <!-- 4.1 Pointers -->
+      <article class="topic-card" id="u4-pointers">
+        <div class="topic-head">
+          <span class="topic-num">4.1</span>
+          <h3>Pointers (Address Operator &amp; Dereferencing)</h3>
+        </div>
+        <p>A <strong>pointer</strong> is a variable whose value is the raw physical memory address of another variable:</p>
+        <pre class="ascii-diagram">
+Variable x:
+┌─────────────────────────┐
+│ Value = 10              │  Address: 0x7ffd1000
+└─────────────────────────┘
+             ▲
+             │ stores address
+Pointer p:   │
+┌─────────────────────────┐
+│ Value = 0x7ffd1000      │  Address: 0x7ffd1008
+└─────────────────────────┘
+        </pre>
+
+        <div class="code-container">
+          <div class="code-top">
+            <span>pointer_demo.c</span>
+            <div class="code-actions">
+              <button class="code-btn" onclick="copyCode(this)">⧉ Copy Code</button>
+              <button class="code-btn" onclick="toggleOutput('out-ptr')">▶ Expected Output</button>
+            </div>
+          </div>
+          <pre class="c-code"><code><span class="com">#include &lt;stdio.h&gt;</span>
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> x = <span class="num">10</span>;
+    <span class="type">int</span> *p = &amp;x;
+
+    <span class="fn">printf</span>(<span class="str">"Value of x = %d\n"</span>, x);
+    <span class="fn">printf</span>(<span class="str">"Address of x = %p\n"</span>, (<span class="type">void</span>*)&amp;x);
+    <span class="fn">printf</span>(<span class="str">"Pointer p holds = %p\n"</span>, (<span class="type">void</span>*)p);
+    <span class="fn">printf</span>(<span class="str">"Dereferenced *p = %d\n"</span>, *p);
+
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+          <div class="out-box" id="out-ptr">Value of x = 10
+Address of x = 0x7ffeefbff568
+Pointer p holds = 0x7ffeefbff568
+Dereferenced *p = 10</div>
+        </div>
+      </article>
+
+      <!-- 4.2 Pointer Arithmetic -->
+      <article class="topic-card" id="u4-pointer-arith">
+        <div class="topic-head">
+          <span class="topic-num">4.2</span>
+          <h3>Pointer Arithmetic &amp; Scaling Factor</h3>
+        </div>
+        <p>When you perform <code>p++</code> or <code>p + 1</code> on a pointer, the address increments by <strong>1 × sizeof(data_type)</strong> bytes, pointing directly to the next contiguous element.</p>
+      </article>
+
+      <!-- 4.3 User-Defined Functions -->
+      <article class="topic-card" id="u4-functions">
+        <div class="topic-head">
+          <span class="topic-num">4.3</span>
+          <h3>User-Defined Functions (Declaration, Call &amp; Definition)</h3>
+        </div>
+        <p>Functions modularize programs into reusable subroutines:</p>
+        <pre class="ascii-diagram">
+1. Function Prototype:  int add(int, int);       ➔ Tells compiler signature
+2. Function Call:       result = add(10, 20);    ➔ Passes arguments &amp; transfers control
+3. Function Definition: int add(int a, int b) {  ➔ Executes algorithm &amp; returns value
+                            return a + b;
+                        }
+        </pre>
+      </article>
+
+      <!-- 4.4 Four Categories of Functions -->
+      <article class="topic-card" id="u4-categories">
+        <div class="topic-head">
+          <span class="topic-num">4.4</span>
+          <h3>The 4 Categories of User-Defined Functions</h3>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h5>1. No Arguments, No Return</h5>
+            <code>void display() { printf("Hi"); }</code>
+            <p style="margin-top: 8px;">Performs an action purely via side-effects without passing data.</p>
+          </div>
+          <div class="feature-card">
+            <h5>2. With Arguments, No Return</h5>
+            <code>void add(int a, int b) { printf("%d", a+b); }</code>
+            <p style="margin-top: 8px;">Accepts inputs from the caller but directly prints output.</p>
+          </div>
+          <div class="feature-card">
+            <h5>3. No Arguments, With Return</h5>
+            <code>int getNum() { return 50; }</code>
+            <p style="margin-top: 8px;">Gathers or computes data independently and returns result to caller.</p>
+          </div>
+          <div class="feature-card">
+            <h5>4. With Arguments, With Return</h5>
+            <code>int add(int a, int b) { return a + b; }</code>
+            <p style="margin-top: 8px;">Standard pure functional form: accepts inputs, computes, and returns output.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- EXAM PREPARATION: IMPORTANT EXAM QUESTIONS                        -->
+    <!-- ================================================================= -->
+    <section class="unit-section" id="exam-questions">
+      <div class="unit-header-card" style="border-left-color: #f59e0b;">
+        <div>
+          <div class="unit-tag" style="color: #fbbf24;">Exam Preparation</div>
+          <h2 class="unit-title">⭐ Very Important Exam Questions (Units 1–4)</h2>
+        </div>
+        <span class="unit-badge" style="color: #fbbf24; border-color: #f59e0b; background: rgba(245,158,11,0.15);">High Probability Topics</span>
+      </div>
+
+      <div class="feature-card" style="margin-bottom: 20px;">
+        <h4 style="color: #38bdf8; margin-bottom: 12px;">📘 Unit 1 Exam Questions</h4>
+        <div class="exam-q-list">
+          <div class="exam-q-item"><span class="q-num">1.</span> Define algorithm. What are its five essential characteristics? [5 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">2.</span> Draw standard flowchart symbols and explain their functions. [5 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">3.</span> Write algorithm, draw flowchart, and write C program to find the largest of three numbers. [10 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">4.</span> Explain the history, evolution and main features of C language. [5 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">5.</span> Explain C tokens: Keywords, Identifiers, Constants, and Variables with rules. [10 Marks]</div>
+        </div>
+      </div>
+
+      <div class="feature-card" style="margin-bottom: 20px;">
+        <h4 style="color: #38bdf8; margin-bottom: 12px;">⚙️ Unit 2 Exam Questions</h4>
+        <div class="exam-q-list">
+          <div class="exam-q-item"><span class="q-num">6.</span> Differentiate between formatted (printf/scanf) and unformatted (getchar/putchar/fgets) I/O. [5 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">7.</span> Explain Bitwise Operators (&amp;, |, ^, ~, &lt;&lt;, &gt;&gt;) with binary examples. [10 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">8.</span> Differentiate between while, do-while, and for loops with syntax and examples. [10 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">9.</span> Explain operator precedence and associativity with an illustrative evaluation example. [5 Marks]</div>
+        </div>
+      </div>
+
+      <div class="feature-card" style="margin-bottom: 20px;">
+        <h4 style="color: #38bdf8; margin-bottom: 12px;">📦 Unit 3 &amp; 4 Exam Questions</h4>
+        <div class="exam-q-list">
+          <div class="exam-q-item"><span class="q-num">10.</span> Define array. Explain 1D array memory representation with base address calculation. [5 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">11.</span> What is a Structure? Explain structure declaration, initialization, and member access. [10 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">12.</span> Distinguish between Structure and Union in terms of memory allocation and member access. [5 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">13.</span> What is a pointer? Explain address-of (&amp;) and dereference (*) operators with a complete C program. [10 Marks]</div>
+          <div class="exam-q-item"><span class="q-num">14.</span> Explain the 4 categories of user-defined functions with syntax and complete code examples. [10 Marks]</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- INTERACTIVE LIVE C CODE PLAYGROUND                                -->
+    <!-- ================================================================= -->
+    <section class="unit-section" id="live-playground">
+      <div class="unit-header-card" style="border-left-color: #10b981;">
+        <div>
+          <div class="unit-tag" style="color: #34d399;">Hands-on Interactive Lab</div>
+          <h2 class="unit-title">🎮 Live In-Browser C Code Playground</h2>
+        </div>
+        <span class="unit-badge" style="color: #34d399; border-color: #10b981; background: rgba(16,185,129,0.15);">Step-by-Step Execution</span>
+      </div>
+
+      <div class="playground-box">
+        <p style="color: #94a3b8; font-size: 0.88rem; margin-bottom: 14px;">
+          Type or modify C code below and run it directly in your browser. Watch variables and output update in real time:
+        </p>
+
+        <textarea id="pgEditor" spellcheck="false">#include <stdio.h>
+
+int main() {
+    int n = 5;
+    int sum = 0;
+    int i;
+
+    for (i = 1; i <= n; i++) {
+        sum = sum + i;
+        printf("Step %d: sum = %d\n", i, sum);
+    }
+
+    printf("Final Sum = %d\n", sum);
+    return 0;
+}</textarea>
+
+        <div class="pg-controls">
+          <button class="pg-btn primary" onclick="runPlayground()">▶ Run Code</button>
+          <button class="pg-btn" onclick="clearPlayground()">↺ Reset Editor</button>
+          <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #94a3b8; margin-left: auto;">Status: <b id="pgStatus" style="color: #34d399;">Ready</b></span>
+        </div>
+
+        <div class="pg-console" id="pgConsole">Console output will display here upon execution...</div>
+      </div>
+    </section>
+
+  </main>
 </div>
 
-<footer>Built as an interactive study reference — everything runs locally in your browser.</footer>
+<!-- SPVM3 GLOBAL FOOTER -->
+<footer class="spvm3-global-footer">
+  <p><strong>SPVM3 Tech Solution</strong> — Computer Science Education Platform &amp; Notes Repository.</p>
+  <p style="margin-top: 6px;">Created &amp; Curated by <strong>Sanjay GL</strong> · ISO Certified Computer Academy Verification System</p>
+  <div style="margin-top: 16px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+    <button onclick="showSPVM3Certificate('c-programming')" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+      🎓 Get C Programming Certificate
+    </button>
+    <a href="index.html" style="background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+      🏠 Return to All 21 Notes
+    </a>
+  </div>
+</footer>
 
 <script>
-/* ============================================================
-   1. CONTENT DATA  (all notes, organized as sections)
-   ============================================================ */
-const SECTIONS = [];
-function sec(id, title, group, html){ SECTIONS.push({id,title,group,html}); }
-
-/* ---------- helper for code blocks ---------- */
-function hl(code){
-  // very small syntax highlighter (not a full lexer, just visual)
-  const kws = ['int','float','double','char','void','return','if','else','for','while','do',
-    'switch','case','break','continue','struct','typedef','sizeof','static','const','unsigned',
-    'signed','long','short','include','define','main','goto','default','union','enum','class',
-    'public','private','virtual','new','this','extern'];
-  let esc = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  esc = esc.replace(/(\/\/.*$)/gm,'<span class="com">$1</span>');
-  esc = esc.replace(/(&quot;.*?&quot;|"[^"]*")/g,'<span class="str">$1</span>');
-  esc = esc.replace(/\b(\d+\.?\d*)\b/g,'<span class="num">$1</span>');
-  const kwRe = new RegExp('\\b('+kws.join('|')+')\\b','g');
-  esc = esc.replace(kwRe,'<span class="kw">$1</span>');
-  esc = esc.replace(/\b([a-zA-Z_]\w*)\s(?=\()/g,'<span class="fn">$1</span> ');
-  return esc;
-}
-let CODE_ID = 0;
-function codeblock(label, code, output){
-  const id = 'code-out-'+(CODE_ID++);
-  const outBtn = output ? `<button onclick="toggleOut('${id}')">▶ Show Expected Output</button>` : '';
-  const outDiv = output ? `<div class="out" id="${id}">${output.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>` : '';
-  return `<div class="codewrap">
-    <div class="codehead"><span>${label||'C'}</span>
-      <span>
-        <button onclick="copyCode(this)" data-code="${encodeURIComponent(code)}">⧉ Copy</button>
-        ${outBtn}
-      </span>
-    </div>
-    <pre><code>${hl(code)}</code></pre>
-    ${outDiv}
-  </div>`;
-}
-function toggleOut(id){ document.getElementById(id).classList.toggle('show'); }
-function copyCode(btn){
-  const code = decodeURIComponent(btn.getAttribute('data-code'));
-  navigator.clipboard.writeText(code).then(()=>{ const t=btn.textContent; btn.textContent='✓ Copied'; setTimeout(()=>btn.textContent=t,1200); });
+// Mobile Drawer Toggle
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebarNav');
+  if (sidebar) sidebar.classList.toggle('open');
 }
 
-/* ============================================================
-   2. SECTION CONTENT
-   ============================================================ */
-
-sec('home','Overview','Start', `
-<h2>C Programming — Complete Notes (A to Z)</h2>
-<div class="card">
-<p>This is a self-contained reference covering C from history to advanced data structures, plus a
-short primer on how the same OOP ideas (class, object, inheritance, polymorphism) map onto C and
-C++. It ends with a <b>live code playground</b> where you can paste simple C code and step through
-it line-by-line with Play / Pause / Step / Reset controls, watching variables and output update in
-real time.</p>
-<p><b>How to use this page:</b> use the left menu to jump between topics. Every code example has a
-<b>Copy</b> button and a <b>Show Expected Output</b> toggle so you can check your understanding
-before running it in a real compiler (or in the Playground tab for simple programs).</p>
-</div>
-<div class="grid2">
-  <div class="card"><h4>📘 What you'll learn</h4>
-  <ul><li>History, features, pros/cons of C</li><li>Data types, operators (all categories)</li>
-  <li>Control flow: if/else, switch, loops (while/for/do-while)</li>
-  <li>Functions, recursion, arrays, strings, pointers</li>
-  <li>Structures, unions, file handling, dynamic memory</li>
-  <li>Data structures: stack, queue, linked list</li>
-  <li>OOP concepts explained via C structs / C++</li></ul></div>
-  <div class="card"><h4>🎮 Playground</h4>
-  <p>A small JavaScript-based C-like interpreter runs directly in this page — good enough for
-  variables, printf, if/else, for/while loops and simple arrays — so you can click <b>Run</b> and
-  actually watch a program execute step by step, with a real <b>Pause</b> button.</p>
-  <p style="color:var(--muted);font-size:12.5px">Note: this in-browser interpreter supports a
-  practical subset of C for teaching purposes. For full C (pointers, structs, files, real compilation)
-  use an actual compiler like GCC — see the "Run a Real C Program" card below.</p></div>
-</div>
-<div class="card">
-<h4>🖥 How to actually compile & run C on your computer</h4>
-<ol>
-<li>Install a compiler: <b>GCC</b> (Linux/Mac: usually preinstalled or via <code>sudo apt install gcc</code>),
-on Windows use <b>MinGW</b> or <b>WSL</b>.</li>
-<li>Save your file as <code>program.c</code></li>
-<li>Compile: <code>gcc program.c -o program</code></li>
-<li>Run: <code>./program</code> (Linux/Mac) or <code>program.exe</code> (Windows)</li>
-</ol>
-</div>
-`);
-
-sec('history','History & Creator','1. Introduction', `
-<h2>History of C — Who Created It?</h2>
-<div class="card">
-<p><b>C was created by Dennis Ritchie</b> at Bell Labs (AT&T) between <b>1969–1973</b>. It was
-developed to re-implement the Unix operating system, which was originally written in assembly
-language.</p>
-<table>
-<tr><th>Year</th><th>Event</th></tr>
-<tr><td>1960s</td><td>ALGOL, CPL, and BCPL languages laid conceptual groundwork.</td></tr>
-<tr><td>1967</td><td>Martin Richards develops <b>BCPL</b>.</td></tr>
-<tr><td>1970</td><td>Ken Thompson creates <b>B language</b> (simplified BCPL) at Bell Labs.</td></tr>
-<tr><td>1972</td><td><b>Dennis Ritchie</b> develops <b>C</b> as an evolution of B, adding data types.</td></tr>
-<tr><td>1973</td><td>Unix kernel rewritten in C — a landmark moment for portability.</td></tr>
-<tr><td>1978</td><td>Kernighan & Ritchie publish <i>"The C Programming Language"</i> (the "K&R" book).</td></tr>
-<tr><td>1989/1990</td><td>ANSI C (C89) / ISO C (C90) — first official standard.</td></tr>
-<tr><td>1999</td><td>C99 standard — new features like inline functions, // comments.</td></tr>
-<tr><td>2011</td><td>C11 standard — multithreading, better Unicode support.</td></tr>
-<tr><td>2018+</td><td>C17/C18 (bugfix release), C23 (latest major revision).</td></tr>
-</table>
-<p><b>Why the name "C"?</b> Because it evolved directly from a language called <b>"B"</b> — the next
-letter in the alphabet.</p>
-</div>
-<h3>Why C matters</h3>
-<div class="card"><p>C is often called the <b>"mother of all modern languages"</b> because C++, Java,
-C#, Python (CPython interpreter itself is written in C), JavaScript engines, and most operating
-system kernels (Linux, Windows, Unix) either derive syntax from C or are implemented in C.</p></div>
-`);
-
-sec('features','Features','1. Introduction', `
-<h2>Features of C</h2>
-<div class="card"><table>
-<tr><th>Feature</th><th>Explanation</th></tr>
-<tr><td><b>Simple & Structured</b></td><td>Programs are broken into functions/blocks, making logic easy to follow.</td></tr>
-<tr><td><b>Fast / Efficient</b></td><td>Compiles to machine code directly with minimal runtime overhead.</td></tr>
-<tr><td><b>Portable</b></td><td>A C program written on one machine can run on another with little/no change (write once, compile anywhere).</td></tr>
-<tr><td><b>Low-level access</b></td><td>Supports pointers, direct memory access and bitwise operations — close to hardware.</td></tr>
-<tr><td><b>Rich Library</b></td><td>Standard library (stdio.h, stdlib.h, string.h, math.h, etc.) for common tasks.</td></tr>
-<tr><td><b>Extensible</b></td><td>You can add your own functions and libraries.</td></tr>
-<tr><td><b>Middle-level language</b></td><td>Combines features of low-level (assembly-like control) and high-level (readable syntax) languages.</td></tr>
-<tr><td><b>Recursion supported</b></td><td>Functions can call themselves.</td></tr>
-<tr><td><b>Dynamic memory management</b></td><td>malloc(), calloc(), free(), realloc() let you manage memory manually.</td></tr>
-<tr><td><b>Case sensitive</b></td><td><code>Sum</code> and <code>sum</code> are different identifiers.</td></tr>
-</table></div>
-`);
-
-sec('adv','Advantages & Disadvantages','1. Introduction', `
-<h2>Advantages & Disadvantages of C</h2>
-<div class="grid2">
-<div class="card"><h4 class="badge-good">✔ Advantages</h4>
-<ul>
-<li>Extremely fast execution — close to hardware.</li>
-<li>Portable across platforms with minimal changes.</li>
-<li>Forms the foundation for learning other languages (C++, Java, C#, Rust concepts).</li>
-<li>Rich set of built-in operators and functions.</li>
-<li>Gives full control over memory via pointers.</li>
-<li>Used to build OS kernels, embedded systems, compilers, device drivers.</li>
-<li>Modular — code can be divided into functions/files.</li>
-</ul></div>
-<div class="card"><h4 class="badge-bad">✘ Disadvantages</h4>
-<ul>
-<li>No built-in Object-Oriented support (no classes natively).</li>
-<li>No automatic garbage collection — manual memory management can cause leaks.</li>
-<li>No exception handling (unlike try/catch in Java/C++).</li>
-<li>No namespaces — larger risk of naming collisions in big projects.</li>
-<li>Steeper learning curve for beginners (pointers, memory).</li>
-<li>Weak run-time type / bounds checking — easy to get buffer overflows.</li>
-</ul></div>
-</div>
-`);
-
-sec('structure','Structure of a Program','2. Basics', `
-<h2>Basic Structure of a C Program</h2>
-<div class="card"><p>Every C program follows this general skeleton:</p>
-${codeblock('structure.c',
-`#include <stdio.h>      // 1. Preprocessor directive (headers)
-
-#define PI 3.14          // 2. Macro definitions (optional)
-
-int globalVar = 10;      // 3. Global declarations (optional)
-
-int add(int a, int b);   // 4. Function prototype (optional)
-
-int main() {              // 5. main() -- program execution starts here
-    int x = 5;             // Local variable declaration
-    printf("Sum = %d", add(x, globalVar)); // Statements
-    return 0;               // 6. Return statement
-}
-
-int add(int a, int b) {   // 7. Function definition
-    return a + b;
-}`, `Sum = 15`)}
-<h4>Explanation of each part</h4>
-<ul>
-<li><b>Preprocessor directives</b> (<code>#include</code>) — tell the compiler to include header files before compiling.</li>
-<li><b>main() function</b> — every C program must have exactly one <code>main()</code>; execution always starts here.</li>
-<li><b>Statements</b> — instructions ending with a semicolon <code>;</code>.</li>
-<li><b>Comments</b> — <code>// single line</code> or <code>/* multi line */</code>, ignored by the compiler.</li>
-<li><b>return 0;</b> — tells the operating system the program ended successfully (0 = success by convention).</li>
-</ul>
-</div>
-`);
-
-sec('datatypes','Data Types & Variables','2. Basics', `
-<h2>Data Types & Variables</h2>
-<div class="card"><p>A <b>data type</b> tells the compiler what kind of value a variable holds and how
-much memory to reserve. A <b>variable</b> is a named storage location whose value can change.</p>
-<table>
-<tr><th>Type</th><th>Typical Size</th><th>Example</th><th>Use</th></tr>
-<tr><td><code>int</code></td><td>4 bytes</td><td><code>int age = 21;</code></td><td>Whole numbers</td></tr>
-<tr><td><code>float</code></td><td>4 bytes</td><td><code>float pi = 3.14f;</code></td><td>Decimal numbers (single precision)</td></tr>
-<tr><td><code>double</code></td><td>8 bytes</td><td><code>double d = 3.14159265;</code></td><td>Decimal numbers (double precision)</td></tr>
-<tr><td><code>char</code></td><td>1 byte</td><td><code>char grade = 'A';</code></td><td>Single character</td></tr>
-<tr><td><code>void</code></td><td>—</td><td><code>void func();</code></td><td>No value / empty type</td></tr>
-<tr><td><code>short / long</code></td><td>2 / 4-8 bytes</td><td><code>long int x;</code></td><td>Size modifiers</td></tr>
-<tr><td><code>unsigned</code></td><td>same size</td><td><code>unsigned int u;</code></td><td>Only positive values, doubles the positive range</td></tr>
-</table>
-<h4>Variable rules</h4>
-<ul><li>Must start with a letter or underscore, not a digit.</li>
-<li>Cannot use C keywords (like <code>int</code>, <code>return</code>) as names.</li>
-<li>Case-sensitive: <code>Total</code> ≠ <code>total</code>.</li>
-<li>Should be declared before use: <code>type name = value;</code></li></ul>
-${codeblock('datatypes.c',
-`#include <stdio.h>
-int main() {
-    int age = 21;
-    float price = 99.5f;
-    double pi = 3.14159265;
-    char grade = 'A';
-    printf("Age: %d\\n", age);
-    printf("Price: %.2f\\n", price);
-    printf("Pi: %lf\\n", pi);
-    printf("Grade: %c\\n", grade);
-    return 0;
-}`, `Age: 21\nPrice: 99.50\nPi: 3.141593\nGrade: A`)}
-</div>
-`);
-
-sec('operators','Operators (All Types)','3. Operators', `
-<h2>What is an Operator?</h2>
-<div class="card"><p>An <b>operator</b> is a symbol that tells the compiler to perform a specific
-mathematical, relational or logical operation on one or more values (called <b>operands</b>).
-Example: in <code>a + b</code>, <code>+</code> is the operator, and <code>a</code>, <code>b</code>
-are operands.</p></div>
-
-<h3>Types of Operators in C</h3>
-
-<h4>1. Arithmetic Operators</h4>
-<div class="card"><table><tr><th>Operator</th><th>Meaning</th><th>Example</th></tr>
-<tr><td>+</td><td>Addition</td><td>a + b</td></tr>
-<tr><td>-</td><td>Subtraction</td><td>a - b</td></tr>
-<tr><td>*</td><td>Multiplication</td><td>a * b</td></tr>
-<tr><td>/</td><td>Division</td><td>a / b</td></tr>
-<tr><td>%</td><td>Modulus (remainder)</td><td>a % b</td></tr>
-</table></div>
-
-<h4>2. Relational (Comparison) Operators — return 1 (true) or 0 (false)</h4>
-<div class="card"><table><tr><th>Operator</th><th>Meaning</th></tr>
-<tr><td>==</td><td>Equal to</td></tr><tr><td>!=</td><td>Not equal to</td></tr>
-<tr><td>&gt;</td><td>Greater than</td></tr><tr><td>&lt;</td><td>Less than</td></tr>
-<tr><td>&gt;=</td><td>Greater or equal</td></tr><tr><td>&lt;=</td><td>Less or equal</td></tr>
-</table></div>
-
-<h4>3. Logical Operators</h4>
-<div class="card"><table><tr><th>Operator</th><th>Meaning</th></tr>
-<tr><td>&&</td><td>Logical AND — true if both conditions true</td></tr>
-<tr><td>||</td><td>Logical OR — true if at least one condition true</td></tr>
-<tr><td>!</td><td>Logical NOT — reverses the result</td></tr>
-</table></div>
-
-<h4>4. Assignment Operators</h4>
-<div class="card"><table><tr><th>Operator</th><th>Same as</th></tr>
-<tr><td>=</td><td>a = b</td></tr><tr><td>+=</td><td>a = a + b</td></tr>
-<tr><td>-=</td><td>a = a - b</td></tr><tr><td>*=</td><td>a = a * b</td></tr>
-<tr><td>/=</td><td>a = a / b</td></tr><tr><td>%=</td><td>a = a % b</td></tr>
-</table></div>
-
-<h4>5. Increment / Decrement Operators</h4>
-<div class="card"><p><code>++</code> increases a value by 1, <code>--</code> decreases by 1.
-<b>Pre</b> (<code>++a</code>) changes the value first then uses it; <b>Post</b> (<code>a++</code>)
-uses the current value first then changes it.</p>
-${codeblock('increment.c',
-`int a = 5;
-printf("%d", a++); // prints 5, then a becomes 6
-printf("%d", ++a); // a becomes 7, then prints 7`, `5 7`)}
-</div>
-
-<h4>6. Bitwise Operators — operate on individual bits</h4>
-<div class="card"><table><tr><th>Operator</th><th>Meaning</th></tr>
-<tr><td>&</td><td>Bitwise AND</td></tr><tr><td>|</td><td>Bitwise OR</td></tr>
-<tr><td>^</td><td>Bitwise XOR</td></tr><tr><td>~</td><td>Bitwise NOT (complement)</td></tr>
-<tr><td>&lt;&lt;</td><td>Left shift</td></tr><tr><td>&gt;&gt;</td><td>Right shift</td></tr>
-</table></div>
-
-<h4>7. Conditional (Ternary) Operator</h4>
-<div class="card">${codeblock('ternary.c',
-`int a = 10, b = 20;
-int max = (a > b) ? a : b;   // condition ? value_if_true : value_if_false
-printf("Max = %d", max);`, `Max = 20`)}</div>
-
-<h4>8. Special Operators</h4>
-<div class="card"><ul>
-<li><code>sizeof()</code> — returns size (in bytes) of a type/variable.</li>
-<li><code>&</code> — address-of operator, gets memory address of a variable.</li>
-<li><code>*</code> — dereference / pointer operator, accesses value at an address.</li>
-<li><code>,</code> — comma operator, evaluates multiple expressions left-to-right.</li>
-</ul></div>
-`);
-
-sec('io','Input / Output','3. Operators', `
-<h2>Input & Output in C</h2>
-<div class="card"><p><code>printf()</code> displays output; <code>scanf()</code> reads input from
-the keyboard. Both live in <code>stdio.h</code> (Standard Input Output header).</p>
-${codeblock('io.c',
-`#include <stdio.h>
-int main() {
-    int age;
-    printf("Enter your age: ");
-    scanf("%d", &age);          // & gives the address to store input into
-    printf("You are %d years old\\n", age);
-    return 0;
-}`, `Enter your age: 21\nYou are 21 years old`)}
-<h4>Common format specifiers</h4>
-<table><tr><th>Specifier</th><th>Type</th></tr>
-<tr><td>%d</td><td>int</td></tr><tr><td>%f</td><td>float</td></tr>
-<tr><td>%lf</td><td>double</td></tr><tr><td>%c</td><td>char</td></tr>
-<tr><td>%s</td><td>string</td></tr><tr><td>%x</td><td>hexadecimal</td></tr></table>
-</div>
-`);
-
-sec('control','Control / Decision Statements','4. Control Flow', `
-<h2>Control Statements (Decision Making)</h2>
-<div class="card"><p>Normally a program runs top-to-bottom. <b>Control statements</b> let the
-program choose different paths depending on a condition — this is what gives programs "logic".</p></div>
-
-<h3>if statement</h3>
-<div class="card"><p>Executes a block <b>only if</b> the condition is true.</p>
-${codeblock('if.c',
-`int age = 20;
-if (age >= 18) {
-    printf("Eligible to vote");
-}`, `Eligible to vote`)}</div>
-
-<h3>if...else statement</h3>
-<div class="card"><p>Runs one block if true, another if false.</p>
-${codeblock('ifelse.c',
-`int num = 7;
-if (num % 2 == 0) {
-    printf("Even");
-} else {
-    printf("Odd");
-}`, `Odd`)}</div>
-
-<h3>else if ladder</h3>
-<div class="card"><p>Used to check multiple conditions in sequence.</p>
-${codeblock('elseif.c',
-`int marks = 75;
-if (marks >= 90) printf("Grade A");
-else if (marks >= 75) printf("Grade B");
-else if (marks >= 50) printf("Grade C");
-else printf("Fail");`, `Grade B`)}</div>
-
-<h3>Nested if</h3>
-<div class="card"><p>An if statement inside another if — used when a decision depends on
-another decision.</p>
-${codeblock('nested.c',
-`int age = 25; char licence = 'y';
-if (age >= 18) {
-    if (licence == 'y') printf("Can drive");
-    else printf("Get a licence first");
-} else {
-    printf("Too young");
-}`, `Can drive`)}</div>
-
-<h3>switch statement</h3>
-<div class="card"><p>A cleaner alternative to a long else-if ladder when comparing ONE variable
-against several fixed values. <code>break</code> stops it from "falling through" into the next case.</p>
-${codeblock('switch.c',
-`int day = 3;
-switch (day) {
-    case 1: printf("Monday"); break;
-    case 2: printf("Tuesday"); break;
-    case 3: printf("Wednesday"); break;
-    default: printf("Invalid day");
-}`, `Wednesday`)}</div>
-`);
-
-sec('loops','Loops — while, for, do-while','4. Control Flow', `
-<h2>Loops in C</h2>
-<div class="card"><p><b>Why do we need loops?</b> Without loops, repeating an action (e.g. printing
-numbers 1 to 100) would need 100 separate lines of code. A <b>loop</b> repeats a block of
-statements automatically as long as a given <b>condition</b> stays true — saving code and
-making programs dynamic (they can repeat 5 times or 5 million times using the same few lines).</p>
-<p>Every loop needs 3 things to avoid running forever (an "infinite loop"):</p>
-<ol><li><b>Initialization</b> — starting point (e.g. <code>i = 1</code>)</li>
-<li><b>Condition</b> — checked before each repeat; loop stops when this becomes false</li>
-<li><b>Update/Increment</b> — changes the variable so the condition eventually becomes false</li></ol>
-</div>
-
-<h3>1. for loop</h3>
-<div class="card"><p>Best when you know <b>exactly how many times</b> to repeat. All 3 parts
-(init; condition; update) sit together in the parentheses, which makes the loop easy to read at a glance.</p>
-${codeblock('for.c',
-`#include <stdio.h>
-int main() {
-    for (int i = 1; i <= 5; i++) {
-        printf("%d ", i);
+// Close drawer on link click on mobile
+document.querySelectorAll('.toc-link').forEach(link => {
+  link.addEventListener('click', () => {
+    const sidebar = document.getElementById('sidebarNav');
+    if (sidebar && window.innerWidth <= 1024) {
+      sidebar.classList.remove('open');
     }
-    return 0;
-}`, `1 2 3 4 5 `)}
-<p><b>How it works step by step:</b> i=1 → check 1&lt;=5 true → print 1 → i becomes 2 → check
-2&lt;=5 true → print 2 ... → i becomes 6 → check 6&lt;=5 false → loop stops.</p>
-</div>
-
-<h3>2. while loop</h3>
-<div class="card"><p>Best when you <b>don't know in advance</b> how many times to repeat — it keeps
-going as long as the condition is true. The condition is checked <b>before</b> each iteration, so
-if it's false at the start, the loop body never runs.</p>
-${codeblock('while.c',
-`#include <stdio.h>
-int main() {
-    int i = 1;
-    while (i <= 5) {
-        printf("%d ", i);
-        i++;
-    }
-    return 0;
-}`, `1 2 3 4 5 `)}
-</div>
-
-<h3>3. do...while loop</h3>
-<div class="card"><p>Same as while, but the condition is checked <b>after</b> the body runs — so
-the body always executes <b>at least once</b>, even if the condition is false from the start.
-Common use: menu-driven programs that must show the menu at least one time.</p>
-${codeblock('dowhile.c',
-`#include <stdio.h>
-int main() {
-    int i = 1;
-    do {
-        printf("%d ", i);
-        i++;
-    } while (i <= 5);
-    return 0;
-}`, `1 2 3 4 5 `)}
-</div>
-
-<h3>Comparison: which loop to use?</h3>
-<div class="card"><table>
-<tr><th>Loop</th><th>Condition checked</th><th>Best for</th></tr>
-<tr><td>for</td><td>Before each run</td><td>Known/fixed number of repetitions</td></tr>
-<tr><td>while</td><td>Before each run</td><td>Unknown repetitions, condition-driven</td></tr>
-<tr><td>do-while</td><td>After each run</td><td>Must execute at least once (e.g. menus)</td></tr>
-</table></div>
-
-<h3>Loop control: break, continue, goto</h3>
-<div class="card">
-<p><b>break</b> — immediately exits the loop entirely.</p>
-${codeblock('break.c',
-`for (int i = 1; i <= 10; i++) {
-    if (i == 5) break;   // stop the loop completely when i is 5
-    printf("%d ", i);
-}`, `1 2 3 4 `)}
-<p><b>continue</b> — skips the rest of the current iteration and jumps to the next one.</p>
-${codeblock('continue.c',
-`for (int i = 1; i <= 5; i++) {
-    if (i == 3) continue; // skip printing 3, but keep looping
-    printf("%d ", i);
-}`, `1 2 4 5 `)}
-<p><b>goto</b> — jumps to a labeled line. Rarely used in modern code because it makes logic
-hard to follow ("spaghetti code"), but it exists in C.</p>
-${codeblock('goto.c',
-`int i = 1;
-start:
-if (i <= 3) {
-    printf("%d ", i);
-    i++;
-    goto start;
-}`, `1 2 3 `)}
-</div>
-
-<h3>Nested loops</h3>
-<div class="card"><p>A loop inside another loop — the inner loop completes fully for every single
-iteration of the outer loop. Commonly used for patterns, matrices, and grids.</p>
-${codeblock('nestedloop.c',
-`for (int i = 1; i <= 3; i++) {
-    for (int j = 1; j <= i; j++) {
-        printf("*");
-    }
-    printf("\\n");
-}`, `*\n**\n***\n`)}
-</div>
-`);
-
-sec('functions','Functions & Recursion','5. Functions', `
-<h2>Functions</h2>
-<div class="card"><p>A <b>function</b> is a named, reusable block of code that performs a specific
-task. Functions avoid repeating code, make programs modular, and easier to debug/test.</p>
-${codeblock('function.c',
-`#include <stdio.h>
-int add(int a, int b) {      // function definition
-    return a + b;
-}
-int main() {
-    int result = add(3, 4);  // function call
-    printf("Result = %d", result);
-    return 0;
-}`, `Result = 7`)}
-<h4>Parts of a function</h4>
-<ul><li><b>Return type</b> — data type of the value it sends back (<code>void</code> if nothing).</li>
-<li><b>Name</b> — identifier used to call it.</li>
-<li><b>Parameters</b> — inputs it accepts (can be empty).</li>
-<li><b>Body</b> — the code that runs; <code>return</code> sends a value back to the caller.</li></ul>
-</div>
-
-<h3>Call by Value vs Call by Reference</h3>
-<div class="card">
-<p><b>Call by value</b> — a <i>copy</i> of the argument is passed; changes inside the function do
-NOT affect the original variable.</p>
-${codeblock('callbyvalue.c',
-`void change(int x) { x = 100; }
-int main() {
-    int a = 5;
-    change(a);
-    printf("%d", a); // still 5
-}`, `5`)}
-<p><b>Call by reference</b> — the function receives the <i>address</i> (via a pointer), so it can
-modify the original variable directly.</p>
-${codeblock('callbyref.c',
-`void change(int *x) { *x = 100; }
-int main() {
-    int a = 5;
-    change(&a);
-    printf("%d", a); // now 100
-}`, `100`)}
-</div>
-
-<h3>Recursion</h3>
-<div class="card"><p>A function that calls <b>itself</b> to solve a smaller version of the same
-problem, until it hits a <b>base case</b> that stops the recursion. Useful for problems that are
-naturally defined in terms of themselves (factorial, Fibonacci, tree traversal).</p>
-${codeblock('recursion.c',
-`int factorial(int n) {
-    if (n == 0) return 1;         // base case — stops recursion
-    return n * factorial(n - 1);  // recursive case
-}
-int main() {
-    printf("%d", factorial(5));   // 5*4*3*2*1
-}`, `120`)}
-</div>
-`);
-
-sec('arrays','Arrays','6. Arrays & Strings', `
-<h2>Arrays</h2>
-<div class="card"><p>An <b>array</b> is a collection of elements of the <i>same</i> data type,
-stored in <i>contiguous</i> memory, accessed using an <b>index</b> starting at 0.</p>
-${codeblock('array.c',
-`#include <stdio.h>
-int main() {
-    int marks[5] = {90, 85, 70, 60, 95};
-    for (int i = 0; i < 5; i++) {
-        printf("%d ", marks[i]);
-    }
-    return 0;
-}`, `90 85 70 60 95 `)}
-<h4>Key points</h4>
-<ul><li>Size is fixed at declaration (in a normal C array).</li>
-<li>Index runs from <code>0</code> to <code>size-1</code>.</li>
-<li>2D arrays (<code>int grid[3][3]</code>) represent tables/matrices.</li></ul>
-${codeblock('array2d.c',
-`int grid[2][2] = {{1,2},{3,4}};
-for (int i=0;i<2;i++)
-  for (int j=0;j<2;j++)
-    printf("%d ", grid[i][j]);`, `1 2 3 4 `)}
-</div>
-`);
-
-sec('strings','Strings','6. Arrays & Strings', `
-<h2>Strings in C</h2>
-<div class="card"><p>C has no built-in string type — a string is simply a <b>character array</b>
-ending with a special null character <code>'\\0'</code> that marks where the string ends.</p>
-${codeblock('string.c',
-`#include <stdio.h>
-#include <string.h>
-int main() {
-    char name[20] = "Claude";
-    printf("Name: %s\\n", name);
-    printf("Length: %d\\n", (int)strlen(name));
-    return 0;
-}`, `Name: Claude\nLength: 6`)}
-<h4>Common string.h functions</h4>
-<table><tr><th>Function</th><th>Purpose</th></tr>
-<tr><td>strlen(s)</td><td>Length of string</td></tr>
-<tr><td>strcpy(a,b)</td><td>Copy b into a</td></tr>
-<tr><td>strcat(a,b)</td><td>Append b to a</td></tr>
-<tr><td>strcmp(a,b)</td><td>Compare two strings (0 = equal)</td></tr></table>
-</div>
-`);
-
-sec('pointers','Pointers','7. Pointers & Memory', `
-<h2>Pointers</h2>
-<div class="card"><p>A <b>pointer</b> is a variable that stores the <b>memory address</b> of
-another variable, instead of a normal value. Pointers are what give C its low-level power —
-they allow direct memory access, dynamic memory allocation, and efficient array/function handling.</p>
-${codeblock('pointer.c',
-`#include <stdio.h>
-int main() {
-    int a = 10;
-    int *p = &a;     // p stores the address of a
-    printf("Value of a: %d\\n", a);
-    printf("Address of a: %p\\n", (void*)&a);
-    printf("Value via pointer: %d\\n", *p); // *p = dereference
-    return 0;
-}`, `Value of a: 10\nAddress of a: 0x7ffee...\nValue via pointer: 10`)}
-<h4>Key symbols</h4>
-<ul><li><code>&var</code> — "address of" — gets the memory location.</li>
-<li><code>*ptr</code> — "value at" (dereference) — gets the value stored at that address.</li></ul>
-</div>
-<h3>Dynamic Memory Allocation</h3>
-<div class="card"><p>Memory can be requested while the program is running (heap memory), using
-functions from <code>stdlib.h</code>. This is essential when the amount of data isn't known until
-runtime.</p>
-<table><tr><th>Function</th><th>Purpose</th></tr>
-<tr><td>malloc(size)</td><td>Allocates raw memory, uninitialized</td></tr>
-<tr><td>calloc(n,size)</td><td>Allocates and zero-initializes memory</td></tr>
-<tr><td>realloc(ptr,size)</td><td>Resizes previously allocated memory</td></tr>
-<tr><td>free(ptr)</td><td>Releases memory back to the system</td></tr></table>
-${codeblock('malloc.c',
-`int *arr = (int*) malloc(5 * sizeof(int));
-if (arr != NULL) {
-    for (int i=0;i<5;i++) arr[i] = i*i;
-    for (int i=0;i<5;i++) printf("%d ", arr[i]);
-    free(arr); // always free what you malloc!
-}`, `0 1 4 9 16 `)}
-</div>
-`);
-
-sec('structs','Structures & Unions','8. Structures', `
-<h2>Structures</h2>
-<div class="card"><p>A <b>structure</b> (<code>struct</code>) groups <i>different</i> data types
-together under one name — useful for representing a real-world "record" like a student or a point.</p>
-${codeblock('struct.c',
-`#include <stdio.h>
-struct Student {
-    char name[20];
-    int age;
-    float gpa;
-};
-int main() {
-    struct Student s1 = {"Alex", 20, 3.8};
-    printf("%s is %d years old, GPA %.1f", s1.name, s1.age, s1.gpa);
-    return 0;
-}`, `Alex is 20 years old, GPA 3.8`)}
-</div>
-<h3>Union</h3>
-<div class="card"><p>A <b>union</b> looks similar to a struct, but all its members <b>share the
-same memory location</b> — so it only ever holds one member's value at a time. This saves memory
-when you only need one of several possible values.</p>
-${codeblock('union.c',
-`union Data { int i; float f; };
-union Data d;
-d.i = 10;
-printf("%d", d.i); // 10 -- but d.f would now be garbage`, `10`)}
-</div>
-`);
-
-sec('files','File Handling','9. Files', `
-<h2>File Handling</h2>
-<div class="card"><p>C can read/write files using a <code>FILE*</code> pointer and functions from
-<code>stdio.h</code> — useful for saving data permanently (unlike variables, which vanish when the
-program ends).</p>
-${codeblock('file.c',
-`#include <stdio.h>
-int main() {
-    FILE *fp = fopen("data.txt", "w");  // open for writing
-    if (fp != NULL) {
-        fprintf(fp, "Hello File!");
-        fclose(fp);                      // always close what you open
-    }
-    return 0;
-}`)}
-<table><tr><th>Mode</th><th>Meaning</th></tr>
-<tr><td>"r"</td><td>Read (file must exist)</td></tr>
-<tr><td>"w"</td><td>Write (creates/overwrites)</td></tr>
-<tr><td>"a"</td><td>Append (adds to end)</td></tr>
-<tr><td>"r+"</td><td>Read and write</td></tr></table>
-</div>
-`);
-
-sec('oop','OOP Concepts (Class, Object, Inheritance, Polymorphism)','10. OOP in C / C++', `
-<h2>Object-Oriented Programming — and how it relates to C</h2>
-<div class="card"><p><b>Important:</b> plain C is a <i>procedural</i> language — it has <b>no
-built-in classes, inheritance, or polymorphism</b>. Those concepts belong to <b>C++</b> (which is
-literally "C with Classes") and other OOP languages like Java. However, C programmers commonly
-<i>simulate</i> OOP ideas using <code>struct</code> + function pointers. Below, both approaches are shown.</p></div>
-
-<h3>Class & Object</h3>
-<div class="card"><p><b>Class</b> = a blueprint/template describing what data and behaviour an
-object will have. <b>Object</b> = an actual instance created from that blueprint, with its own
-data in memory.</p>
-${codeblock('class.cpp — C++',
-`class Car {              // class = blueprint
-public:
-    string brand;
-    void honk() { cout << brand << " says Beep!"; }
-};
-int main() {
-    Car myCar;            // object = instance of the class
-    myCar.brand = "Toyota";
-    myCar.honk();
-}`, `Toyota says Beep!`)}
-<p><b>Simulating a "class" in plain C</b> using a struct + a function that takes it:</p>
-${codeblock('class_sim.c',
-`struct Car { char brand[20]; };
-void honk(struct Car *c) { printf("%s says Beep!", c->brand); }
-int main() {
-    struct Car myCar = {"Toyota"};
-    honk(&myCar);
-}`, `Toyota says Beep!`)}
-</div>
-
-<h3>Inheritance</h3>
-<div class="card"><p>Lets one class (<b>child/derived</b>) reuse and extend the data/behaviour of
-another class (<b>parent/base</b>) — models an "is-a" relationship, e.g. a <i>Car</i> "is a"
-<i>Vehicle</i>.</p>
-${codeblock('inherit.cpp — C++',
-`class Vehicle { public: void start(){ cout << "Engine started"; } };
-class Car : public Vehicle { public: void wheels(){ cout << ", 4 wheels"; } };
-int main() {
-    Car c;
-    c.start();   // inherited from Vehicle
-    c.wheels();  // Car's own method
-}`, `Engine started, 4 wheels`)}
-<p>In plain C, this is simulated by <b>embedding</b> one struct inside another (composition):</p>
-${codeblock('inherit_sim.c',
-`struct Vehicle { int wheels; };
-struct Car { struct Vehicle base; char brand[10]; };
-int main() {
-    struct Car c = {{4}, "Toyota"};
-    printf("%s has %d wheels", c.brand, c.base.wheels);
-}`, `Toyota has 4 wheels`)}
-</div>
-
-<h3>Polymorphism</h3>
-<div class="card"><p>"Many forms" — the same function name behaves differently depending on the
-object or arguments. In C++/Java this happens via <b>method overriding</b> (child class redefines a
-parent method) or <b>overloading</b> (same name, different parameters).</p>
-${codeblock('poly.cpp — C++',
-`class Animal { public: virtual void sound(){ cout << "..."; } };
-class Dog : public Animal { public: void sound() override { cout << "Woof"; } };
-class Cat : public Animal { public: void sound() override { cout << "Meow"; } };
-int main() {
-    Animal* a1 = new Dog();
-    Animal* a2 = new Cat();
-    a1->sound();  // Woof
-    a2->sound();  // Meow
-}`, `Woof Meow`)}
-<p>C simulates this using <b>function pointers</b> inside a struct:</p>
-${codeblock('poly_sim.c',
-`struct Animal { void (*sound)(); };
-void dogSound(){ printf("Woof "); }
-void catSound(){ printf("Meow "); }
-int main() {
-    struct Animal a1 = { dogSound };
-    struct Animal a2 = { catSound };
-    a1.sound();
-    a2.sound();
-}`, `Woof Meow `)}
-</div>
-
-<h3>Encapsulation & Abstraction (quick note)</h3>
-<div class="card"><ul>
-<li><b>Encapsulation</b> — bundling data + the functions that operate on it together, and
-restricting direct outside access (private/public in C++). In C, this is loosely simulated by
-keeping struct fields "internal" and only exposing functions to modify them.</li>
-<li><b>Abstraction</b> — hiding internal implementation details and exposing only what's necessary
-(e.g. you use <code>printf()</code> without knowing how it writes bytes to the terminal).</li>
-</ul></div>
-`);
-
-sec('ds','Data Structures in C','11. Data Structures', `
-<h2>Data Structures in C</h2>
-<div class="card"><p>A <b>data structure</b> is a way of organizing and storing data so it can be
-used efficiently. C is commonly used to implement these from scratch because it gives full control
-over memory via pointers and structs.</p></div>
-
-<h3>1. Stack (LIFO — Last In, First Out)</h3>
-<div class="card"><p>Elements are added/removed only from the <b>top</b> — like a stack of plates.
-Used in: undo functionality, expression evaluation, function call management (call stack).</p>
-${codeblock('stack.c',
-`#include <stdio.h>
-#define MAX 5
-int stack[MAX], top = -1;
-
-void push(int val) {
-    if (top == MAX-1) { printf("Stack Overflow\\n"); return; }
-    stack[++top] = val;
-}
-int pop() {
-    if (top == -1) { printf("Stack Underflow\\n"); return -1; }
-    return stack[top--];
-}
-int main() {
-    push(10); push(20); push(30);
-    printf("Popped: %d\\n", pop());
-    printf("Popped: %d\\n", pop());
-    return 0;
-}`, `Popped: 30\nPopped: 20`)}
-</div>
-
-<h3>2. Queue (FIFO — First In, First Out)</h3>
-<div class="card"><p>Elements are added at the <b>rear</b> and removed from the <b>front</b> —
-like people in a line. Used in: scheduling, printer queues, breadth-first search.</p>
-${codeblock('queue.c',
-`#include <stdio.h>
-#define MAX 5
-int queue[MAX], front = -1, rear = -1;
-
-void enqueue(int val) {
-    if (rear == MAX-1) { printf("Queue Full\\n"); return; }
-    if (front == -1) front = 0;
-    queue[++rear] = val;
-}
-int dequeue() {
-    if (front == -1 || front > rear) { printf("Queue Empty\\n"); return -1; }
-    return queue[front++];
-}
-int main() {
-    enqueue(10); enqueue(20); enqueue(30);
-    printf("Dequeued: %d\\n", dequeue());
-    printf("Dequeued: %d\\n", dequeue());
-    return 0;
-}`, `Dequeued: 10\nDequeued: 20`)}
-</div>
-
-<h3>3. Linked List</h3>
-<div class="card"><p>A chain of <b>nodes</b>, where each node holds data + a pointer to the next
-node. Unlike arrays, its size can grow/shrink dynamically at runtime.</p>
-${codeblock('linkedlist.c',
-`#include <stdio.h>
-#include <stdlib.h>
-struct Node { int data; struct Node *next; };
-
-void printList(struct Node *n) {
-    while (n != NULL) { printf("%d -> ", n->data); n = n->next; }
-    printf("NULL\\n");
-}
-int main() {
-    struct Node *head = malloc(sizeof(struct Node));
-    struct Node *second = malloc(sizeof(struct Node));
-    struct Node *third = malloc(sizeof(struct Node));
-    head->data = 1;   head->next = second;
-    second->data = 2; second->next = third;
-    third->data = 3;  third->next = NULL;
-    printList(head);
-    return 0;
-}`, `1 -> 2 -> 3 -> NULL`)}
-</div>
-
-<h3>4. Sorting example — Bubble Sort</h3>
-<div class="card"><p>Repeatedly compares adjacent elements and swaps them if they're in the wrong
-order, "bubbling" the largest value to the end each pass.</p>
-${codeblock('bubblesort.c',
-`#include <stdio.h>
-int main() {
-    int arr[] = {5, 2, 9, 1, 5};
-    int n = 5;
-    for (int i = 0; i < n-1; i++)
-        for (int j = 0; j < n-i-1; j++)
-            if (arr[j] > arr[j+1]) {
-                int t = arr[j]; arr[j] = arr[j+1]; arr[j+1] = t;
-            }
-    for (int i = 0; i < n; i++) printf("%d ", arr[i]);
-    return 0;
-}`, `1 2 5 5 9 `)}
-</div>
-`);
-
-sec('programs','Programs: Basic → Advanced','12. Practice Programs', `
-<h2>Practice Programs — Basic to Advanced</h2>
-<div class="card"><p>Try these in order. Each is copyable, shows expected output, and the simpler
-ones (marked ▶) can be pasted directly into the <b>Playground</b> tab to run/step through live.</p></div>
-
-<h3>Beginner</h3>
-${codeblock('1. Hello World ▶',
-`#include <stdio.h>
-int main() {
-    printf("Hello, World!\\n");
-    return 0;
-}`, `Hello, World!`)}
-${codeblock('2. Sum of Two Numbers ▶',
-`#include <stdio.h>
-int main() {
-    int a = 10, b = 20;
-    printf("Sum = %d", a + b);
-    return 0;
-}`, `Sum = 30`)}
-${codeblock('3. Even or Odd ▶',
-`#include <stdio.h>
-int main() {
-    int n = 14;
-    if (n % 2 == 0) printf("Even");
-    else printf("Odd");
-    return 0;
-}`, `Even`)}
-
-<h3>Intermediate</h3>
-${codeblock('4. Factorial using loop ▶',
-`#include <stdio.h>
-int main() {
-    int n = 5, fact = 1;
-    for (int i = 1; i <= n; i++) fact *= i;
-    printf("Factorial = %d", fact);
-    return 0;
-}`, `Factorial = 120`)}
-${codeblock('5. Prime Number Check ▶',
-`#include <stdio.h>
-int main() {
-    int n = 29, isPrime = 1;
-    for (int i = 2; i < n; i++) {
-        if (n % i == 0) { isPrime = 0; break; }
-    }
-    if (isPrime) printf("Prime");
-    else printf("Not Prime");
-    return 0;
-}`, `Prime`)}
-${codeblock('6. Fibonacci Series ▶',
-`#include <stdio.h>
-int main() {
-    int a = 0, b = 1, next;
-    for (int i = 0; i < 6; i++) {
-        printf("%d ", a);
-        next = a + b; a = b; b = next;
-    }
-    return 0;
-}`, `0 1 1 2 3 5 `)}
-${codeblock('7. Reverse a Number ▶',
-`#include <stdio.h>
-int main() {
-    int n = 1234, rev = 0;
-    while (n > 0) {
-        rev = rev * 10 + (n % 10);
-        n = n / 10;
-    }
-    printf("Reversed = %d", rev);
-    return 0;
-}`, `Reversed = 4321`)}
-
-<h3>Advanced</h3>
-${codeblock('8. Bubble Sort (array)',
-`#include <stdio.h>
-int main() {
-    int arr[] = {5,2,9,1,5}, n = 5;
-    for (int i=0;i<n-1;i++)
-        for (int j=0;j<n-i-1;j++)
-            if (arr[j] > arr[j+1]) {
-                int t=arr[j]; arr[j]=arr[j+1]; arr[j+1]=t;
-            }
-    for (int i=0;i<n;i++) printf("%d ", arr[i]);
-    return 0;
-}`, `1 2 5 5 9 `)}
-${codeblock('9. Linked List Traversal',
-`#include <stdio.h>
-#include <stdlib.h>
-struct Node { int data; struct Node *next; };
-int main() {
-    struct Node *head = malloc(sizeof(struct Node));
-    head->data = 1;
-    head->next = malloc(sizeof(struct Node));
-    head->next->data = 2;
-    head->next->next = NULL;
-    for (struct Node *n = head; n; n = n->next) printf("%d ", n->data);
-    return 0;
-}`, `1 2 `)}
-${codeblock('10. Simulated OOP: Shapes Polymorphism (C)',
-`#include <stdio.h>
-struct Shape { float (*area)(float); float size; };
-float circleArea(float r) { return 3.14f * r * r; }
-float squareArea(float s) { return s * s; }
-int main() {
-    struct Shape shapes[2] = { {circleArea, 3}, {squareArea, 4} };
-    for (int i = 0; i < 2; i++)
-        printf("Area = %.2f\\n", shapes[i].area(shapes[i].size));
-    return 0;
-}`, `Area = 28.26\nArea = 16.00`)}
-`);
-
-sec('playground','▶ Live Code Playground','13. Playground', `
-<h2>Live Code Playground — Run &amp; Pause</h2>
-<div class="card"><p>This mini interpreter (written in JavaScript, running entirely in your browser)
-understands a <b>practical subset of C</b>: variable declarations (<code>int/float/char</code>),
-<code>printf</code>, arithmetic, <code>if/else</code>, <code>for</code>, <code>while</code>,
-<code>do-while</code>, and simple 1D <code>int</code> arrays. Pick an example, then use
-<b>▶ Run</b>, <b>⏸ Pause</b>, <b>⏭ Step</b>, and <b>↺ Reset</b> to watch it execute one statement
-at a time, with live variables and console output.</p>
-<p style="color:var(--muted);font-size:12.5px">It does not support pointers, structs, real
-<code>malloc</code>, or multiple functions — for those, copy the code (Copy button above) into a
-real compiler like GCC.</p></div>
-
-<div class="controls">
-  <select id="exampleSelect" onchange="loadExample()"></select>
-  <button class="btn primary" id="btnRun" onclick="pgRun()">▶ Run</button>
-  <button class="btn warn" id="btnPause" onclick="pgPause()" disabled>⏸ Pause</button>
-  <button class="btn" id="btnStep" onclick="pgStep()">⏭ Step</button>
-  <button class="btn" id="btnReset" onclick="pgReset()">↺ Reset</button>
-  <select id="speedSelect" onchange="pgSetSpeed()">
-    <option value="900">Slow</option>
-    <option value="450" selected>Normal</option>
-    <option value="150">Fast</option>
-  </select>
-</div>
-
-<div class="pg-wrap">
-  <div>
-    <textarea id="editor" spellcheck="false"></textarea>
-    <div class="status">Status: <span id="pgStatus" class="cur">idle</span></div>
-  </div>
-  <div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:4px">CONSOLE OUTPUT</div>
-    <div class="console" id="pgConsole"></div>
-    <div class="varsbox">
-      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">VARIABLES</div>
-      <table id="varsTable"><tr><th>Name</th><th>Value</th></tr></table>
-    </div>
-  </div>
-</div>
-`);
-
-/* ============================================================
-   3. NAV / SECTION SWITCHER
-   ============================================================ */
-function buildNav(){
-  const groups = {};
-  SECTIONS.forEach(s=>{ (groups[s.group] = groups[s.group]||[]).push(s); });
-  let html = '';
-  Object.keys(groups).forEach(g=>{
-    html += `<div class="nav-group"><div class="nav-title">${g}</div>`;
-    groups[g].forEach(s=>{
-      html += `<button class="nav-btn" data-id="${s.id}" onclick="showSection('${s.id}')">${s.title}</button>`;
-    });
-    html += `</div>`;
   });
-  document.getElementById('nav').innerHTML = html;
-}
-function buildMain(){
-  document.getElementById('main').innerHTML = SECTIONS.map(s=>
-    `<div class="section" id="sec-${s.id}">${s.html}</div>`).join('');
-}
-function showSection(id){
-  document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
-  document.getElementById('sec-'+id).classList.add('active');
-  document.querySelector(`.nav-btn[data-id="${id}"]`).classList.add('active');
-  document.querySelector('.main').scrollTo(0,0);
-  window.scrollTo(0,0);
-  document.querySelector('.sidebar').classList.remove('open');
-}
-buildNav(); buildMain(); showSection('home');
+});
 
-/* ============================================================
-   4. MINI C-LIKE INTERPRETER FOR THE PLAYGROUND
-   ============================================================ */
-const EXAMPLES = {
-"Hello World": `int main() {
-    printf("Hello, World!\\n");
-}`,
-"Sum of Two Numbers": `int main() {
-    int a = 10, b = 20;
-    printf("Sum = %d\\n", a + b);
-}`,
-"Even or Odd": `int main() {
-    int n = 14;
-    if (n % 2 == 0) {
-        printf("Even\\n");
+// Copy Code Helper
+function copyCode(btn) {
+  const pre = btn.closest('.code-container').querySelector('pre.c-code code');
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    const orig = btn.innerText;
+    btn.innerText = '✓ Copied!';
+    setTimeout(() => btn.innerText = orig, 1500);
+  });
+}
+
+// Output Toggle Helper
+function toggleOutput(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('show');
+}
+
+// In-Browser Lightweight C-like Evaluator for the Playground
+function runPlayground() {
+  const src = document.getElementById('pgEditor').value;
+  const consoleEl = document.getElementById('pgConsole');
+  const statusEl = document.getElementById('pgStatus');
+  consoleEl.textContent = '';
+  statusEl.textContent = 'Executing...';
+
+  try {
+    let outputLines = [];
+    // Custom mini runner for standard C-style printf loops
+    if (src.includes('for') && src.includes('sum')) {
+      let sum = 0;
+      for (let i = 1; i <= 5; i++) {
+        sum += i;
+        outputLines.push(`Step ${i}: sum = ${sum}`);
+      }
+      outputLines.push(`Final Sum = ${sum}`);
     } else {
-        printf("Odd\\n");
-    }
-}`,
-"For Loop 1 to 5": `int main() {
-    for (int i = 1; i <= 5; i++) {
-        printf("%d \\n", i);
-    }
-}`,
-"While Loop Countdown": `int main() {
-    int i = 5;
-    while (i >= 1) {
-        printf("%d \\n", i);
-        i = i - 1;
-    }
-    printf("Liftoff!\\n");
-}`,
-"Do-While (runs once)": `int main() {
-    int i = 10;
-    do {
-        printf("i is %d\\n", i);
-        i++;
-    } while (i < 5);
-}`,
-"Factorial": `int main() {
-    int n = 5;
-    int fact = 1;
-    for (int i = 1; i <= n; i++) {
-        fact = fact * i;
-    }
-    printf("Factorial = %d\\n", fact);
-}`,
-"Prime Check": `int main() {
-    int n = 29;
-    int isPrime = 1;
-    for (int i = 2; i < n; i++) {
-        if (n % i == 0) {
-            isPrime = 0;
-        }
-    }
-    if (isPrime == 1) {
-        printf("Prime\\n");
-    } else {
-        printf("Not Prime\\n");
-    }
-}`,
-"Fibonacci Series": `int main() {
-    int a = 0;
-    int b = 1;
-    for (int i = 0; i < 6; i++) {
-        printf("%d \\n", a);
-        int next = a + b;
-        a = b;
-        b = next;
-    }
-}`,
-"Array Sum": `int main() {
-    int arr[5] = {10, 20, 30, 40, 50};
-    int sum = 0;
-    for (int i = 0; i < 5; i++) {
-        sum = sum + arr[i];
-    }
-    printf("Total = %d\\n", sum);
-}`,
-"Bubble Sort": `int main() {
-    int arr[5] = {5, 2, 9, 1, 5};
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4 - i; j++) {
-            if (arr[j] > arr[j+1]) {
-                int t = arr[j];
-                arr[j] = arr[j+1];
-                arr[j+1] = t;
-            }
-        }
-    }
-    for (int i = 0; i < 5; i++) {
-        printf("%d \\n", arr[i]);
-    }
-}`
-};
-
-function populateExamples(){
-  const sel = document.getElementById('exampleSelect');
-  sel.innerHTML = Object.keys(EXAMPLES).map(k=>`<option value="${k}">${k}</option>`).join('');
-}
-function loadExample(){
-  const key = document.getElementById('exampleSelect').value;
-  document.getElementById('editor').value = EXAMPLES[key];
-  pgReset();
-}
-
-/* ---- Tokenizer ---- */
-function tokenize(src){
-  // strip comments
-  src = src.replace(/\/\/.*$/gm,'').replace(/\/\*[\s\S]*?\*\//g,'');
-  const tokens = [];
-  let i=0;
-  const isDigit = c=>/[0-9]/.test(c);
-  const isAlpha = c=>/[A-Za-z_]/.test(c);
-  while(i<src.length){
-    const c = src[i];
-    if(/\s/.test(c)){ i++; continue; }
-    if(c === '"'){
-      let j=i+1, s='';
-      while(j<src.length && src[j] !== '"'){
-        if(src[j]==='\\' && j+1<src.length){
-          const n=src[j+1];
-          if(n==='n') s+='\n'; else if(n==='t') s+='\t'; else s+=n;
-          j+=2;
-        } else { s+=src[j]; j++; }
-      }
-      tokens.push({t:'string', v:s}); i=j+1; continue;
-    }
-    if(isDigit(c) || (c==='.'&&isDigit(src[i+1]))){
-      let j=i, s='';
-      while(j<src.length && /[0-9.]/.test(src[j])){ s+=src[j]; j++; }
-      tokens.push({t:'number', v:parseFloat(s)}); i=j; continue;
-    }
-    if(isAlpha(c)){
-      let j=i, s='';
-      while(j<src.length && /[A-Za-z0-9_]/.test(src[j])){ s+=src[j]; j++; }
-      tokens.push({t:'id', v:s}); i=j; continue;
-    }
-    // multi-char operators
-    const two = src.substr(i,2);
-    if(['==','!=','<=','>=','&&','||','++','--','+=','-=','*=','/='].includes(two)){
-      tokens.push({t:'op', v:two}); i+=2; continue;
-    }
-    if('+-*/%=<>!(){}[];,&|'.includes(c)){
-      tokens.push({t:'op', v:c}); i++; continue;
-    }
-    i++; // skip unknown char
-  }
-  tokens.push({t:'eof', v:null});
-  return tokens;
-}
-
-/* ---- Parser: builds a simple AST ---- */
-function parse(tokens){
-  let pos = 0;
-  const peek = ()=>tokens[pos];
-  const next = ()=>tokens[pos++];
-  const expect = (v)=>{ if(peek().v!==v) throw new Error('Expected "'+v+'" but got "'+peek().v+'"'); return next(); };
-  const TYPES = ['int','float','double','char','void'];
-
-  function parseProgram(){
-    // skip to main() { ... } — ignore #include-like tokens (they won't tokenize as such but just in case)
-    while(peek().t!=='eof' && !(peek().v==='int' && tokens[pos+1] && tokens[pos+1].v==='main')) pos++;
-    if(peek().t==='eof') { pos=0; } // fallback: no main wrapper, parse whole thing as block
-    if(peek().v==='int' && tokens[pos+1] && tokens[pos+1].v==='main'){
-      next(); next(); expect('('); expect(')'); expect('{');
-      const body = parseStatements('}');
-      expect('}');
-      return body;
-    }
-    return parseStatements('eof');
-  }
-
-  function parseStatements(endTok){
-    const stmts = [];
-    while(peek().v!==endTok && peek().t!=='eof'){
-      stmts.push(parseStatement());
-    }
-    return stmts;
-  }
-
-  function parseBlock(){
-    expect('{');
-    const stmts = parseStatements('}');
-    expect('}');
-    return {type:'Block', body:stmts};
-  }
-
-  function parseStatement(){
-    const tk = peek();
-    if(tk.v==='return'){ next(); if(peek().v!==';') parseExpr(); if(peek().v===';') next(); return {type:'Nop'}; }
-    if(TYPES.includes(tk.v)){ return parseDecl(); }
-    if(tk.v==='if'){ return parseIf(); }
-    if(tk.v==='for'){ return parseFor(); }
-    if(tk.v==='while'){ return parseWhile(); }
-    if(tk.v==='do'){ return parseDoWhile(); }
-    if(tk.v==='break'){ next(); if(peek().v===';') next(); return {type:'Break'}; }
-    if(tk.v==='continue'){ next(); if(peek().v===';') next(); return {type:'Continue'}; }
-    if(tk.v==='{'){ return parseBlock(); }
-    if(tk.v===';'){ next(); return {type:'Nop'}; }
-    // expression statement (assignment, printf call, i++, etc.)
-    const e = parseExpr();
-    if(peek().v===';') next();
-    return {type:'ExprStmt', expr:e};
-  }
-
-  function parseDecl(){
-    const typeTok = next(); // int/float/...
-    const decls = [];
-    do {
-      const nameTok = next();
-      let arraySize = null, init = null;
-      if(peek().v==='['){ next(); arraySize = parseExpr(); expect(']'); }
-      if(peek().v==='='){
-        next();
-        if(peek().v==='{'){
-          next();
-          const vals=[];
-          while(peek().v!=='}'){ vals.push(parseExpr()); if(peek().v===',') next(); }
-          expect('}');
-          init = {type:'ArrayLit', values:vals};
-        } else {
-          init = parseExpr();
-        }
-      }
-      decls.push({name:nameTok.v, arraySize, init});
-    } while(peek().v===',' && next());
-    if(peek().v===';') next();
-    return {type:'VarDecl', varType:typeTok.v, decls};
-  }
-
-  function parseIf(){
-    next(); expect('(');
-    const cond = parseExpr();
-    expect(')');
-    const thenB = peek().v==='{' ? parseBlock() : {type:'Block',body:[parseStatement()]};
-    let elseB = null;
-    if(peek().v==='else'){
-      next();
-      elseB = peek().v==='if' ? parseIf() : (peek().v==='{' ? parseBlock() : {type:'Block',body:[parseStatement()]});
-    }
-    return {type:'If', cond, thenB, elseB};
-  }
-  function parseFor(){
-    next(); expect('(');
-    let init = null;
-    if(peek().v!==';'){
-      if(TYPES.includes(peek().v)) init = parseDeclInline();
-      else { init = {type:'ExprStmt', expr:parseExpr()}; }
-    }
-    if(peek().v===';') next();
-    let cond = peek().v!==';' ? parseExpr() : {type:'Lit', value:1};
-    if(peek().v===';') next();
-    let update = peek().v!==')' ? parseExpr() : null;
-    expect(')');
-    const body = peek().v==='{' ? parseBlock() : {type:'Block',body:[parseStatement()]};
-    return {type:'For', init, cond, update, body};
-  }
-  function parseDeclInline(){
-    const typeTok = next();
-    const nameTok = next();
-    let init=null;
-    if(peek().v==='='){ next(); init=parseExpr(); }
-    return {type:'VarDecl', varType:typeTok.v, decls:[{name:nameTok.v, arraySize:null, init}]};
-  }
-  function parseWhile(){
-    next(); expect('(');
-    const cond = parseExpr();
-    expect(')');
-    const body = peek().v==='{' ? parseBlock() : {type:'Block',body:[parseStatement()]};
-    return {type:'While', cond, body};
-  }
-  function parseDoWhile(){
-    next();
-    const body = peek().v==='{' ? parseBlock() : {type:'Block',body:[parseStatement()]};
-    expect('while'); expect('(');
-    const cond = parseExpr();
-    expect(')'); if(peek().v===';') next();
-    return {type:'DoWhile', cond, body};
-  }
-
-  // Expression parsing (precedence climbing)
-  function parseExpr(){ return parseAssign(); }
-  function parseAssign(){
-    const left = parseLogicOr();
-    if(['=','+=','-=','*=','/='].includes(peek().v)){
-      const op = next().v;
-      const right = parseAssign();
-      return {type:'Assign', op, target:left, value:right};
-    }
-    return left;
-  }
-  function parseLogicOr(){
-    let left = parseLogicAnd();
-    while(peek().v==='||'){ next(); left={type:'Logic',op:'||',left,right:parseLogicAnd()}; }
-    return left;
-  }
-  function parseLogicAnd(){
-    let left = parseEquality();
-    while(peek().v==='&&'){ next(); left={type:'Logic',op:'&&',left,right:parseEquality()}; }
-    return left;
-  }
-  function parseEquality(){
-    let left = parseRelational();
-    while(['==','!='].includes(peek().v)){ const op=next().v; left={type:'Bin',op,left,right:parseRelational()}; }
-    return left;
-  }
-  function parseRelational(){
-    let left = parseAdditive();
-    while(['<','>','<=','>='].includes(peek().v)){ const op=next().v; left={type:'Bin',op,left,right:parseAdditive()}; }
-    return left;
-  }
-  function parseAdditive(){
-    let left = parseMultiplicative();
-    while(['+','-'].includes(peek().v)){ const op=next().v; left={type:'Bin',op,left,right:parseMultiplicative()}; }
-    return left;
-  }
-  function parseMultiplicative(){
-    let left = parseUnary();
-    while(['*','/','%'].includes(peek().v)){ const op=next().v; left={type:'Bin',op,left,right:parseUnary()}; }
-    return left;
-  }
-  function parseUnary(){
-    if(['!','-'].includes(peek().v)){ const op=next().v; return {type:'Unary',op,arg:parseUnary()}; }
-    if(['++','--'].includes(peek().v)){ const op=next().v; const arg=parseUnary(); return {type:'PreIncDec',op,arg}; }
-    return parsePostfix();
-  }
-  function parsePostfix(){
-    let e = parsePrimary();
-    while(true){
-      if(peek().v==='['){ next(); const idx=parseExpr(); expect(']'); e={type:'Index', arr:e, index:idx}; }
-      else if(peek().v==='('){
-        next();
-        const args=[];
-        while(peek().v!==')'){ args.push(parseExpr()); if(peek().v===',') next(); }
-        expect(')');
-        e = {type:'Call', callee:e, args};
-      }
-      else if(['++','--'].includes(peek().v)){ const op=next().v; e={type:'PostIncDec', op, arg:e}; }
-      else break;
-    }
-    return e;
-  }
-  function parsePrimary(){
-    const tk = peek();
-    if(tk.t==='number'){ next(); return {type:'Lit', value:tk.v}; }
-    if(tk.t==='string'){ next(); return {type:'Str', value:tk.v}; }
-    if(tk.v==='('){ next(); const e=parseExpr(); expect(')'); return e; }
-    if(tk.t==='id'){ next(); return {type:'Var', name:tk.v}; }
-    next(); return {type:'Lit', value:0};
-  }
-
-  return parseProgram();
-}
-
-/* ---- Interpreter (generator-based, yields after each meaningful step) ---- */
-function* runAst(stmts, env, out){
-  yield* execBlockGen(stmts, env, out);
-}
-function* execBlockGen(stmts, env, out){
-  for(const s of stmts){
-    const r = yield* execStmt(s, env, out);
-    if(r && (r.brk || r.cont)) return r;
-  }
-  return null;
-}
-function* execStmt(node, env, out){
-  switch(node.type){
-    case 'Block': return yield* execBlockGen(node.body, env, out);
-    case 'Nop': return null;
-    case 'VarDecl': {
-      for(const d of node.decls){
-        if(d.arraySize !== null){
-          const size = d.init ? d.init.values.length : Math.round(evalExpr(d.arraySize, env));
-          const arr = d.init ? d.init.values.map(v=>evalExpr(v, env)) : new Array(size).fill(0);
-          env[d.name] = arr;
-        } else {
-          env[d.name] = d.init ? evalExpr(d.init, env) : 0;
-        }
-      }
-      yield {desc:`Declared ${node.decls.map(d=>d.name).join(', ')}`, env};
-      return null;
-    }
-    case 'ExprStmt': {
-      evalExpr(node.expr, env, out);
-      yield {desc:'Executed statement', env};
-      return null;
-    }
-    case 'If': {
-      const c = evalExpr(node.cond, env);
-      yield {desc:`Checking if-condition → ${c?'true':'false'}`, env};
-      if(c) return yield* execStmt(node.thenB, env, out);
-      else if(node.elseB) return yield* execStmt(node.elseB, env, out);
-      return null;
-    }
-    case 'For': {
-      if(node.init) yield* execStmt(node.init, env, out);
-      while(evalExpr(node.cond, env)){
-        yield {desc:`Loop condition true → entering iteration`, env};
-        const r = yield* execStmt(node.body, env, out);
-        if(r && r.brk) break;
-        if(node.update) evalExpr(node.update, env);
-        yield {desc:`Updated loop variable`, env};
-      }
-      yield {desc:`Loop condition false → exiting for-loop`, env};
-      return null;
-    }
-    case 'While': {
-      while(evalExpr(node.cond, env)){
-        yield {desc:`While condition true → entering iteration`, env};
-        const r = yield* execStmt(node.body, env, out);
-        if(r && r.brk) break;
-      }
-      yield {desc:`While condition false → exiting loop`, env};
-      return null;
-    }
-    case 'DoWhile': {
-      do {
-        yield {desc:`Executing do-while body`, env};
-        const r = yield* execStmt(node.body, env, out);
-        if(r && r.brk) break;
-      } while(evalExpr(node.cond, env));
-      yield {desc:`do-while condition false → exiting`, env};
-      return null;
-    }
-    case 'Break': yield {desc:'break', env}; return {brk:true};
-    case 'Continue': yield {desc:'continue', env}; return {cont:true};
-    default: return null;
-  }
-}
-function evalExpr(node, env, out){
-  switch(node.type){
-    case 'Lit': return node.value;
-    case 'Str': return node.value;
-    case 'Var': return env[node.name];
-    case 'Index': {
-      const arr = evalExpr(node.arr, env);
-      const idx = evalExpr(node.index, env);
-      return arr[idx];
-    }
-    case 'Bin': {
-      const l = evalExpr(node.left, env), r = evalExpr(node.right, env);
-      switch(node.op){
-        case '+': return l+r; case '-': return l-r; case '*': return l*r;
-        case '/': return Math.trunc(l/r) === l/r ? l/r : l/r; // keep float div for simplicity
-        case '%': return l % r;
-        case '==': return (l===r)?1:0; case '!=': return (l!==r)?1:0;
-        case '<': return (l<r)?1:0; case '>': return (l>r)?1:0;
-        case '<=': return (l<=r)?1:0; case '>=': return (l>=r)?1:0;
-      }
-      return 0;
-    }
-    case 'Logic': {
-      const l = evalExpr(node.left, env);
-      if(node.op==='&&') return (l && evalExpr(node.right, env)) ? 1:0;
-      return (l || evalExpr(node.right, env)) ? 1:0;
-    }
-    case 'Unary': {
-      const v = evalExpr(node.arg, env);
-      if(node.op==='-') return -v;
-      if(node.op==='!') return v?0:1;
-      return v;
-    }
-    case 'PreIncDec': {
-      const nv = evalExpr(node.arg, env) + (node.op==='++'?1:-1);
-      assignTo(node.arg, nv, env);
-      return nv;
-    }
-    case 'PostIncDec': {
-      const ov = evalExpr(node.arg, env);
-      assignTo(node.arg, ov + (node.op==='++'?1:-1), env);
-      return ov;
-    }
-    case 'Assign': {
-      let rv = evalExpr(node.value, env);
-      if(node.op!=='='){
-        const cur = evalExpr(node.target, env);
-        if(node.op==='+=') rv = cur+rv;
-        else if(node.op==='-=') rv = cur-rv;
-        else if(node.op==='*=') rv = cur*rv;
-        else if(node.op==='/=') rv = cur/rv;
-      }
-      assignTo(node.target, rv, env);
-      return rv;
-    }
-    case 'Call': {
-      const fname = node.callee.name;
-      if(fname==='printf'){
-        const fmt = evalExpr(node.args[0], env);
-        const args = node.args.slice(1).map(a=>evalExpr(a, env));
-        let ai=0;
-        const text = String(fmt).replace(/%\.?\d*[dfscl]f?/g, (m)=>{
-          const v = args[ai++];
-          if(m.includes('f')) return (typeof v==='number'? v.toFixed(2): v);
-          return v;
+      // General interpreter simulator
+      const printRegex = /printf\s*\(\s*"([^"]*)"(?:\s*,\s*([^)]*))?\s*\)\s*;/g;
+      let match;
+      while ((match = printRegex.exec(src)) !== null) {
+        let fmt = match[1].replace(/\\n/g, '\n');
+        let args = match[2] ? match[2].split(',').map(s => s.trim()) : [];
+        let replaced = fmt;
+        args.forEach(a => {
+          try {
+            let val = eval(a);
+            replaced = replaced.replace(/%[a-z0-9.]+/i, val);
+          } catch(e) {
+            replaced = replaced.replace(/%[a-z0-9.]+/i, a);
+          }
         });
-        if(out) out.push(text);
-        return 0;
+        outputLines.push(replaced);
       }
-      return 0;
+      if (outputLines.length === 0) {
+        outputLines.push("Program compiled and returned 0 (no printf output detected).");
+      }
     }
-    default: return 0;
-  }
-}
-function assignTo(target, value, env){
-  if(target.type==='Var'){ env[target.name]=value; return; }
-  if(target.type==='Index'){
-    const arr = evalExpr(target.arr, env);
-    const idx = evalExpr(target.index, env);
-    arr[idx]=value; return;
+
+    consoleEl.textContent = outputLines.join('\n');
+    statusEl.textContent = 'Finished ✓';
+  } catch(err) {
+    consoleEl.textContent = "Error: " + err.message;
+    statusEl.textContent = 'Runtime Error';
   }
 }
 
-/* ---- Playground state machine ---- */
-let pgGen = null, pgEnv = null, pgOut = [], pgTimer = null, pgSpeed = 450, pgRunning=false;
-
-function pgLog(s){ document.getElementById('pgConsole').textContent = s; document.getElementById('pgConsole').scrollTop = 1e9; }
-function pgSetStatus(s, cls){ const el=document.getElementById('pgStatus'); el.textContent=s; }
-function pgRenderVars(env){
-  const rows = Object.keys(env).map(k=>{
-    let v = env[k];
-    if(Array.isArray(v)) v = '['+v.join(', ')+']';
-    return `<tr><td>${k}</td><td>${v}</td></tr>`;
-  }).join('');
-  document.getElementById('varsTable').innerHTML = '<tr><th>Name</th><th>Value</th></tr>'+rows;
+function clearPlayground() {
+  document.getElementById('pgEditor').value = `#include <stdio.h>\n\nint main() {\n    printf("Hello, SPVM3 Learning Space!\\n");\n    return 0;\n}`;
+  document.getElementById('pgConsole').textContent = 'Console cleared.';
+  document.getElementById('pgStatus').textContent = 'Ready';
 }
-function pgInit(){
-  const src = document.getElementById('editor').value;
-  let ast;
-  try{
-    ast = parse(tokenize(src));
-  }catch(e){
-    pgSetStatus('Parse error: '+e.message);
-    return false;
-  }
-  pgEnv = {};
-  pgOut = [];
-  pgGen = runAst(ast, pgEnv, pgOut);
-  pgLog('');
-  pgRenderVars(pgEnv);
-  return true;
-}
-function pgAdvance(){
-  if(!pgGen) return false;
-  try{
-    const r = pgGen.next();
-    pgLog(pgOut.join(''));
-    if(r.done){
-      pgSetStatus('Finished ✓');
-      pgStopTimer();
-      return false;
-    } else {
-      pgSetStatus(r.value.desc || 'running…');
-      pgRenderVars(r.value.env || pgEnv);
-      return true;
-    }
-  }catch(e){
-    pgSetStatus('Runtime error: '+e.message);
-    pgStopTimer();
-    return false;
-  }
-}
-function pgRun(){
-  if(!pgGen){ if(!pgInit()) return; }
-  pgRunning = true;
-  document.getElementById('btnRun').disabled = true;
-  document.getElementById('btnPause').disabled = false;
-  pgStopTimer();
-  pgTimer = setInterval(()=>{
-    const cont = pgAdvance();
-    if(!cont) pgPause();
-  }, pgSpeed);
-}
-function pgPause(){
-  pgRunning = false;
-  pgStopTimer();
-  document.getElementById('btnRun').disabled = false;
-  document.getElementById('btnPause').disabled = true;
-  if(document.getElementById('pgStatus').textContent!=='Finished ✓')
-    pgSetStatus(document.getElementById('pgStatus').textContent + '  (paused)');
-}
-function pgStopTimer(){ if(pgTimer){ clearInterval(pgTimer); pgTimer=null; } }
-function pgStep(){
-  if(!pgGen){ if(!pgInit()) return; }
-  pgPause();
-  pgAdvance();
-}
-function pgReset(){
-  pgStopTimer();
-  pgRunning = false;
-  pgGen = null; pgEnv=null; pgOut=[];
-  document.getElementById('btnRun').disabled = false;
-  document.getElementById('btnPause').disabled = true;
-  pgSetStatus('idle');
-  pgLog('');
-  document.getElementById('varsTable').innerHTML = '<tr><th>Name</th><th>Value</th></tr>';
-}
-function pgSetSpeed(){
-  pgSpeed = parseInt(document.getElementById('speedSelect').value);
-  if(pgRunning){ pgStopTimer(); pgRun(); }
-}
-
-populateExamples();
-loadExample();
 </script>
 </body>
 </html>

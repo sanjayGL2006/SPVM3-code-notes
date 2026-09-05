@@ -13,7 +13,9 @@ Dependencies (install if needed):
 """
 
 import os
+import sys
 import time
+import json
 import sqlite3
 import smtplib
 import threading
@@ -22,18 +24,45 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask import Flask, request, jsonify
 
+# Ensure Windows terminal doesn't crash on emojis
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
+
 # -----------------------------------------------------------------------------
-# CONFIGURATION
+# CONFIGURATION & DYNAMIC SMTP LOADER
 # -----------------------------------------------------------------------------
 DB_FILE = "spvm3_certificates.db"
 
-# SMTP Settings (Set your Gmail App Password or Brevo/Resend SMTP keys here or in Env Vars)
-SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com") # or 'smtp-relay.brevo.com' / 'smtp.resend.com'
-SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
-SMTP_USER = os.environ.get("SMTP_USER", "spvm3techsolution@gmail.com")
-SMTP_PASS = os.environ.get("SMTP_PASS", "") # Put Gmail App Password or Brevo Key here
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "spvm3techsolution@gmail.com")
-SENDER_NAME = "Sanjay GL — SPVM3 Tech Solution"
+def get_smtp_config():
+    """Dynamically loads SMTP settings from spvm3_smtp_config.json, .env, or env vars."""
+    cfg = {
+        "smtp_host": os.environ.get("SMTP_HOST", "smtp.gmail.com"),
+        "smtp_port": int(os.environ.get("SMTP_PORT", "587")),
+        "smtp_user": os.environ.get("SMTP_USER", "spvm3techsolution@gmail.com"),
+        "smtp_pass": os.environ.get("SMTP_PASS", "").strip(),
+        "sender_email": os.environ.get("SENDER_EMAIL", "spvm3techsolution@gmail.com"),
+        "sender_name": "Sanjay GL — SPVM3 Tech Solution"
+    }
+
+    # Check local spvm3_smtp_config.json
+    config_file = os.path.join(os.path.dirname(__file__), "spvm3_smtp_config.json")
+    if os.path.exists(config_file):
+        try:
+            with open(config_file, "r", encoding="utf-8") as f:
+                saved = json.load(f)
+                if saved.get("smtp_host"): cfg["smtp_host"] = saved["smtp_host"]
+                if saved.get("smtp_port"): cfg["smtp_port"] = int(saved["smtp_port"])
+                if saved.get("smtp_user"): cfg["smtp_user"] = saved["smtp_user"].strip()
+                if saved.get("smtp_pass"): cfg["smtp_pass"] = saved["smtp_pass"].strip()
+                if saved.get("sender_email"): cfg["sender_email"] = saved["sender_email"].strip()
+                if saved.get("sender_name"): cfg["sender_name"] = saved["sender_name"].strip()
+        except Exception as err:
+            print(f"[CONFIG WARNING] Failed to parse spvm3_smtp_config.json: {err}")
+
+    return cfg
+
 
 # -----------------------------------------------------------------------------
 # DATABASE INITIALIZATION
@@ -139,17 +168,18 @@ def send_welcome_email_async(name, email, delay_seconds=120):
     </html>
     """
     
+    cfg = get_smtp_config()
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"] = f"{SENDER_NAME} <{SENDER_EMAIL}>"
+    msg["From"] = f"{cfg['sender_name']} <{cfg['sender_email']}>"
     msg["To"] = email
     msg.attach(MIMEText(html_body, "html"))
     
     try:
-        if SMTP_PASS:
-            with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        if cfg["smtp_pass"]:
+            with smtplib.SMTP(cfg["smtp_host"], cfg["smtp_port"]) as server:
                 server.starttls()
-                server.login(SMTP_USER, SMTP_PASS)
+                server.login(cfg["smtp_user"], cfg["smtp_pass"])
                 server.send_message(msg)
             
             conn = sqlite3.connect(DB_FILE)
@@ -159,7 +189,9 @@ def send_welcome_email_async(name, email, delay_seconds=120):
             conn.close()
             print(f"[SUCCESS] Welcome email delivered to {email}")
         else:
-            print(f"[SIMULATION] Welcome email queued for {email}")
+            print(f"[AUTHENTICATION REQUIRED] Cannot deliver live email to {email} because SMTP_PASS is empty.")
+            print(f"👉 Please enter your 16-character Gmail App Password into 'spvm3_smtp_config.json' or .env")
+            print(f"👉 Generate at: https://myaccount.google.com/apppasswords")
     except Exception as e:
         print(f"[ERROR] Failed to send welcome email to {email}: {e}")
 
@@ -225,17 +257,18 @@ def send_certificate_email_async(student_name, student_email, course_title, cert
     </html>
     """
     
+    cfg = get_smtp_config()
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"] = f"{SENDER_NAME} <{SENDER_EMAIL}>"
+    msg["From"] = f"{cfg['sender_name']} <{cfg['sender_email']}>"
     msg["To"] = student_email
     msg.attach(MIMEText(html_body, "html"))
     
     try:
-        if SMTP_PASS:
-            with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        if cfg["smtp_pass"]:
+            with smtplib.SMTP(cfg["smtp_host"], cfg["smtp_port"]) as server:
                 server.starttls()
-                server.login(SMTP_USER, SMTP_PASS)
+                server.login(cfg["smtp_user"], cfg["smtp_pass"])
                 server.send_message(msg)
             
             conn = sqlite3.connect(DB_FILE)
@@ -245,7 +278,9 @@ def send_certificate_email_async(student_name, student_email, course_title, cert
             conn.close()
             print(f"[SUCCESS] Certificate email delivered to {student_email} (Cert ID: {cert_id})")
         else:
-            print(f"[SIMULATION] SMTP_PASS not set. Certificate email prepared for {student_email}")
+            print(f"[AUTHENTICATION REQUIRED] Cannot deliver live email to {student_email} because SMTP_PASS is empty.")
+            print(f"👉 Please enter your 16-character Gmail App Password into 'spvm3_smtp_config.json' or .env")
+            print(f"👉 Generate at: https://myaccount.google.com/apppasswords")
     except Exception as e:
         print(f"[ERROR] Failed to send certificate email to {student_email}: {e}")
 
@@ -345,11 +380,14 @@ def send_certificate():
     thread.daemon = True
     thread.start()
 
+    cfg = get_smtp_config()
+    has_pass = bool(cfg["smtp_pass"])
     return jsonify({
         "success": True,
-        "message": f"Certificate delivery queued for {name} ({email})",
+        "message": f"Certificate delivery registered for {name} ({email})",
         "cert_id": cert_id,
-        "email_delivery": "queued_async"
+        "has_smtp_password": has_pass,
+        "email_delivery": "live_dispatch" if has_pass else "simulation_needs_app_password"
     }), 200
 
 @app.route('/api/records', methods=['GET'])
@@ -363,6 +401,98 @@ def get_records():
     
     return jsonify([dict(row) for row in rows]), 200
 
+@app.route('/api/smtp-status', methods=['GET'])
+def smtp_status():
+    cfg = get_smtp_config()
+    has_pass = bool(cfg["smtp_pass"])
+    masked_pass = (cfg["smtp_pass"][:2] + "****" + cfg["smtp_pass"][-2:]) if len(cfg["smtp_pass"]) >= 4 else ("****" if has_pass else "")
+    return jsonify({
+        "status": "ready" if has_pass else "authentication_required",
+        "smtp_host": cfg["smtp_host"],
+        "smtp_port": cfg["smtp_port"],
+        "smtp_user": cfg["smtp_user"],
+        "has_password": has_pass,
+        "masked_pass": masked_pass,
+        "instructions": "Set your 16-character Gmail App Password in spvm3_smtp_config.json or POST /api/smtp-config. Generate at: https://myaccount.google.com/apppasswords" if not has_pass else "Ready to deliver live emails to recipient inboxes"
+    }), 200
+
+@app.route('/api/smtp-config', methods=['POST', 'OPTIONS'])
+def update_smtp_config():
+    if request.method == 'OPTIONS':
+        return jsonify({"status": "ok"}), 200
+    
+    data = request.get_json(force=True) or {}
+    config_file = os.path.join(os.path.dirname(__file__), "spvm3_smtp_config.json")
+    
+    current = get_smtp_config()
+    for key in ["smtp_host", "smtp_port", "smtp_user", "smtp_pass", "sender_email", "sender_name"]:
+        if key in data and str(data[key]).strip():
+            current[key] = int(data[key]) if key == "smtp_port" else str(data[key]).strip()
+            
+    with open(config_file, "w", encoding="utf-8") as f:
+        json.dump(current, f, indent=2)
+        
+    return jsonify({
+        "success": True,
+        "message": "SMTP configuration updated successfully.",
+        "has_password": bool(current.get("smtp_pass"))
+    }), 200
+
+@app.route('/api/send-test-email', methods=['POST', 'OPTIONS'])
+def send_test_email():
+    if request.method == 'OPTIONS':
+        return jsonify({"status": "ok"}), 200
+        
+    data = request.get_json(force=True) or {}
+    recipient = data.get("email", "sanjaygl3006@gmail.com").strip()
+    name = data.get("name", "Sanjay GL").strip()
+    
+    cfg = get_smtp_config()
+    if not cfg["smtp_pass"]:
+        return jsonify({
+            "success": False,
+            "error": "SMTP_PASS is empty. Google requires a 16-character App Password to authenticate and send live emails.",
+            "guide": "Go to https://myaccount.google.com/apppasswords -> Create password for 'SPVM3' -> Paste the 16 characters into spvm3_smtp_config.json"
+        }), 400
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "🧪 SPVM3 Tech Solution — Live SMTP Email Verification Test"
+        msg["From"] = f"{cfg['sender_name']} <{cfg['sender_email']}>"
+        msg["To"] = recipient
+        
+        body = f"""
+        <html>
+        <body style="font-family: sans-serif; background: #0b0f19; color: #f1f5f9; padding: 24px;">
+          <div style="max-width: 540px; margin: 0 auto; background: #121a2b; border: 2px solid #10b981; border-radius: 16px; padding: 24px;">
+            <h2 style="color: #10b981; margin: 0 0 10px;">✅ SMTP Email Connection Successful!</h2>
+            <p>Hello <strong>{name}</strong>,</p>
+            <p>This email confirms that your SPVM3 automatic email certificate engine is successfully connected and delivering live emails to <strong>{recipient}</strong>.</p>
+            <p style="color: #38bdf8;">Your students will now automatically receive their official completion certificates and welcome emails directly in their Gmail inbox!</p>
+            <hr style="border: none; border-top: 1px solid #1e293b; margin: 20px 0;">
+            <p style="font-size: 12px; color: #94a3b8;">SPVM3 Tech Solution • ISO Certified IT Academy • Verified by Sanjay GL</p>
+          </div>
+        </body>
+        </html>
+        """
+        msg.attach(MIMEText(body, "html"))
+        
+        with smtplib.SMTP(cfg["smtp_host"], cfg["smtp_port"]) as server:
+            server.starttls()
+            server.login(cfg["smtp_user"], cfg["smtp_pass"])
+            server.send_message(msg)
+            
+        return jsonify({
+            "success": True,
+            "message": f"Test email successfully delivered to {recipient}!"
+        }), 200
+    except Exception as err:
+        return jsonify({
+            "success": False,
+            "error": f"SMTP Dispatch Error: {str(err)}",
+            "tip": "Check your Gmail App Password or verify 2-Step Verification is enabled on your Google account."
+        }), 500
+
 # -----------------------------------------------------------------------------
 # MAIN ENTRYPOINT
 # -----------------------------------------------------------------------------
@@ -370,6 +500,7 @@ if __name__ == '__main__':
     print("=====================================================================")
     print("🚀 SPVM3 AUTOMATIC EMAIL CERTIFICATE SERVER IS RUNNING!")
     print("📍 Listening on: http://localhost:5000")
-    print("📧 SMTP User:", SMTP_USER)
+    print("📧 Config file: spvm3_smtp_config.json")
     print("=====================================================================")
     app.run(host='0.0.0.0', port=5000, debug=True)
+

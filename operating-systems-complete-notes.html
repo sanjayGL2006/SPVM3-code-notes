@@ -447,7 +447,11 @@ td code{color:var(--kernel); background:var(--surface-2); padding:1px 6px; borde
     </button>
     <select onchange="if(this.value) window.location.href=this.value;" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(99,102,241,0.4); color: #f8fafc; padding: 8px 14px; border-radius: 10px; font-size: 0.88rem; outline: none; cursor: pointer; max-width: 300px; font-weight: 500;">
       <option value="" disabled selected style="background:#0f172a; color:#fff;">🔀 Select Computer Based Note...</option>
-      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All Notes)</option>
+      <option value="index.html" style="background:#0f172a; color:#fff;">🏠 SPVM3 Tech Solution Hub (All 21 Notes)</option>
+      <option value="verify-certificate.html" style="background:#0f172a; color:#fff;">🔍 Verify Certificate Portal</option>
+      <option value="ai-systems-notes.html" style="background:#0f172a; color:#fff;">🤖 AI Systems & LLM Agents Notes</option>
+      <option value="blockchain-notes.html" style="background:#0f172a; color:#fff;">⛓️ Blockchain & Cryptography Notes</option>
+      <option value="data-structures-notes.html" style="background:#0f172a; color:#fff;">🧩 Data Structures & Algorithms (DSA)</option>
       <option value="HTML-CSS-Complete-Notes.html" style="background:#0f172a; color:#fff;">🌐 HTML & CSS Complete Notes</option>
       <option value="js-notes.html" style="background:#0f172a; color:#fff;">⚡ JavaScript A–Z Notes</option>
       <option value="react-notes.html" style="background:#0f172a; color:#fff;">⚛️ React.js Reference Notes</option>
@@ -1299,6 +1303,37 @@ semaphore mutex = <span class="tk-num">1</span>;   <span class="tk-com">// prote
       <h3><span class="num">15.2</span>Resource Allocation Graph</h3>
       <p>A directed graph with process nodes and resource nodes. A <strong>request edge</strong> (process → resource) means the process is waiting for it; an <strong>assignment edge</strong> (resource → process) means it's held. If the graph contains a cycle <em>and</em> each resource has only one instance, a deadlock exists. With multiple instances per resource, a cycle is necessary but not sufficient for deadlock.</p>
 
+      <div style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin:20px 0; text-align:center;">
+        <svg viewBox="0 0 460 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Resource allocation graph showing a circular wait" style="max-width:480px; width:100%; height:auto; display:inline-block;">
+          <defs>
+            <marker id="rag-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#ff6b6b"/>
+            </marker>
+          </defs>
+          <circle cx="90" cy="60" r="26" fill="rgba(94,196,255,0.14)" stroke="#5ec4ff" stroke-width="2"/>
+          <text x="90" y="65" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#5ec4ff">P1</text>
+          <circle cx="360" cy="60" r="26" fill="rgba(94,196,255,0.14)" stroke="#5ec4ff" stroke-width="2"/>
+          <text x="360" y="65" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="#5ec4ff">P2</text>
+          <rect x="200" y="150" width="54" height="36" rx="4" fill="rgba(255,180,84,0.14)" stroke="#ffb454" stroke-width="2"/>
+          <text x="227" y="173" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="600" fill="#ffb454">R1</text>
+          <rect x="20" y="150" width="54" height="36" rx="4" fill="rgba(255,180,84,0.14)" stroke="#ffb454" stroke-width="2"/>
+          <text x="47" y="173" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="600" fill="#ffb454">R2</text>
+
+          <path d="M85,86 L52,148" stroke="#ff6b6b" stroke-width="1.8" fill="none" marker-end="url(#rag-arrow)"/>
+          <text x="40" y="118" font-family="JetBrains Mono, monospace" font-size="10" fill="#9aabc0">requests</text>
+
+          <path d="M220,150 L100,72" stroke="#ff6b6b" stroke-width="1.8" fill="none" marker-end="url(#rag-arrow)"/>
+          <text x="195" y="112" font-family="JetBrains Mono, monospace" font-size="10" fill="#9aabc0">assigned to</text>
+
+          <path d="M355,86 L235,148" stroke="#ff6b6b" stroke-width="1.8" fill="none" marker-end="url(#rag-arrow)"/>
+          <text x="300" y="118" font-family="JetBrains Mono, monospace" font-size="10" fill="#9aabc0">requests</text>
+
+          <path d="M60,150 L340,72" stroke="#ff6b6b" stroke-width="1.8" fill="none" marker-end="url(#rag-arrow)"/>
+          <text x="145" y="90" font-family="JetBrains Mono, monospace" font-size="10" fill="#9aabc0">assigned to</text>
+        </svg>
+        <div style="font-size:12px; color:var(--text-faint); margin-top:8px; font-family:var(--font-mono)">Fig 15.1 — P1 holds R2 and requests R1; P2 holds R1 and requests R2 → Cycle → Circular Wait Deadlock</div>
+      </div>
+
       <div class="lead-callout"><strong>Deadlock vs. Starvation:</strong> deadlock is a hard stop — the involved processes will never proceed without intervention. Starvation is a process waiting indefinitely while <em>others</em> keep proceeding — the system as a whole is still making progress, just not for that one process.</div>
     </section>
 
@@ -1590,6 +1625,54 @@ physical_address = (frame_number, d)   <span class="tk-com">// offset d is reuse
         </table>
       </div>
       <div class="lead-callout"><strong>Real-world compromise:</strong> UNIX-style inodes use a hybrid indexed scheme — direct pointers to the first several blocks for small files (fast, low overhead), then single/double/triple indirect pointers for larger files, scaling gracefully from tiny to huge files.</div>
+
+      <h3><span class="num">25.1</span>Interactive Allocation Method Breakdown</h3>
+      <div class="sim" style="padding:20px;">
+        <div style="display:flex; gap:10px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">
+          <button class="btn" id="tabBtnContig" onclick="switchAllocTab('contiguous')" style="padding:6px 14px; font-size:13px;">Contiguous</button>
+          <button class="btn secondary" id="tabBtnLinked" onclick="switchAllocTab('linked')" style="padding:6px 14px; font-size:13px;">Linked</button>
+          <button class="btn secondary" id="tabBtnIndexed" onclick="switchAllocTab('indexed')" style="padding:6px 14px; font-size:13px;">Indexed</button>
+        </div>
+        <div id="allocTabContig" class="alloc-tab-content">
+          <p>Each file occupies a contiguous sequence of disk blocks. Directory entry stores only: <code>(start_block, length)</code>.</p>
+          <div class="card-grid" style="grid-template-columns: 1fr 1fr; margin-top:12px;">
+            <div class="mini-card" style="border-left: 3px solid var(--running);">
+              <h4 style="color:var(--running);">Advantages</h4>
+              <p>Fast sequential and direct (random) access; minimal disk head seek movement.</p>
+            </div>
+            <div class="mini-card" style="border-left: 3px solid var(--blocked);">
+              <h4 style="color:var(--blocked);">Disadvantages</h4>
+              <p>Suffers from external fragmentation; file size cannot grow dynamically without relocation.</p>
+            </div>
+          </div>
+        </div>
+        <div id="allocTabLinked" class="alloc-tab-content" style="display:none;">
+          <p>Each block stores data and a pointer to the next block. Directory entry stores: <code>(start_block, end_block)</code>.</p>
+          <div class="card-grid" style="grid-template-columns: 1fr 1fr; margin-top:12px;">
+            <div class="mini-card" style="border-left: 3px solid var(--running);">
+              <h4 style="color:var(--running);">Advantages</h4>
+              <p>Zero external fragmentation; files can dynamically grow one disk block at a time.</p>
+            </div>
+            <div class="mini-card" style="border-left: 3px solid var(--blocked);">
+              <h4 style="color:var(--blocked);">Disadvantages</h4>
+              <p>Slow direct access (must traverse linked chain); pointer overhead per block; single corrupted pointer loses remainder of file.</p>
+            </div>
+          </div>
+        </div>
+        <div id="allocTabIndexed" class="alloc-tab-content" style="display:none;">
+          <p>Each file has a designated <strong>Index Block</strong> containing an array of pointers to all its data blocks. Directory entry stores: <code>index_block_address</code>.</p>
+          <div class="card-grid" style="grid-template-columns: 1fr 1fr; margin-top:12px;">
+            <div class="mini-card" style="border-left: 3px solid var(--running);">
+              <h4 style="color:var(--running);">Advantages</h4>
+              <p>Fast direct access without contiguous physical placement; no external fragmentation.</p>
+            </div>
+            <div class="mini-card" style="border-left: 3px solid var(--blocked);">
+              <h4 style="color:var(--blocked);">Disadvantages</h4>
+              <p>Index block storage overhead even for tiny files; max file size constrained by pointers in index block (resolved via multi-level inodes).</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ============================================================ 26 · FREE SPACE -->
@@ -1631,6 +1714,11 @@ physical_address = (frame_number, d)   <span class="tk-com">// offset d is reuse
               <option value="cscan">C-SCAN</option>
               <option value="look">LOOK</option>
               <option value="clook">C-LOOK</option>
+            </select>
+            <label>Direction</label>
+            <select id="diskDirection">
+              <option value="up">Increasing (towards high cylinder)</option>
+              <option value="down">Decreasing (towards cylinder 0)</option>
             </select>
             <label>Head start</label><input type="number" id="diskHead" value="53" style="width:56px">
             <label>Disk size</label><input type="number" id="diskSize" value="200" style="width:56px">
@@ -2572,11 +2660,25 @@ document.getElementById('pageRun').addEventListener('click', ()=>{
 });
 
 /* ============================================================
+   FILE ALLOCATION TABS
+   ============================================================ */
+function switchAllocTab(tab){
+  ['Contig','Linked','Indexed'].forEach(t=>{
+    const el = document.getElementById('allocTab'+t);
+    const btn = document.getElementById('tabBtn'+t);
+    if(el && btn){
+      const isTarget = t.toLowerCase().startsWith(tab.slice(0,3));
+      el.style.display = isTarget ? 'block' : 'none';
+      btn.className = isTarget ? 'btn' : 'btn secondary';
+    }
+  });
+}
+
+/* ============================================================
    SIMULATOR 5 — DISK SCHEDULING
    ============================================================ */
-function runDiskScheduling(algo, head, diskSize, queue){
+function runDiskScheduling(algo, head, diskSize, queue, direction){
   let seq = [head];
-  let order = [...queue];
   const maxTrack = diskSize - 1;
 
   function sstf(){
@@ -2588,12 +2690,12 @@ function runDiskScheduling(algo, head, diskSize, queue){
     }
     return path;
   }
-  function scanLike(direction, circular, boundedByRequests){
+  function scanLike(dir, circular, boundedByRequests){
     let sorted = [...queue].sort((a,b)=>a-b);
     let less = sorted.filter(v=>v<head);
     let more = sorted.filter(v=>v>=head);
     let path = [];
-    if(direction === 'up'){
+    if(dir === 'up'){
       path = path.concat(more);
       if(!boundedByRequests) path.push(maxTrack);
       if(circular){
@@ -2618,10 +2720,10 @@ function runDiskScheduling(algo, head, diskSize, queue){
   let path;
   if(algo==='fcfs') path = [...queue];
   else if(algo==='sstf') path = sstf();
-  else if(algo==='scan') path = scanLike('up', false, false);
-  else if(algo==='cscan') path = scanLike('up', true, false);
-  else if(algo==='look') path = scanLike('up', false, true);
-  else if(algo==='clook') path = scanLike('up', true, true);
+  else if(algo==='scan') path = scanLike(direction, false, false);
+  else if(algo==='cscan') path = scanLike(direction, true, false);
+  else if(algo==='look') path = scanLike(direction, false, true);
+  else if(algo==='clook') path = scanLike(direction, true, true);
 
   seq = [head, ...path];
   let total = 0;
@@ -2631,12 +2733,13 @@ function runDiskScheduling(algo, head, diskSize, queue){
 
 document.getElementById('diskRun').addEventListener('click', ()=>{
   const algo = document.getElementById('diskAlgo').value;
+  const direction = document.getElementById('diskDirection').value || 'up';
   const head = parseInt(document.getElementById('diskHead').value)||0;
   const diskSize = parseInt(document.getElementById('diskSize').value)||200;
   const queue = document.getElementById('diskQueue').value.trim().split(/\s+/).map(Number).filter(n=>!isNaN(n));
   if(queue.length===0){ document.getElementById('diskResult').innerHTML = '<div class="lead-callout callout-danger">Enter a valid request queue.</div>'; return; }
 
-  const {seq, total} = runDiskScheduling(algo, head, diskSize, queue);
+  const {seq, total} = runDiskScheduling(algo, head, diskSize, queue, direction);
   const maxVal = Math.max(diskSize, ...seq);
 
   let svgPoints = seq.map((v,i)=> `${(i/(seq.length-1||1))*760+10},${200-(v/maxVal)*180}`).join(' ');

@@ -123,9 +123,9 @@
       --bg-card-hover: #ffffff;
       --border-card: rgba(226, 232, 240, 0.8);
       --border-highlight: rgba(99, 102, 241, 0.5);
-      --text-main: #0f172a;
+      --text-main: #ef1ce4;
       --text-muted: #475569;
-      --text-dim: #94a3b8;
+      --text-dim: #3280ed;
       --primary: #4f46e5;
       --primary-light: #6366f1;
       --primary-glow: rgba(79, 70, 229, 0.15);
@@ -309,7 +309,7 @@
     }
 
     .hero-title .gradient-text {
-      background: linear-gradient(135deg, #a5b4fc, #6366f1, #38bdf8);
+      background: linear-gradient(135deg, #cfd1d7, #dedef0, #38bdf8);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -855,11 +855,18 @@
       <div class="brand-text">SPVM3 Tech <span>Solution</span></div>
     </a>
 
-    <div class="nav-actions">
+    <div class="nav-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
       <div class="nav-badge">
         <span>💻</span>
-        <span>All Computer Based Notes (21 Subjects)</span>
+        <span>21 Master Subjects</span>
       </div>
+      <button class="spvm3-login-btn" id="spvm3-header-login-btn" onclick="showSPVM3LoginModal()" style="background: rgba(99,102,241,0.2); color: #38bdf8; border: 1px solid #6366f1; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+        🔑 Account / Login
+      </button>
+      <a href="verify-certificate.html" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(6, 182, 212, 0.15); color: #38bdf8; border: 1px solid #06b6d4; padding: 7px 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-decoration: none; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+        <span>🔍</span>
+        <span>Verify Certs</span>
+      </a>
       <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme">
         🌙
       </button>

@@ -267,7 +267,7 @@ function verifyCertificateId(certId) {
 
   // Check Local Storage Records
   const records = JSON.parse(localStorage.getItem('spvm3_cert_records') || '{}');
-  const studentName = localStorage.getItem('spvm3_student_name') || 'Sanjay GL';
+  let studentName = localStorage.getItem('spvm3_student_name') || 'Sanjay GL';
 
   let matchedRecord = null;
   let matchedSubject = null;
@@ -281,97 +281,56 @@ function verifyCertificateId(certId) {
     }
   }
 
+  // If found in localStorage, render immediately
+  if (matchedRecord && matchedSubject) {
+    renderVerifiedReport(matchedRecord, matchedSubject, studentName);
+    return;
+  }
+
+  // Otherwise, query Python backend database API (http://localhost:5000/api/records)
+  fetch('http://localhost:5000/api/records')
+    .then(r => r.json())
+    .then(dbRecords => {
+      const dbMatch = Array.isArray(dbRecords) ? dbRecords.find(r => r.cert_id && r.cert_id.toUpperCase() === certId) : null;
+      if (dbMatch) {
+        const foundSub = SPVM3_SUBJECTS_MASTER.find(s => s.id === dbMatch.subject_id || s.title.toLowerCase().includes(dbMatch.course_title.toLowerCase())) || {
+          id: dbMatch.subject_id || 'course',
+          title: dbMatch.course_title,
+          readTimeMin: 60,
+          accent: '#06b6d4',
+          icon: '🎓'
+        };
+        const parsedDate = dbMatch.timestamp ? new Date(dbMatch.timestamp) : new Date();
+        const rec = {
+          completed: true,
+          completedDate: parsedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+          completedTime: parsedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }),
+          certId: dbMatch.cert_id,
+          course_hours: dbMatch.course_hours || '2.0 Hours'
+        };
+        renderVerifiedReport(rec, foundSub, dbMatch.student_name);
+      } else {
+        fallbackOrNotFound(certId);
+      }
+    })
+    .catch(err => {
+      fallbackOrNotFound(certId);
+    });
+}
+
+function fallbackOrNotFound(certId) {
+  const resultContainer = document.getElementById('resultContainer');
   // Fallback demo matching for testing any SPVM3-CERT or SPVM3 ID pattern
-  if (!matchedRecord && (certId.startsWith('SPVM3') || certId.length > 6)) {
+  if (certId.startsWith('SPVM3') || certId.length > 6) {
     const foundSubject = SPVM3_SUBJECTS_MASTER.find(s => certId.toLowerCase().includes(s.id.toLowerCase())) || SPVM3_SUBJECTS_MASTER[0];
     const now = new Date();
-    matchedRecord = {
+    const matchedRecord = {
       completed: true,
       completedDate: now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
       completedTime: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }),
       certId: certId
     };
-    matchedSubject = foundSubject;
-  }
-
-  if (matchedRecord && matchedSubject) {
-    const hours = calcCourseHours(matchedSubject.readTimeMin);
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href.split('?')[0] + '?certId=' + matchedRecord.certId)}`;
-
-    resultContainer.innerHTML = `
-      <div class="status-banner status-valid">
-        <span>✅</span>
-        <span>VERIFIED OFFICIAL CERTIFICATE</span>
-      </div>
-
-      <div class="cert-report" id="spvm3PrintableCert">
-        <div class="report-header">
-          <!-- Left: SPVM3 Brand Logo -->
-          <div style="text-align: left;">
-            <img src="spvm3_logo.jpg" alt="SPVM3 Logo" class="report-logo">
-          </div>
-
-          <!-- Center: SPVM3 TECH SOLUTION / SPVM3 Education Platform -->
-          <div style="text-align: center; flex: 1;">
-            <div class="report-brand-name">SPVM3 TECH SOLUTION</div>
-            <div style="font-size: 0.8rem; color: #38bdf8; font-weight: 700; letter-spacing: 0.05em;">SPVM3 EDUCATION PLATFORM</div>
-            <div style="font-size: 0.72rem; color: #94a3b8; letter-spacing: 0.1em; margin-top: 2px;">ISO CERTIFIED ACADEMY VERIFICATION REPORT</div>
-          </div>
-
-          <!-- Right: Subject Specific Logo & QR -->
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 65px; height: 65px; border-radius: 50%; background: rgba(99,102,241,0.15); border: 2px solid ${matchedSubject.accent || '#06b6d4'}; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
-              ${matchedSubject.icon || '💻'}
-            </div>
-            <div class="qr-box-verify">
-              <img src="${qrUrl}" alt="QR Code">
-            </div>
-          </div>
-        </div>
-
-        <div class="report-grid">
-          <div class="report-field">
-            <span class="report-label">Student / Recipient:</span>
-            <span class="report-val highlight">${studentName}</span>
-          </div>
-          <div class="report-field">
-            <span class="report-label">Course / Subject Name:</span>
-            <span class="report-val">${matchedSubject.title}</span>
-          </div>
-          <div class="report-field">
-            <span class="report-label">Certified Course Duration:</span>
-            <span class="report-val highlight">${hours} (${matchedSubject.readTimeMin} Mins Study Units)</span>
-          </div>
-          <div class="report-field">
-            <span class="report-label">Completion Date:</span>
-            <span class="report-val">${matchedRecord.completedDate}</span>
-          </div>
-          <div class="report-field">
-            <span class="report-label">Exact Completion Time:</span>
-            <span class="report-val">${matchedRecord.completedTime}</span>
-          </div>
-          <div class="report-field">
-            <span class="report-label">Certificate Unique ID:</span>
-            <span class="report-val" style="font-family: var(--font-mono); color: #fbbf24;">${matchedRecord.certId}</span>
-          </div>
-          <div class="report-field">
-            <span class="report-label">Verification Status:</span>
-            <span class="report-val" style="color: #34d399;">🟢 100% Authentic & Registered</span>
-          </div>
-          <div class="report-field">
-            <span class="report-label">Issuing Authority:</span>
-            <span class="report-val">Sanjay GL (SPVM3 Director)</span>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
-          <button onclick="downloadSPVM3CertificateImage('${matchedRecord.certId}')" class="btn-verify" style="background: linear-gradient(135deg, #06b6d4, #0284c7); padding: 10px 16px; font-size: 0.85rem;">🖼️ Image (.png)</button>
-          <button onclick="downloadSPVM3CertificatePDF('${matchedRecord.certId}')" class="btn-verify" style="background: linear-gradient(135deg, #ef4444, #dc2626); padding: 10px 16px; font-size: 0.85rem;">📕 PDF (.pdf)</button>
-          <button onclick="downloadSPVM3CertificateDoc('${matchedRecord.certId}', '${matchedSubject.title}')" class="btn-verify" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 10px 16px; font-size: 0.85rem;">📄 Word (.doc)</button>
-          <button onclick="sendSPVM3CertificateEmail('${matchedSubject.id}', '${matchedRecord.certId}')" class="btn-verify" style="background: linear-gradient(135deg, #10b981, #059669); padding: 10px 16px; font-size: 0.85rem;">📧 Email Certificate</button>
-        </div>
-      </div>
-    `;
+    renderVerifiedReport(matchedRecord, foundSubject, localStorage.getItem('spvm3_student_name') || 'Sanjay GL');
   } else {
     resultContainer.innerHTML = `
       <div class="status-banner status-invalid">
@@ -383,6 +342,87 @@ function verifyCertificateId(certId) {
       </p>
     `;
   }
+}
+
+function renderVerifiedReport(matchedRecord, matchedSubject, studentName) {
+  const resultContainer = document.getElementById('resultContainer');
+  const hours = matchedRecord.course_hours || calcCourseHours(matchedSubject.readTimeMin || 60);
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href.split('?')[0] + '?certId=' + matchedRecord.certId)}`;
+
+  resultContainer.innerHTML = `
+    <div class="status-banner status-valid">
+      <span>✅</span>
+      <span>VERIFIED OFFICIAL CERTIFICATE</span>
+    </div>
+
+    <div class="cert-report" id="spvm3PrintableCert">
+      <div class="report-header">
+        <!-- Left: SPVM3 Brand Logo -->
+        <div style="text-align: left;">
+          <img src="spvm3_logo.jpg" alt="SPVM3 Logo" class="report-logo">
+        </div>
+
+        <!-- Center: SPVM3 TECH SOLUTION / SPVM3 Education Platform -->
+        <div style="text-align: center; flex: 1;">
+          <div class="report-brand-name">SPVM3 TECH SOLUTION</div>
+          <div style="font-size: 0.8rem; color: #38bdf8; font-weight: 700; letter-spacing: 0.05em;">SPVM3 EDUCATION PLATFORM</div>
+          <div style="font-size: 0.72rem; color: #94a3b8; letter-spacing: 0.1em; margin-top: 2px;">ISO CERTIFIED ACADEMY VERIFICATION REPORT</div>
+        </div>
+
+        <!-- Right: Subject Specific Logo & QR -->
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 65px; height: 65px; border-radius: 50%; background: rgba(99,102,241,0.15); border: 2px solid ${matchedSubject.accent || '#06b6d4'}; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+            ${matchedSubject.icon || '💻'}
+          </div>
+          <div class="qr-box-verify">
+            <img src="${qrUrl}" alt="QR Code">
+          </div>
+        </div>
+      </div>
+
+      <div class="report-grid">
+        <div class="report-field">
+          <span class="report-label">Student / Recipient:</span>
+          <span class="report-val highlight">${studentName}</span>
+        </div>
+        <div class="report-field">
+          <span class="report-label">Course / Subject Name:</span>
+          <span class="report-val">${matchedSubject.title}</span>
+        </div>
+        <div class="report-field">
+          <span class="report-label">Certified Course Duration:</span>
+          <span class="report-val highlight">${hours}</span>
+        </div>
+        <div class="report-field">
+          <span class="report-label">Completion Date:</span>
+          <span class="report-val">${matchedRecord.completedDate}</span>
+        </div>
+        <div class="report-field">
+          <span class="report-label">Exact Completion Time:</span>
+          <span class="report-val">${matchedRecord.completedTime}</span>
+        </div>
+        <div class="report-field">
+          <span class="report-label">Certificate Unique ID:</span>
+          <span class="report-val" style="font-family: var(--font-mono); color: #fbbf24;">${matchedRecord.certId}</span>
+        </div>
+        <div class="report-field">
+          <span class="report-label">Verification Status:</span>
+          <span class="report-val" style="color: #34d399;">🟢 100% Authentic & Registered</span>
+        </div>
+        <div class="report-field">
+          <span class="report-label">Issuing Authority:</span>
+          <span class="report-val">Sanjay GL (SPVM3 Director)</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
+        <button onclick="downloadSPVM3CertificateImage('${matchedRecord.certId}')" class="btn-verify" style="background: linear-gradient(135deg, #06b6d4, #0284c7); padding: 10px 16px; font-size: 0.85rem;">🖼️ Image (.png)</button>
+        <button onclick="downloadSPVM3CertificatePDF('${matchedRecord.certId}')" class="btn-verify" style="background: linear-gradient(135deg, #ef4444, #dc2626); padding: 10px 16px; font-size: 0.85rem;">📕 PDF (.pdf)</button>
+        <button onclick="downloadSPVM3CertificateDoc('${matchedRecord.certId}', '${matchedSubject.title}')" class="btn-verify" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); padding: 10px 16px; font-size: 0.85rem;">📄 Word (.doc)</button>
+        <button onclick="sendSPVM3CertificateEmail('${matchedSubject.id}', '${matchedRecord.certId}')" class="btn-verify" style="background: linear-gradient(135deg, #10b981, #059669); padding: 10px 16px; font-size: 0.85rem;">📧 Email Certificate</button>
+      </div>
+    </div>
+  `;
 }
 
 // Auto verify if query parameter certId is present
